@@ -30,7 +30,7 @@ namespace chat_teacher_server.Controllers
         [HttpPost]
         public IActionResult Post(LenguajeLup codigo)
         {
-            return Ok("Hola");
+            return Ok("hola");
         }
 
         // PUT: api/LenguajeLup/5
