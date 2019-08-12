@@ -1,2 +1,3 @@
-chat-teacher-server/ .vs
-chat-teacher-server/bin
+chat-teacher-server/.vs/
+chat-teacher-server/bin/
+chat-teacher-server/obj/
