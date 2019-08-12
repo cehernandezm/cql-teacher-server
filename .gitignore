@@ -1,3 +1,14 @@
+# Build results
+chat-teacher-server/[Dd]ebug/
+chat-teacher-server/[Dd]ebugPublic/
+chat-teacher-server/[Rr]elease/
+chat-teacher-server/[Rr]eleases/
+chat-teacher-server/x64/
+chat-teacher-server/x86/
+chat-teacher-server/bld/
+chat-teacher-server/[Bb]in/
+chat-teacher-server/[Oo]bj/
+chat-teacher-server/[Ll]og/
+
+# Visual Studio 2015 cache/options directory
 chat-teacher-server/.vs/
-chat-teacher-server/bin/
-chat-teacher-server/obj/
