@@ -11,7 +11,8 @@ namespace chat_teacher_server.LUP.Gramatica
         public GramaticaLUP() : base (caseSensitive: false)
         {
             #region ER
-            StringLiteral CADENA = new StringLiteral("cadena");
+            var CUERPO = new RegexBasedTerminal("Cuerpo", "([^\"\n]|(\\\"))+");
+            
             #endregion
 
             #region Terminales
@@ -31,6 +32,8 @@ namespace chat_teacher_server.LUP.Gramatica
             NonTerminal inicio = new NonTerminal("inicio");
             NonTerminal instruccion = new NonTerminal("instruccion");
             NonTerminal login = new NonTerminal("login");
+            NonTerminal expresiones_cuerpo = new NonTerminal("expresiones_cuerpo");
+            NonTerminal expresion_cuerpo = new NonTerminal("expresion_cuerpo");
             #endregion
 
             #region Gramatica
@@ -40,9 +43,12 @@ namespace chat_teacher_server.LUP.Gramatica
             instruccion.Rule = login;
 
             login.Rule = LLAVEIZQ + MAS + LOGIN + LLAVEDER + LLAVEIZQ + MAS
-                        + USER + LLAVEDER + CADENA + LLAVEIZQ + MENOS + USER + LLAVEDER + LLAVEIZQ + MAS + PASS + LLAVEDER +
+                        + USER + LLAVEDER + CUERPO + LLAVEIZQ + MENOS + USER + LLAVEDER + LLAVEIZQ + MAS + PASS + LLAVEDER + CUERPO +
                         LLAVEIZQ + MENOS + PASS + LLAVEDER + LLAVEIZQ + MENOS + LOGIN + LLAVEDER;
 
+
+            
+            
             #endregion
 
             #region Preferencias

@@ -23,16 +23,20 @@ namespace chat_teacher_server.LUP.Arbol
         //-------------------------------------------------- RECORRE TODO EL ARBOL GUARDANDOLO EN UN ARCHIVO--------------------------------------------------------
         public static void recorrer(ParseTreeNode raiz, System.IO.StreamWriter f)
         {
-            f.Write("nodo" + raiz.GetHashCode() + "[label=\"" + raiz.ToString().Replace("\"", "\\\"") + " \", fillcolor=\"LightBlue\", style =\"filled\", shape=\"box\"]; \n");
-            if(raiz.ChildNodes.Count > 0)
+            if(raiz != null)
             {
-                ParseTreeNode[] hijos = raiz.ChildNodes.ToArray();
-                for(int i = 0; i < raiz.ChildNodes.Count; i++)
+                f.Write("nodo" + raiz.GetHashCode() + "[label=\"" + raiz.ToString().Replace("\"", "\\\"") + " \", fillcolor=\"LightBlue\", style =\"filled\", shape=\"box\"]; \n");
+                if (raiz.ChildNodes.Count > 0)
                 {
-                    recorrer(hijos[i],f);
-                    f.Write("\"nodo" + raiz.GetHashCode() + "\"-> \"nodo" + hijos[i].GetHashCode() + "\" \n");
+                    ParseTreeNode[] hijos = raiz.ChildNodes.ToArray();
+                    for (int i = 0; i < raiz.ChildNodes.Count; i++)
+                    {
+                        recorrer(hijos[i], f);
+                        f.Write("\"nodo" + raiz.GetHashCode() + "\"-> \"nodo" + hijos[i].GetHashCode() + "\" \n");
+                    }
                 }
             }
+            
         }
 
        
