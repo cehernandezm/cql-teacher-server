@@ -11,7 +11,7 @@ namespace cql_teacher_server.LUP.Gramatica
         public GramaticaLUP() : base(caseSensitive: false)
         {
             #region ER
-            var CUERPO = new RegexBasedTerminal("Cuerpo", "[^\n]+");
+            var CUERPO = new RegexBasedTerminal("Cuerpo", "[^\n []+");
 
             #endregion
 

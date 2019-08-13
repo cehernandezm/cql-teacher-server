@@ -48,6 +48,9 @@ namespace cql_teacher_server.LUP.Gramatica
                         {
                             Boolean flag = (Boolean) res;
                             salida = (flag) ? "[+LOGOUT]\n\t[SUCCESS]\n[-LOGOUT]" : "[+LOGOUT]\n\t[FAIL]\n[-LOGOUT]";
+                        }else if(AST.GetType() == typeof(Consulta))
+                        {
+                            salida = (string) res;
                         }
                     } 
                 }
@@ -61,10 +64,19 @@ namespace cql_teacher_server.LUP.Gramatica
 
         public InstruccionLUP instrucciones(ParseTreeNode actual)
         {
-            return instruccion(actual.ChildNodes.ElementAt(0));
+            try
+            {
+                return (InstruccionLUP)instruccion(actual.ChildNodes.ElementAt(0));
+            }
+            catch(Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine("Error: " + e.Message);
+                return null;
+            }
+            
         }
 
-        public InstruccionLUP instruccion(ParseTreeNode actual)
+        public Object instruccion(ParseTreeNode actual)
         {
             string token = actual.ToString().Split(' ')[0].ToLower();
             switch (token)
@@ -84,6 +96,33 @@ namespace cql_teacher_server.LUP.Gramatica
                     string user = actual.ChildNodes.ElementAt(8).ToString().Split(' ')[0];
                     return new Logout(user);
                     break;
+                //------------------------------------------- SI EL PAQUETE ES DE CONSULTA ----------------------------------------------------------------
+
+                case "query":
+                    string userq = actual.ChildNodes.ElementAt(8).ToString().Split(' ')[0];
+                    string sql =(string) instruccion(actual.ChildNodes.ElementAt(13));
+                    return new Consulta(userq, sql);
+                    break;
+
+                // ------------------------------------------- Produccion DATA -----------------------------------------------------------------------------
+                case "data":
+                    return instruccion(actual.ChildNodes.ElementAt(4));
+                    break;
+
+                //----------------------------------------------- expresion_cuerpo -------------------------------------------------------------------------
+                case "expresion_cuerpo":
+                    if(actual.ChildNodes.Count == 2)
+                    {
+                        //----------------------------------- expresion_cuerpo CUERPO------------------------------------------------------------------
+                        string cuerpo = actual.ChildNodes.ElementAt(1).ToString().Split("(")[0];
+                        return instruccion(actual.ChildNodes.ElementAt(0)) + cuerpo;
+                    }
+                    else
+                    {
+                        return actual.ChildNodes.ElementAt(0).ToString().Split("(")[0];
+                    }
+                    break;
+
             }
             
             return null;
