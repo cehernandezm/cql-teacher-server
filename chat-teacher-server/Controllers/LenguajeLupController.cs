@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using chat_teacher_server.LUP.Gramatica;
 using chat_teacher_server.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +31,9 @@ namespace chat_teacher_server.Controllers
         [HttpPost]
         public IActionResult Post(LenguajeLup codigo)
         {
-            return Ok("hola");
+            SintacticoLUP sintactico = new SintacticoLUP();
+            string salida = sintactico.analizar(codigo.codigo);
+            return Ok(salida);
         }
 
         // PUT: api/LenguajeLup/5
