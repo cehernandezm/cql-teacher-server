@@ -1,12 +1,12 @@
-﻿using chat_teacher_server.LUP.Arbol;
-using chat_teacher_server.LUP.Componentes;
+﻿using cql_teacher_server.LUP.Arbol;
+using cql_teacher_server.LUP.Componentes;
 using Irony.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace chat_teacher_server.LUP.Gramatica
+namespace cql_teacher_server.LUP.Gramatica
 {
     public class SintacticoLUP
     {
@@ -44,6 +44,10 @@ namespace chat_teacher_server.LUP.Gramatica
                             Boolean flag = (Boolean) res;
                             salida = (flag) ? "[+LOGIN]\n\t[SUCCESS]\n[-LOGIN]": "[+LOGIN]\n\t[FAIL]\n[-LOGIN]";
                             
+                        }else if(AST.GetType() == typeof(Logout))
+                        {
+                            Boolean flag = (Boolean) res;
+                            salida = (flag) ? "[+LOGOUT]\n\t[SUCCESS]\n[-LOGOUT]" : "[+LOGOUT]\n\t[FAIL]\n[-LOGOUT]";
                         }
                     } 
                 }
@@ -72,6 +76,13 @@ namespace chat_teacher_server.LUP.Gramatica
                     string password = actual.ChildNodes.ElementAt(17).ToString().Split(' ')[0];
                     return new Usuario(usuario, password);
 
+                    break;
+
+                //------------------------------------------ SI EL PAQUETE ES DE LOGOUT -------------------------------------------------------------------------------
+
+                case "logout":
+                    string user = actual.ChildNodes.ElementAt(8).ToString().Split(' ')[0];
+                    return new Logout(user);
                     break;
             }
             

@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using chat_teacher_server.LUP.Gramatica;
-using chat_teacher_server.Models;
+using cql_teacher_server.LUP.Gramatica;
+using cql_teacher_server.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace chat_teacher_server.Controllers
+namespace cql_teacher_server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

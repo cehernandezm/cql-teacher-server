@@ -1,10 +1,10 @@
-﻿using chat_teacher_server.LUP.Arbol;
+﻿using cql_teacher_server.LUP.Arbol;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace chat_teacher_server.LUP.Componentes
+namespace cql_teacher_server.LUP.Componentes
 {
     public class Usuario : InstruccionLUP
     {

@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace chat_teacher_server.LUP.Arbol
+namespace cql_teacher_server.LUP.Arbol
 {
     class GraficarLUP
     {
