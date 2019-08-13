@@ -1,4 +1,5 @@
 ﻿using chat_teacher_server.LUP.Arbol;
+using chat_teacher_server.LUP.Componentes;
 using Irony.Parsing;
 using System;
 using System.Collections.Generic;
@@ -19,17 +20,34 @@ namespace chat_teacher_server.LUP.Gramatica
             ParseTree arbol = parser.Parse(cadena);
             ParseTreeNode raiz = arbol.Root;
 
-            //LinkedList<InstruccionLUP> AST = instrucciones(raiz.ChildNodes.ElementAt(0));
+            
             if (arbol != null)
             {
                 GraficarLUP.Construir(raiz);
                 string salida = "";
+
                 for (int i = 0; i < arbol.ParserMessages.Count(); i++)
                 {
 
                     salida += arbol.ParserMessages.ElementAt(i).Message + " Linea: " + arbol.ParserMessages.ElementAt(i).Location.Line.ToString()
                               + " Columna: " + arbol.ParserMessages.ElementAt(i).Location.Column.ToString() + "\n";
                 }
+
+                if (arbol.ParserMessages.Count() < 1)
+                {
+                    InstruccionLUP AST = instrucciones(raiz.ChildNodes.ElementAt(0));
+                    if (AST != null)
+                    {
+                        Object res = AST.ejecutar();
+                        if (AST.GetType() == typeof(Usuario))
+                        {
+                            Boolean flag = (Boolean) res;
+                            salida = (flag) ? "[+LOGIN]\n\t[SUCCESS]\n[-LOGIN]": "[+LOGIN]\n\t[FAIL]\n[-LOGIN]";
+                            
+                        }
+                    } 
+                }
+
                 return salida;
             }
             return "";
@@ -37,16 +55,26 @@ namespace chat_teacher_server.LUP.Gramatica
         }
 
 
-        public LinkedList<InstruccionLUP> instrucciones(ParseTreeNode actual)
+        public InstruccionLUP instrucciones(ParseTreeNode actual)
         {
-            LinkedList<InstruccionLUP> lista = new LinkedList<InstruccionLUP>();
-            lista.AddLast(instruccion(actual.ChildNodes.ElementAt(0)));
-            return lista;
+            return instruccion(actual.ChildNodes.ElementAt(0));
         }
 
         public InstruccionLUP instruccion(ParseTreeNode actual)
         {
-            string tokenOperacion = actual.ChildNodes.ElementAt(0).ToString().Split(' ')[0].ToLower();
+            string token = actual.ToString().Split(' ')[0].ToLower();
+            switch (token)
+            {
+                //------------------------------------------- SI EL PAQUETE ES DE LOGUEO --------------------------------------------------------------------------------
+                case "login":
+
+                    string usuario = actual.ChildNodes.ElementAt(8).ToString().Split(' ')[0];
+                    string password = actual.ChildNodes.ElementAt(17).ToString().Split(' ')[0];
+                    return new Usuario(usuario, password);
+
+                    break;
+            }
+            
             return null;
         }
        
