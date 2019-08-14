@@ -14,7 +14,8 @@ namespace cql_teacher_server.CHISON.Gramatica
             StringLiteral CADENA = new StringLiteral("cadena", "\"");
             var ENTERO = new NumberLiteral("entero");
             var DECIMAL = new RegexBasedTerminal("decimal", "[0-9]+'.'[0-9]+");
-            var FECHA = new RegexBasedTerminal("fecha","((19 | 20)\\d{2})'-'((0|1)\\d{1})'-'((0|1|2)\\d{1})");
+            var FECHA = new RegexBasedTerminal("fecha","((19|20)\\d{2})'-'((0|1)\\d{1})'-'((0|1|2)\\d{1})");
+            var HORA = new RegexBasedTerminal("hora", "(([0-1]\\d{1})|(2[0-3]))':'([0-5]\\d{1})':'([0-5]\\d{1})");
             IdentifierTerminal ID = new IdentifierTerminal("ID");
 
             #endregion
