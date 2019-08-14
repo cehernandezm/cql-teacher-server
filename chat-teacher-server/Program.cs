@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using cql_teacher_server.Herramientas;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -14,6 +15,7 @@ namespace chat_teacher_server
     {
         public static void Main(string[] args)
         {
+            //LeerArchivo leer = new LeerArchivo();
             CreateWebHostBuilder(args).Build().Run();
         }
 
