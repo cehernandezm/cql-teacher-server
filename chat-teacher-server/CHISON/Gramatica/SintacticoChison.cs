@@ -1,4 +1,4 @@
-﻿using cql_teacher_server.LUP.Arbol;
+﻿using cql_teacher_server.LUP.Gramatica;
 using Irony.Parsing;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace cql_teacher_server.CHISON.Gramatica
 {
-    public class SintacticoChison
+    class SintacticoChison
     {
 
         public void analizar(string cadena)
@@ -21,9 +21,10 @@ namespace cql_teacher_server.CHISON.Gramatica
             if(arbol != null)
             {
                 graficar(raiz);
-            }
-            
-            
+            }else System.Diagnostics.Debug.WriteLine("ERROR CHISON VACIO");
+
+
+
         }
 
 

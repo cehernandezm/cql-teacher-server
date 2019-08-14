@@ -59,8 +59,11 @@ namespace cql_teacher_server.CHISON.Gramatica
 
             #endregion
 
+            #region Preferencias
+            this.Root = inicio;
             instruccion_superior.ErrorRule = SyntaxError + instruccion_superior;
-
+            #endregion
+            
         }
     }
 }

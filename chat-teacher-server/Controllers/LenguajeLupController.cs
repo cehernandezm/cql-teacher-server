@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using cql_teacher_server.CHISON.Gramatica;
+using cql_teacher_server.Herramientas;
 using cql_teacher_server.LUP.Gramatica;
 using cql_teacher_server.Models;
 using Microsoft.AspNetCore.Http;
@@ -17,6 +19,8 @@ namespace cql_teacher_server.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
+            LeerArchivo leer = new LeerArchivo();
+            
             return new string[] { "value1", "value2" };
         }
 

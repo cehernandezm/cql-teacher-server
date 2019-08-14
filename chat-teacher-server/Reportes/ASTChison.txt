@@ -1,0 +1,24 @@
+digraph Arbol{ rankdir=TB; 
+ node[shape = box, style = filled, color = white];nodo58366981[label="inicio ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo38583594[label="instruccion_superior ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo51781231[label="$ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo38583594"-> "nodo51781231" 
+nodo65849037[label="< (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo38583594"-> "nodo65849037" 
+nodo62407605[label="database ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo463695[label="\"databases\" (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo62407605"-> "nodo463695" 
+nodo26430654[label="= (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo62407605"-> "nodo26430654" 
+nodo30152281[label="[ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo62407605"-> "nodo30152281" 
+nodo40958450[label="] (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo62407605"-> "nodo40958450" 
+"nodo38583594"-> "nodo62407605" 
+nodo52930323[label="> (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo38583594"-> "nodo52930323" 
+nodo64238395[label="$ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo38583594"-> "nodo64238395" 
+"nodo58366981"-> "nodo38583594" 
+
+}
