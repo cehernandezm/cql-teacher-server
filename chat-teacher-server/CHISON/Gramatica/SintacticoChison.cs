@@ -20,7 +20,14 @@ namespace cql_teacher_server.CHISON.Gramatica
 
             if(arbol != null)
             {
-                graficar(raiz);
+                for(int i = 0; i < arbol.ParserMessages.Count(); i++)
+                {
+                    System.Diagnostics.Debug.WriteLine(arbol.ParserMessages.ElementAt(i).Message + " Linea: " + arbol.ParserMessages.ElementAt(i).Location.Line.ToString()
+                              + " Columna: " + arbol.ParserMessages.ElementAt(i).Location.Column.ToString() + "\n");
+                }
+
+                if(arbol.ParserMessages.Count() < 1)
+                    graficar(raiz);
             }else System.Diagnostics.Debug.WriteLine("ERROR CHISON VACIO");
 
 

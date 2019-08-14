@@ -12,10 +12,10 @@ namespace cql_teacher_server.CHISON.Gramatica
         {
             #region ER
             StringLiteral CADENA = new StringLiteral("cadena", "\"");
+            var FECHA = new RegexBasedTerminal("fecha", "\\'\\d{4}-(((0)[0-9])|((1)[0-2]))-([0-2][0-9]|(3)[0-1])\\'");
+            var HORA = new RegexBasedTerminal("hora", "\\'(([0-1][0-9])|2[0-3]):([0-2][0-9]):([0-5][0-9])\\'");
             var ENTERO = new NumberLiteral("entero");
             var DECIMAL = new RegexBasedTerminal("decimal", "[0-9]+'.'[0-9]+");
-            var FECHA = new RegexBasedTerminal("fecha","((19|20)\\d{2})'-'((0|1)\\d{1})'-'((0|1|2)\\d{1})");
-            var HORA = new RegexBasedTerminal("hora", "(([0-1]\\d{1})|(2[0-3]))':'([0-5]\\d{1})':'([0-5]\\d{1})");
             IdentifierTerminal ID = new IdentifierTerminal("ID");
 
             #endregion
@@ -32,38 +32,50 @@ namespace cql_teacher_server.CHISON.Gramatica
             var DOLAR = ToTerm("$");
             var DATABASES = ToTerm("\"DATABASES\"");
             var USERS = ToTerm("\"USERS\"");
-            var NAME = ToTerm("\"NAME\"");
-            var DATA = ToTerm("\"DATA\"");
-            var PASSWORD = ToTerm("\"PASSWORD\"");
-            var PERMISSIONS = ToTerm("\"PERMISSIONS\"");
-            var CQL_TYPE = ToTerm("\"CQL-TYPE\"");
-            var COLUMNS = ToTerm("\"COLUMNS\"");
-            var TYPE = ToTerm("\"TYPE\"");
-            var PK = ToTerm("\"PK\"");
-            var ATTRS = ToTerm("\"ATTRS\"");
-            var INSTR = ToTerm("\"INSTR\"");
-            var AS = ToTerm("\"AS\"");
             #endregion
 
 
             #region No Terminales
             NonTerminal inicio = new NonTerminal("inicio");
-            NonTerminal instruccion_superior = new NonTerminal("instruccion_superior");
+            NonTerminal instrucciones_superior = new NonTerminal("instrucciones_superior");
+            NonTerminal instruccion_superior = new NonTerminal("intruccion_superior");
+
             NonTerminal database = new NonTerminal("database");
+
+            NonTerminal objetos = new NonTerminal("objetos");
+            NonTerminal objeto = new NonTerminal("objeto");
+            NonTerminal tipo = new NonTerminal("tipo");
             #endregion
 
             #region Gramatica
-            inicio.Rule = instruccion_superior;
+            inicio.Rule = DOLAR + MENOR + instrucciones_superior + MAYOR + DOLAR;
 
-            instruccion_superior.Rule = DOLAR + MENOR + database + MAYOR + DOLAR;
+            instrucciones_superior.Rule = instrucciones_superior + COMA + instruccion_superior 
+                                        | instruccion_superior;
 
-            database.Rule = DATABASES + IGUAL + LLAVEIZQ + LLAVEDER;
+            instruccion_superior.Rule = database;
 
+            database.Rule = DATABASES + IGUAL + LLAVEIZQ + LLAVEDER
+                          | DATABASES + IGUAL + LLAVEIZQ + objetos + LLAVEDER ;
+
+            objetos.Rule = objetos + COMA + objeto
+                         | objeto;
+
+            objeto.Rule = CADENA + IGUAL + tipo;
+
+            tipo.Rule = CADENA
+                      | TRUE
+                      | FALSE
+                      | ENTERO
+                      | DECIMAL
+                      | FECHA
+                      | HORA
+                      ;
             #endregion
 
             #region Preferencias
             this.Root = inicio;
-            instruccion_superior.ErrorRule = SyntaxError + instruccion_superior;
+            instrucciones_superior.ErrorRule = SyntaxError + instrucciones_superior;
             #endregion
             
         }
