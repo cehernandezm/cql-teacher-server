@@ -67,41 +67,42 @@ namespace cql_teacher_server.CHISON.Gramatica
 
                     //------------------------------------- bases ----------------------------------------------------------------------
                     case "bases":
+                        ParseTreeNode hijo;
+                        BaseDeDatos newBase;
+                        string baseActual;
+                        BaseDeDatos oldBase;
+                        LinkedList<Atributo> lista;
                         if (raiz.ChildNodes.Count() == 3)
                         {
                             //-------------------------------- bases coma baseU ------------------------------------------------------
-
                             ejecutar(raiz.ChildNodes.ElementAt(0));
-                            ParseTreeNode hijo = raiz.ChildNodes.ElementAt(2);
-                            LinkedList<Atributo> lista = (LinkedList<Atributo>)ejecutar(hijo.ChildNodes.ElementAt(1));
-                            BaseDeDatos newBase = new BaseDeDatos(lista, "sin usar");
-                            string baseActual = getNombre(lista);
-                            BaseDeDatos oldBase = TablaBaseDeDatos.getBase(baseActual);
-                            if (oldBase == null) global.AddLast(newBase);
-                            else {
-                                System.Diagnostics.Debug.WriteLine("Error Semantico: Ya existe una base de datos con este nombre: " + baseActual + ", Linea: "
-                                 + hijo.ChildNodes.ElementAt(0).Token.Location.Line + " Columna : " + hijo.ChildNodes.ElementAt(0).Token.Location.Column);
-                            }
-                                
-                            baseActual = "none";
+                            hijo = raiz.ChildNodes.ElementAt(2);  
                         }
-                        else
-                        {   
-                            //-------------------------------- baseU ------------------------------------------------------
+                        else hijo = raiz.ChildNodes.ElementAt(0);
 
-                            ParseTreeNode hijo = raiz.ChildNodes.ElementAt(0);
-                            LinkedList<Atributo> lista = (LinkedList<Atributo>)ejecutar(hijo.ChildNodes.ElementAt(1));
-                            BaseDeDatos newBase = new BaseDeDatos(lista, "sin usar");
-                            string baseActual = getNombre(lista);
-                            BaseDeDatos oldBase = TablaBaseDeDatos.getBase(baseActual);
+                        //---------------------------------------------------------- Almacenar la base de datos --------------------------------------------------
+                        lista = (LinkedList<Atributo>)ejecutar(hijo.ChildNodes.ElementAt(1));
+                        newBase = new BaseDeDatos(lista, "sin usar");
+                        baseActual = getNombre(lista);
+                        if (!baseActual.Equals("sinnombre"))
+                        {
+                            oldBase = TablaBaseDeDatos.getBase(baseActual);
+
                             if (oldBase == null) global.AddLast(newBase);
                             else
                             {
                                 System.Diagnostics.Debug.WriteLine("Error Semantico: Ya existe una base de datos con este nombre: " + baseActual + ", Linea: "
                                  + hijo.ChildNodes.ElementAt(0).Token.Location.Line + " Columna : " + hijo.ChildNodes.ElementAt(0).Token.Location.Column);
                             }
-                            baseActual = "none";
                         }
+                        else
+                        {
+                            System.Diagnostics.Debug.WriteLine("Error Semantico: La base de datos necesita un nombre, Linea: "
+                             + hijo.ChildNodes.ElementAt(0).Token.Location.Line + " Columna : " + hijo.ChildNodes.ElementAt(0).Token.Location.Column);
+                        }
+
+
+                        baseActual = "none";
                         break;
 
                     //-------------------------------------- objetos -------------------------------------------------------------------
@@ -133,12 +134,13 @@ namespace cql_teacher_server.CHISON.Gramatica
                         Object valor = null;
                         string tipo = "";
                         ParseTreeNode hijoT = raiz.ChildNodes.ElementAt(2);
-                        if(hijoT.ChildNodes.Count() == 2) // -------------------------------------------- [ ] -------------------------------------------------------
+                        if (hijoT.ChildNodes.Count() == 2) // -------------------------------------------- [ ] -------------------------------------------------------
                         {
                             if (token.Equals("DATA"))
                             {
                                 tipo = "TABLAS";
-                                valor = null;
+                                LinkedList<Tabla> listaTabla = new LinkedList<Tabla>();
+                                valor = listaTabla;
                             }
                             else
                             {
@@ -146,74 +148,90 @@ namespace cql_teacher_server.CHISON.Gramatica
                                     + token + ", Linea: " + raiz.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
                                     + raiz.ChildNodes.ElementAt(0).Token.Location.Column);
                                 return null;
-                            } 
+                            }
                         }
-                        tipo = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[1];
-
-                        if (tipo.Equals("hora)"))
+                        else if (hijoT.ChildNodes.Count() == 3) //---------------------- [ TABLAS ] ------------------------------------------------------------------
                         {
-                            tipo = "HORA";
-                            string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                            valorTemp = valorTemp.Replace("\'", string.Empty);
-                            valorTemp = valorTemp.TrimEnd();
-                            valorTemp = valorTemp.TrimStart();
-                            valor = (string)valorTemp;
-                        }
-                        else if (tipo.Equals("fecha)"))
-                        {
-                            tipo = "FECHA";
-                            string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                            valorTemp = valorTemp.Replace("\'", string.Empty);
-                            valorTemp = valorTemp.TrimEnd();
-                            valorTemp = valorTemp.TrimStart();
-                            valor = (string)valorTemp;
-                        }
-                        else if (tipo.Equals("cadena)"))
-                        {
-                            tipo = "CADENA";
-                            string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                            valorTemp = valorTemp.TrimEnd();
-                            valor = (string)valorTemp;
-                        }
-                        else if (tipo.Equals("entero)"))
-                        {
-                            tipo = "ENTERO";
-                            string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                            valorTemp = valorTemp.TrimEnd();
-                            valor = (string)valorTemp;
-                        }
-                        else if (tipo.Equals("decimal)"))
-                        {
-                            tipo = "DECIMAL";
-                            string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                            valorTemp = valorTemp.TrimEnd();
-                            valor = (string)valorTemp;
-                        }
-                        else if(tipo.Equals("Key symbol)"))
-                        {
-                            tipo = "BOOLEAN";
-                            string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                            valorTemp = valorTemp.Replace("\"", string.Empty);
-                            valorTemp = valorTemp.TrimEnd();
-                            valorTemp = valorTemp.TrimStart();
-                            valor = (string)valorTemp;
-                        }
-
-                        Atributo a = new Atributo(token, valor, tipo);
-                        if(token.Equals("NAME"))
-                        {
-                            if (tipo.Equals("CADENA")) return a;
+                            if (token.Equals("DATA"))
+                            {
+                                tipo = "TABLAS";
+                                LinkedList<Tabla> listaTabla = new LinkedList<Tabla>();
+                            }
                             else
                             {
-                                System.Diagnostics.Debug.WriteLine("ERROR NAME SOLO ACEPTA UN VALOR CADENA NO SE ESPERABA "  
-                                    + valor + " , Linea : " + hijoT.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: " 
-                                    + hijoT.ChildNodes.ElementAt(0).Token.Location.Column);
+                                System.Diagnostics.Debug.WriteLine("Error Semantico: No se le puede asignar una lista al atributo: "
+                                    + token + ", Linea: " + raiz.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
+                                    + raiz.ChildNodes.ElementAt(0).Token.Location.Column);
                                 return null;
                             }
-
                         }
-                        else return a;
+                        else
+                        {
 
+                            tipo = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[1];
+
+                            if (tipo.Equals("hora)"))
+                            {
+                                tipo = "HORA";
+                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
+                                valorTemp = valorTemp.Replace("\'", string.Empty);
+                                valorTemp = valorTemp.TrimEnd();
+                                valorTemp = valorTemp.TrimStart();
+                                valor = (string)valorTemp;
+                            }
+                            else if (tipo.Equals("fecha)"))
+                            {
+                                tipo = "FECHA";
+                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
+                                valorTemp = valorTemp.Replace("\'", string.Empty);
+                                valorTemp = valorTemp.TrimEnd();
+                                valorTemp = valorTemp.TrimStart();
+                                valor = (string)valorTemp;
+                            }
+                            else if (tipo.Equals("cadena)"))
+                            {
+                                tipo = "CADENA";
+                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
+                                valorTemp = valorTemp.TrimEnd();
+                                valor = (string)valorTemp;
+                            }
+                            else if (tipo.Equals("entero)"))
+                            {
+                                tipo = "ENTERO";
+                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
+                                valorTemp = valorTemp.TrimEnd();
+                                valor = (string)valorTemp;
+                            }
+                            else if (tipo.Equals("decimal)"))
+                            {
+                                tipo = "DECIMAL";
+                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
+                                valorTemp = valorTemp.TrimEnd();
+                                valor = (string)valorTemp;
+                            }
+                            else if (tipo.Equals("Key symbol)"))
+                            {
+                                tipo = "BOOLEAN";
+                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
+                                valorTemp = valorTemp.Replace("\"", string.Empty);
+                                valorTemp = valorTemp.TrimEnd();
+                                valorTemp = valorTemp.TrimStart();
+                                valor = (string)valorTemp;
+                            }                            
+                            if (token.Equals("NAME"))
+                            {
+                                if (!tipo.Equals("CADENA")) 
+                                {
+                                    System.Diagnostics.Debug.WriteLine("ERROR NAME SOLO ACEPTA UN VALOR CADENA NO SE ESPERABA "
+                                        + valor + " , Linea : " + hijoT.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
+                                        + hijoT.ChildNodes.ElementAt(0).Token.Location.Column);
+                                    return null;
+                                }
+
+                            }
+                        }
+                        Atributo a = new Atributo(token, valor, tipo);
+                        return a;
                         break;
                 }
             }
@@ -286,7 +304,7 @@ namespace cql_teacher_server.CHISON.Gramatica
             {
                 if (at.nombre.Equals("NAME")) return (String)at.valor;
             }
-            return "";
+            return "sinnombre";
         }
 
 
