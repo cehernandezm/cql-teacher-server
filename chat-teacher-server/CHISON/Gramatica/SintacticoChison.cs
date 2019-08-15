@@ -8,6 +8,8 @@ namespace cql_teacher_server.CHISON.Gramatica
 {
     class SintacticoChison
     {
+        string usuarioActual = "none";
+        string baseActual = "none";
         
         LinkedList<BaseDeDatos> global = TablaBaseDeDatos.global;
         public void analizar(string cadena)
@@ -75,6 +77,7 @@ namespace cql_teacher_server.CHISON.Gramatica
                             ParseTreeNode hijo = raiz.ChildNodes.ElementAt(2);
                             LinkedList<Atributo> lista = (LinkedList<Atributo>)ejecutar(hijo.ChildNodes.ElementAt(1));
                             BaseDeDatos newBase = new BaseDeDatos(lista, "sin usar");
+                            
                             global.AddLast(newBase);
                         }
                         else
@@ -94,14 +97,16 @@ namespace cql_teacher_server.CHISON.Gramatica
                         if(raiz.ChildNodes.Count() == 3)
                         {
                             LinkedList<Atributo> listaA = (LinkedList<Atributo>)ejecutar(raiz.ChildNodes.ElementAt(0));
-                            listaA.AddLast((Atributo)ejecutar(raiz.ChildNodes.ElementAt(2)));
+                            Atributo aa = (Atributo)ejecutar(raiz.ChildNodes.ElementAt(2));
+                            if( aa != null) listaA.AddLast(aa);
                             return listaA;
                         }
                         else if(raiz.ChildNodes.Count() == 1)
                         {
                             //---------------------------- objeto -----------------------------------------------------------------------
                             LinkedList<Atributo> listaA = new LinkedList<Atributo>();
-                            listaA.AddLast((Atributo)ejecutar(raiz.ChildNodes.ElementAt(0)));
+                            Atributo aa = (Atributo)ejecutar(raiz.ChildNodes.ElementAt(0));
+                            if (aa != null) listaA.AddLast(aa);
                             return listaA;
                         }
                         break;
@@ -166,7 +171,22 @@ namespace cql_teacher_server.CHISON.Gramatica
                         }
 
                         Atributo a = new Atributo(token, valor, tipo);
-                        return a;
+                        if(token.Equals("NAME"))
+                        {
+                            if (tipo.Equals("CADENA"))
+                            {
+                                usuarioActual = (String)valor;
+                                return a;
+                            }
+                            else
+                            {
+                                System.Diagnostics.Debug.WriteLine("ERROR NAME SOLO ACEPTA UN VALOR CADENA NO SE ESPERABA "  
+                                    + valor + " , Linea : " + hijoT.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: " 
+                                    + hijoT.ChildNodes.ElementAt(0).Token.Location.Column);
+                                return null;
+                            }
+
+                        }else return a;
 
                         break;
                 }
