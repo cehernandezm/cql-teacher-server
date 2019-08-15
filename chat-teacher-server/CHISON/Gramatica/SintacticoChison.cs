@@ -77,8 +77,14 @@ namespace cql_teacher_server.CHISON.Gramatica
                             ParseTreeNode hijo = raiz.ChildNodes.ElementAt(2);
                             LinkedList<Atributo> lista = (LinkedList<Atributo>)ejecutar(hijo.ChildNodes.ElementAt(1));
                             BaseDeDatos newBase = new BaseDeDatos(lista, "sin usar");
-                            
-                            global.AddLast(newBase);
+                            BaseDeDatos oldBase = TablaBaseDeDatos.getBase(baseActual);
+                            if (oldBase == null) global.AddLast(newBase);
+                            else {
+                                System.Diagnostics.Debug.WriteLine("Error Semantico: Ya existe una base de datos con este nombre: " + baseActual + ", Linea: "
+                                 + hijo.ChildNodes.ElementAt(0).Token.Location.Line + " Columna : " + hijo.ChildNodes.ElementAt(0).Token.Location.Column);
+                            }
+                                
+                            baseActual = "none";
                         }
                         else
                         {   
@@ -87,7 +93,14 @@ namespace cql_teacher_server.CHISON.Gramatica
                             ParseTreeNode hijo = raiz.ChildNodes.ElementAt(0);
                             LinkedList<Atributo> lista = (LinkedList<Atributo>)ejecutar(hijo.ChildNodes.ElementAt(1));
                             BaseDeDatos newBase = new BaseDeDatos(lista, "sin usar");
-                            global.AddLast(newBase);
+                            BaseDeDatos oldBase = TablaBaseDeDatos.getBase(baseActual);
+                            if (oldBase == null) global.AddLast(newBase);
+                            else
+                            {
+                                System.Diagnostics.Debug.WriteLine("Error Semantico: Ya existe una base de datos con este nombre: " + baseActual + ", Linea: "
+                                 + hijo.ChildNodes.ElementAt(0).Token.Location.Line + " Columna : " + hijo.ChildNodes.ElementAt(0).Token.Location.Column);
+                            }
+                            baseActual = "none";
                         }
                         break;
 
@@ -175,7 +188,7 @@ namespace cql_teacher_server.CHISON.Gramatica
                         {
                             if (tipo.Equals("CADENA"))
                             {
-                                usuarioActual = (String)valor;
+                                baseActual = (String) valor;
                                 return a;
                             }
                             else
@@ -186,7 +199,8 @@ namespace cql_teacher_server.CHISON.Gramatica
                                 return null;
                             }
 
-                        }else return a;
+                        }
+                        else return a;
 
                         break;
                 }
