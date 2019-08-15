@@ -126,13 +126,29 @@ namespace cql_teacher_server.CHISON.Gramatica
 
                     //------------------------------------ OBJETO -----------------------------------------------------------------------
                     case "objeto":
+
                         string token = raiz.ChildNodes.ElementAt(0).ToString().Split("(")[0];
                         token = token.TrimEnd();
 
                         Object valor = null;
-
+                        string tipo = "";
                         ParseTreeNode hijoT = raiz.ChildNodes.ElementAt(2);
-                        string tipo = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[1];
+                        if(hijoT.ChildNodes.Count() == 2) // -------------------------------------------- [ ] -------------------------------------------------------
+                        {
+                            if (token.Equals("DATA"))
+                            {
+                                tipo = "TABLAS";
+                                valor = null;
+                            }
+                            else
+                            {
+                                System.Diagnostics.Debug.WriteLine("Error Semantico: No se le puede asignar una lista al atributo: "
+                                    + token + ", Linea: " + raiz.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
+                                    + raiz.ChildNodes.ElementAt(0).Token.Location.Column);
+                                return null;
+                            } 
+                        }
+                        tipo = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[1];
 
                         if (tipo.Equals("hora)"))
                         {

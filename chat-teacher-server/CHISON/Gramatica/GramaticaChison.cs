@@ -48,6 +48,9 @@ namespace cql_teacher_server.CHISON.Gramatica
             NonTerminal objetos = new NonTerminal("objetos");
             NonTerminal objeto = new NonTerminal("objeto");
             NonTerminal tipo = new NonTerminal("tipo");
+
+            NonTerminal listaTablas = new NonTerminal("listaTablas");
+            NonTerminal tabla = new NonTerminal("tabla");
             
             #endregion
 
@@ -79,7 +82,15 @@ namespace cql_teacher_server.CHISON.Gramatica
                       | DECIMAL
                       | FECHA
                       | HORA
+                      | LLAVEIZQ + listaTablas + LLAVEDER
+                      | LLAVEIZQ + LLAVEDER
                       ;
+
+            listaTablas.Rule = listaTablas + COMA + tabla
+                             | tabla
+                             ;
+
+            tabla.Rule = MENOR + objetos + MAYOR;
             #endregion
 
             #region Preferencias
