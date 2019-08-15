@@ -37,7 +37,6 @@ namespace cql_teacher_server.CHISON.Gramatica
 
             #region No Terminales
             NonTerminal inicio = new NonTerminal("inicio");
-            NonTerminal instrucciones_superior = new NonTerminal("instrucciones_superior");
             NonTerminal instruccion_superior = new NonTerminal("intruccion_superior");
 
             NonTerminal database = new NonTerminal("database");
@@ -53,18 +52,18 @@ namespace cql_teacher_server.CHISON.Gramatica
             #endregion
 
             #region Gramatica
-            inicio.Rule = DOLAR + MENOR + instrucciones_superior + MAYOR + DOLAR;
+            inicio.Rule = DOLAR + MENOR + instruccion_superior + MAYOR + DOLAR;
 
-            instrucciones_superior.Rule = instrucciones_superior + COMA + instruccion_superior 
-                                        | instruccion_superior;
 
-            instruccion_superior.Rule = database;
+            instruccion_superior.Rule = database + COMA + user;
 
             database.Rule = DATABASES + IGUAL + LLAVEIZQ + LLAVEDER
                           | DATABASES + IGUAL + LLAVEIZQ + bases + LLAVEDER ;
 
             bases.Rule = bases + COMA + baseU
                        | baseU;
+
+            user.Rule = USERS + IGUAL + LLAVEIZQ + LLAVEDER;
 
             baseU.Rule = MENOR + objetos + MAYOR;
 
@@ -85,7 +84,7 @@ namespace cql_teacher_server.CHISON.Gramatica
 
             #region Preferencias
             this.Root = inicio;
-            instrucciones_superior.ErrorRule = SyntaxError + instrucciones_superior;
+            instruccion_superior.ErrorRule = SyntaxError + instruccion_superior;
             #endregion
             
         }

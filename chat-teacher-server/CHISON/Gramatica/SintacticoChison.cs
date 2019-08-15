@@ -50,23 +50,12 @@ namespace cql_teacher_server.CHISON.Gramatica
             if (raiz != null)
             {
                 string etiqueta = raiz.ToString().Split(' ')[0].ToLower();
-
                 switch (etiqueta)
                 {
-                    //-------------------------------------- Instrucciones Superiores ------------------------------
-                    case "instrucciones_superior":
-                        //------------------------ instrucciones_superio coma instruccion_superior------------------------------------
-                        if (raiz.ChildNodes.Count() == 3)
-                        {
-
-                        }
-                        else if(raiz.ChildNodes.Count() == 1)
-                        {
-                            //--------------------- instruccion superior ------------------------------------------------------------
-                            ParseTreeNode hijo = raiz.ChildNodes.ElementAt(0);
-                            ejecutar(hijo.ChildNodes.ElementAt(0));
-                            return null;
-                        }
+                    //-------------------------------------- Instruccion Superior ------------------------------
+                    case "intruccion_superior":
+                        ejecutar(raiz.ChildNodes.ElementAt(0));
+                         //ejecutar(raiz.ChildNodes.ElementAt(2));   
                         break;
 
                     //--------------------------------- database ----------------------------------------------------------------
@@ -78,7 +67,7 @@ namespace cql_teacher_server.CHISON.Gramatica
 
                     //------------------------------------- bases ----------------------------------------------------------------------
                     case "bases":
-                        if(raiz.ChildNodes.Count() == 3)
+                        if (raiz.ChildNodes.Count() == 3)
                         {
                             //-------------------------------- bases coma baseU ------------------------------------------------------
 
