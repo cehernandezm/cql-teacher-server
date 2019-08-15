@@ -44,6 +44,8 @@ namespace cql_teacher_server.CHISON.Gramatica
             NonTerminal bases = new NonTerminal("bases");
             NonTerminal baseU = new NonTerminal("base");
 
+            NonTerminal user = new NonTerminal("user");
+
             NonTerminal objetos = new NonTerminal("objetos");
             NonTerminal objeto = new NonTerminal("objeto");
             NonTerminal tipo = new NonTerminal("tipo");

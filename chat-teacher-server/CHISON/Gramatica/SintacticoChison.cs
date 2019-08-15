@@ -59,7 +59,8 @@ namespace cql_teacher_server.CHISON.Gramatica
                         if (raiz.ChildNodes.Count() == 3)
                         {
 
-                        }else if(raiz.ChildNodes.Count() == 1)
+                        }
+                        else if(raiz.ChildNodes.Count() == 1)
                         {
                             //--------------------- instruccion superior ------------------------------------------------------------
                             ParseTreeNode hijo = raiz.ChildNodes.ElementAt(0);
@@ -106,7 +107,8 @@ namespace cql_teacher_server.CHISON.Gramatica
                             LinkedList<Atributo> listaA = (LinkedList<Atributo>)ejecutar(raiz.ChildNodes.ElementAt(0));
                             listaA.AddLast((Atributo)ejecutar(raiz.ChildNodes.ElementAt(2)));
                             return listaA;
-                        }else if(raiz.ChildNodes.Count() == 1)
+                        }
+                        else if(raiz.ChildNodes.Count() == 1)
                         {
                             //---------------------------- objeto -----------------------------------------------------------------------
                             LinkedList<Atributo> listaA = new LinkedList<Atributo>();
@@ -133,7 +135,8 @@ namespace cql_teacher_server.CHISON.Gramatica
                             valorTemp = valorTemp.TrimEnd();
                             valorTemp = valorTemp.TrimStart();
                             valor = (string)valorTemp;
-                        }else if (tipo.Equals("fecha)"))
+                        }
+                        else if (tipo.Equals("fecha)"))
                         {
                             tipo = "FECHA";
                             string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
@@ -141,7 +144,8 @@ namespace cql_teacher_server.CHISON.Gramatica
                             valorTemp = valorTemp.TrimEnd();
                             valorTemp = valorTemp.TrimStart();
                             valor = (string)valorTemp;
-                        }else if (tipo.Equals("cadena)"))
+                        }
+                        else if (tipo.Equals("cadena)"))
                         {
                             tipo = "CADENA";
                             string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
@@ -161,7 +165,8 @@ namespace cql_teacher_server.CHISON.Gramatica
                             string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
                             valorTemp = valorTemp.TrimEnd();
                             valor = (string)valorTemp;
-                        }else if(tipo.Equals("Key symbol)"))
+                        }
+                        else if(tipo.Equals("Key symbol)"))
                         {
                             tipo = "BOOLEAN";
                             string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];

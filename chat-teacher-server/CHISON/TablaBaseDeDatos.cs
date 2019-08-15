@@ -15,6 +15,18 @@ namespace cql_teacher_server.CHISON
         {
             return global;
         }
+
+        public static BaseDeDatos getBase(string nombre)
+        {
+            foreach(BaseDeDatos db in global)
+            {
+                foreach(Atributo a in db.atributos)
+                {
+                    if (a.nombre.Equals("NAME") && a.valor.Equals(nombre)) return db; 
+                }
+            }
+            return null;
+        }
         
         
     }
