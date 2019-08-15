@@ -22,7 +22,6 @@ namespace cql_teacher_server.CHISON
             {
                 foreach(Atributo a in db.atributos)
                 {
-                    System.Diagnostics.Debug.WriteLine(" A: " + a.valor + " B: " + nombre);
                     if (a.nombre.Equals("NAME") && a.valor.Equals(nombre)) return db; 
                 }
             }

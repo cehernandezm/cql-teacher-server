@@ -8,8 +8,6 @@ namespace cql_teacher_server.CHISON.Gramatica
 {
     class SintacticoChison
     {
-        string usuarioActual = "none";
-        string baseActual = "none";
         
         LinkedList<BaseDeDatos> global = TablaBaseDeDatos.global;
         public void analizar(string cadena)
@@ -77,6 +75,7 @@ namespace cql_teacher_server.CHISON.Gramatica
                             ParseTreeNode hijo = raiz.ChildNodes.ElementAt(2);
                             LinkedList<Atributo> lista = (LinkedList<Atributo>)ejecutar(hijo.ChildNodes.ElementAt(1));
                             BaseDeDatos newBase = new BaseDeDatos(lista, "sin usar");
+                            string baseActual = getNombre(lista);
                             BaseDeDatos oldBase = TablaBaseDeDatos.getBase(baseActual);
                             if (oldBase == null) global.AddLast(newBase);
                             else {
@@ -93,6 +92,7 @@ namespace cql_teacher_server.CHISON.Gramatica
                             ParseTreeNode hijo = raiz.ChildNodes.ElementAt(0);
                             LinkedList<Atributo> lista = (LinkedList<Atributo>)ejecutar(hijo.ChildNodes.ElementAt(1));
                             BaseDeDatos newBase = new BaseDeDatos(lista, "sin usar");
+                            string baseActual = getNombre(lista);
                             BaseDeDatos oldBase = TablaBaseDeDatos.getBase(baseActual);
                             if (oldBase == null) global.AddLast(newBase);
                             else
@@ -124,7 +124,7 @@ namespace cql_teacher_server.CHISON.Gramatica
                         }
                         break;
 
-                    //------------------------------------ CADENA -----------------------------------------------------------------------
+                    //------------------------------------ OBJETO -----------------------------------------------------------------------
                     case "objeto":
                         string token = raiz.ChildNodes.ElementAt(0).ToString().Split("(")[0];
                         token = token.TrimEnd();
@@ -186,11 +186,7 @@ namespace cql_teacher_server.CHISON.Gramatica
                         Atributo a = new Atributo(token, valor, tipo);
                         if(token.Equals("NAME"))
                         {
-                            if (tipo.Equals("CADENA"))
-                            {
-                                baseActual = (String) valor;
-                                return a;
-                            }
+                            if (tipo.Equals("CADENA")) return a;
                             else
                             {
                                 System.Diagnostics.Debug.WriteLine("ERROR NAME SOLO ACEPTA UN VALOR CADENA NO SE ESPERABA "  
@@ -227,6 +223,7 @@ namespace cql_teacher_server.CHISON.Gramatica
          * ---------------------------------------------------- METODOS PARA GRAFICAR ---------------------------------------------------------------------------
          -------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
+            //----------------------------------------------------------------- Crea el archivo --------------------------------------------------------------------
         public void graficar(ParseTreeNode raiz)
         {
             System.IO.StreamWriter f = new System.IO.StreamWriter("Reportes/ASTChison.txt");
@@ -255,6 +252,28 @@ namespace cql_teacher_server.CHISON.Gramatica
             }
 
         }
+
+
+
+
+
+        /*----------------------------------------------------------------------------------------------------------------------------------------------------
+         * --------------------------------------------------- METODOS VARIOS ---------------------------------------------------------------------------------
+         ------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+        //------------------------------------------------ Devuelve el nombre del objeto a buscar ----------------------------------------------------------------
+
+        public string getNombre(LinkedList<Atributo> lk)
+        {
+            foreach(Atributo at in lk)
+            {
+                if (at.nombre.Equals("NAME")) return (String)at.valor;
+            }
+            return "";
+        }
+
+
 
     }
 }
