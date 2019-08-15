@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using cql_teacher_server.CHISON;
 using cql_teacher_server.Herramientas;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;

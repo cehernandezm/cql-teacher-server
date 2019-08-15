@@ -41,10 +41,13 @@ namespace cql_teacher_server.CHISON.Gramatica
             NonTerminal instruccion_superior = new NonTerminal("intruccion_superior");
 
             NonTerminal database = new NonTerminal("database");
+            NonTerminal bases = new NonTerminal("bases");
+            NonTerminal baseU = new NonTerminal("base");
 
             NonTerminal objetos = new NonTerminal("objetos");
             NonTerminal objeto = new NonTerminal("objeto");
             NonTerminal tipo = new NonTerminal("tipo");
+            
             #endregion
 
             #region Gramatica
@@ -56,7 +59,12 @@ namespace cql_teacher_server.CHISON.Gramatica
             instruccion_superior.Rule = database;
 
             database.Rule = DATABASES + IGUAL + LLAVEIZQ + LLAVEDER
-                          | DATABASES + IGUAL + LLAVEIZQ + objetos + LLAVEDER ;
+                          | DATABASES + IGUAL + LLAVEIZQ + bases + LLAVEDER ;
+
+            bases.Rule = bases + COMA + baseU
+                       | baseU;
+
+            baseU.Rule = MENOR + objetos + MAYOR;
 
             objetos.Rule = objetos + COMA + objeto
                          | objeto;

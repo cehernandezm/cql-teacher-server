@@ -1,3 +1,17 @@
 $<
-	"DATABASES" = ["HORA"= '23:12:00',"FECHA"='2019-12-01',"NAME"="CARLOS"]
+	"DATABASES" = [ 
+		<
+			"HORA"= '23:12:00',"FECHA"='2019-12-01',"NAME"="CARLOS"
+
+		>,
+		<
+			"NAME"="CARLOS2"
+
+		>,
+		<
+			"NAME"="ANA"
+
+		>
+
+	]
 >$

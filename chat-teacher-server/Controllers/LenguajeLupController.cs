@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using cql_teacher_server.CHISON;
+using cql_teacher_server.CHISON.Componentes;
 using cql_teacher_server.CHISON.Gramatica;
 using cql_teacher_server.Herramientas;
 using cql_teacher_server.LUP.Gramatica;
@@ -19,6 +21,7 @@ namespace cql_teacher_server.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
+            TablaBaseDeDatos.global = new LinkedList<BaseDeDatos>();
             LeerArchivo leer = new LeerArchivo();
             
             return new string[] { "value1", "value2" };
@@ -28,22 +31,32 @@ namespace cql_teacher_server.Controllers
         [HttpGet("{id}", Name = "Get")]
         public string Get(int id)
         {
-            return "value";
+            string salida = "";
+            LinkedList <BaseDeDatos> global = TablaBaseDeDatos.global;
+            foreach(BaseDeDatos bd in global)
+            {
+                salida += "{\n\t";
+                foreach(Atributo a in bd.atributos)
+                {
+                    salida += "\"" + a.nombre + "\": \"" + a.valor + "\",\n\t";
+                }
+                salida += "\n}";
+            }
+            return salida;
         }
 
         // POST: api/LenguajeLup
         [HttpPost]
-        public IActionResult Post(LenguajeLup codigo)
+        public void Post(LenguajeLup codigo)
         {
-            SintacticoLUP sintactico = new SintacticoLUP();
-            string salida = sintactico.analizar(codigo.codigo);
-            return Ok(salida);
+            
         }
 
         // PUT: api/LenguajeLup/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public IActionResult Put(int id, [FromBody] string value)
         {
+            return Ok("HOLA");
         }
 
         // DELETE: api/ApiWithActions/5

@@ -1,16 +1,15 @@
 ﻿using cql_teacher_server.CHISON.Componentes;
-using cql_teacher_server.LUP.Gramatica;
 using Irony.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace cql_teacher_server.CHISON.Gramatica
 {
     class SintacticoChison
     {
-        LinkedList<BaseDeDatos> global = new LinkedList<BaseDeDatos>();
+        
+        LinkedList<BaseDeDatos> global = TablaBaseDeDatos.global;
         public void analizar(string cadena)
         {
             GramaticaChison gramatica = new GramaticaChison();
@@ -71,9 +70,32 @@ namespace cql_teacher_server.CHISON.Gramatica
 
                     //--------------------------------- database ----------------------------------------------------------------
                     case "database":
-                        LinkedList<Atributo> lista = (LinkedList<Atributo>)ejecutar(raiz.ChildNodes.ElementAt(3));
-                        BaseDeDatos newBase = new BaseDeDatos(lista, "sin usar");
-                        global.AddLast(newBase);
+                        if (raiz.ChildNodes.Count() == 4) { }
+                        else ejecutar(raiz.ChildNodes.ElementAt(3));
+                        break;
+
+
+                    //------------------------------------- bases ----------------------------------------------------------------------
+                    case "bases":
+                        if(raiz.ChildNodes.Count() == 3)
+                        {
+                            //-------------------------------- bases coma baseU ------------------------------------------------------
+
+                            ejecutar(raiz.ChildNodes.ElementAt(0));
+                            ParseTreeNode hijo = raiz.ChildNodes.ElementAt(2);
+                            LinkedList<Atributo> lista = (LinkedList<Atributo>)ejecutar(hijo.ChildNodes.ElementAt(1));
+                            BaseDeDatos newBase = new BaseDeDatos(lista, "sin usar");
+                            global.AddLast(newBase);
+                        }
+                        else
+                        {   
+                            //-------------------------------- baseU ------------------------------------------------------
+
+                            ParseTreeNode hijo = raiz.ChildNodes.ElementAt(0);
+                            LinkedList<Atributo> lista = (LinkedList<Atributo>)ejecutar(hijo.ChildNodes.ElementAt(1));
+                            BaseDeDatos newBase = new BaseDeDatos(lista, "sin usar");
+                            global.AddLast(newBase);
+                        }
                         break;
 
                     //-------------------------------------- objetos -------------------------------------------------------------------
