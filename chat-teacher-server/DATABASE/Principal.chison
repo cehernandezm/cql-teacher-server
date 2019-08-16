@@ -2,7 +2,16 @@ $<
 	"DATABASES" = [ 
 		<
 			"HORA"= '23:12:00',"FECHA"='2019-12-01',"NAME"="CARLOS",
-			"DATA" = []
+			"DATA" = [
+				<
+					"NAME" = "nombre",
+					"CQL-TYPE" = "TABLE"
+				>,
+				<
+					"NAME" = "nombre2",
+					"CQL-TYPE" = "TABLE"
+				>
+			]
 
 		>,
 		<

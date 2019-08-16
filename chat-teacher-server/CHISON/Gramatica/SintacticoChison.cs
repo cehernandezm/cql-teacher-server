@@ -8,6 +8,8 @@ namespace cql_teacher_server.CHISON.Gramatica
 {
     class SintacticoChison
     {
+        Boolean flagBase = false;
+        Boolean flagTabla = false;
         
         LinkedList<BaseDeDatos> global = TablaBaseDeDatos.global;
         public void analizar(string cadena)
@@ -80,6 +82,7 @@ namespace cql_teacher_server.CHISON.Gramatica
                         }
                         else hijo = raiz.ChildNodes.ElementAt(0);
 
+                        flagBase = true;
                         //---------------------------------------------------------- Almacenar la base de datos --------------------------------------------------
                         lista = (LinkedList<Atributo>)ejecutar(hijo.ChildNodes.ElementAt(1));
                         newBase = new BaseDeDatos(lista, "sin usar");
@@ -102,7 +105,7 @@ namespace cql_teacher_server.CHISON.Gramatica
                         }
 
 
-                        baseActual = "none";
+                        flagBase = false;
                         break;
 
                     //-------------------------------------- objetos -------------------------------------------------------------------
@@ -127,6 +130,7 @@ namespace cql_teacher_server.CHISON.Gramatica
 
                     //------------------------------------ OBJETO -----------------------------------------------------------------------
                     case "objeto":
+
 
                         string token = raiz.ChildNodes.ElementAt(0).ToString().Split("(")[0];
                         token = token.TrimEnd();
@@ -154,8 +158,12 @@ namespace cql_teacher_server.CHISON.Gramatica
                         {
                             if (token.Equals("DATA"))
                             {
-                                tipo = "TABLAS";
-                                LinkedList<Tabla> listaTabla = new LinkedList<Tabla>();
+                                if (flagBase)
+                                {
+                                    tipo = "TABLAS";
+                                    valor = (LinkedList<Tabla>)ejecutar(hijoT.ChildNodes.ElementAt(1));
+                                }
+                                
                             }
                             else
                             {
@@ -233,6 +241,38 @@ namespace cql_teacher_server.CHISON.Gramatica
                         Atributo a = new Atributo(token, valor, tipo);
                         return a;
                         break;
+
+
+                    //-------------------------------------------------------------- analizar las tablas ---------------------------------------------------------
+                    case "listatablas":
+                        LinkedList<Tabla> listaTablas = new LinkedList<Tabla>();
+                        LinkedList<Atributo> listaAtri = new LinkedList<Atributo>();
+                        ParseTreeNode hijoTa;
+                        if (raiz.ChildNodes.Count() == 3)
+                        {
+                            listaTablas = (LinkedList<Tabla>)ejecutar(raiz.ChildNodes.ElementAt(0));
+
+                            hijoTa = raiz.ChildNodes.ElementAt(2);
+                        }
+                        else hijoTa = raiz.ChildNodes.ElementAt(0);
+
+                        int linea = hijoTa.ChildNodes.ElementAt(0).Token.Location.Line;
+                        int columna = hijoTa.ChildNodes.ElementAt(0).Token.Location.Column;
+                        listaAtri = (LinkedList<Atributo>)ejecutar(hijoTa.ChildNodes.ElementAt(1));
+
+                        if (buscarAtributo(listaAtri, "NAME") && buscarAtributo(listaAtri, "CQL-TYPE"))
+                        {
+                            Boolean existe = buscarTabla(listaTablas, getNombre(listaAtri));
+                            Tabla t = new Tabla(listaAtri);
+                            if (!existe) listaTablas.AddLast(t);
+                            else System.Diagnostics.Debug.WriteLine("Error semantico ya existe una tabla con este nombre: " + getNombre(listaAtri) + ", Linea: "
+                            + linea + " Columna: " + columna);
+                        }
+                        else System.Diagnostics.Debug.WriteLine("Error semantico las tablas tiene que tener NAME Y CQL-TYPE, Linea: "
+                            + linea + " Columna: " + columna);
+                        return listaTablas;
+
+                        break;
                 }
             }
             return null;
@@ -307,7 +347,25 @@ namespace cql_teacher_server.CHISON.Gramatica
             return "sinnombre";
         }
 
+        public Boolean buscarAtributo(LinkedList<Atributo> lk, string atributo)
+        {
+            foreach(Atributo at in lk)
+            {
+                if (at.nombre.Equals(atributo)) return true;
+            }
+            return false;
+        }
 
-
+        public Boolean buscarTabla(LinkedList<Tabla> lt , string nombre)
+        {
+            foreach(Tabla ta in lt)
+            {
+                foreach(Atributo at in ta.atributos)
+                {
+                    if (at.nombre.Equals("NAME") && at.valor.Equals(nombre)) return true;
+                }
+            }
+            return false;
+        }
     }
 }

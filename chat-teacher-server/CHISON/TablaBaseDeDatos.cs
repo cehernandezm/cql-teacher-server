@@ -27,6 +27,25 @@ namespace cql_teacher_server.CHISON
             }
             return null;
         }
+
+        public static Tabla getTabla(string nombre, BaseDeDatos db)
+        {
+            foreach(Atributo a in db.atributos)
+            {
+                if (a.nombre.Equals("DATA"))
+                {
+                    foreach(Tabla tb in (LinkedList<Tabla>)a.valor)
+                    {
+                       foreach(Atributo at in tb.atributos)
+                       {
+                            if (at.nombre.Equals("NAME") && at.valor.Equals(nombre)) return tb;
+                       }
+                    }
+                }
+             }
+            
+            return null;
+        }
         
         
     }

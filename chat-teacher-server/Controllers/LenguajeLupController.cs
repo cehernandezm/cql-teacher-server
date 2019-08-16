@@ -40,10 +40,15 @@ namespace cql_teacher_server.Controllers
                 {
                     if (a.tipo.Equals("TABLAS"))
                     {
-                        salida += "\"DATA\": [\n";
+                        salida += "\"DATA\": [";
                         foreach(Tabla tb in (LinkedList<Tabla>)a.valor)
                         {
-
+                            salida += "\n\t\t{\n";
+                            foreach(Atributo at in tb.atributos)
+                            {
+                                salida += "\n\t\t\t \"" + at.nombre + "\": \"" + at.valor + "\",";
+                            }
+                            salida += "\n\t\t},";
                         }
                         salida += "\n\t],";
                     }else salida += "\"" + a.nombre + "\": \"" + a.valor + "\",\n\t";
