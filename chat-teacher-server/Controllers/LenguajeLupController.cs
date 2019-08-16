@@ -46,7 +46,20 @@ namespace cql_teacher_server.Controllers
                             salida += "\n\t\t{\n";
                             foreach(Atributo at in tb.atributos)
                             {
-                                salida += "\n\t\t\t \"" + at.nombre + "\": \"" + at.valor + "\",";
+                                if (at.tipo.Equals("COLUMNS"))
+                                {
+                                    salida += "\n\t\t\t\"COLUMNS\":[";
+                                    foreach (Tabla tb2 in (LinkedList<Tabla>)at.valor)
+                                    {
+                                        salida += "\n\t\t\t\t{";
+                                        foreach(Atributo at2 in tb2.atributos)
+                                        {
+                                            salida += "\n\t\t\t\t\t\"" + at2.nombre + "\": \"" + at2.valor + "\",";
+                                        }
+                                        salida += "\n\t\t\t\t},";
+                                    }
+                                    salida += "\n\t\t\t],";
+                                }else salida += "\n\t\t\t \"" + at.nombre + "\": \"" + at.valor + "\",";
                             }
                             salida += "\n\t\t},";
                         }

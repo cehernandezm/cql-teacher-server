@@ -15,7 +15,13 @@ $<
 
 		>,
 		<
-			"NAME" = "ANA"
+			"NAME" = "ANA",
+			"DATA" = [
+				<
+					"NAME" = "nombre",
+					"CQL-TYPE" = "TABLE"
+				>
+			]
 
 		>
 

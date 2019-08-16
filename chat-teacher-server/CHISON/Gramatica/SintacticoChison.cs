@@ -1,4 +1,5 @@
-﻿using cql_teacher_server.CHISON.Componentes;
+﻿using cql_teacher_server.CHISON.Arbol;
+using cql_teacher_server.CHISON.Componentes;
 using Irony.Parsing;
 using System;
 using System.Collections.Generic;
@@ -8,8 +9,6 @@ namespace cql_teacher_server.CHISON.Gramatica
 {
     class SintacticoChison
     {
-        Boolean flagBase = false;
-        Boolean flagTabla = false;
         
         LinkedList<BaseDeDatos> global = TablaBaseDeDatos.global;
         public void analizar(string cadena)
@@ -81,10 +80,9 @@ namespace cql_teacher_server.CHISON.Gramatica
                             hijo = raiz.ChildNodes.ElementAt(2);  
                         }
                         else hijo = raiz.ChildNodes.ElementAt(0);
-
-                        flagBase = true;
                         //---------------------------------------------------------- Almacenar la base de datos --------------------------------------------------
-                        lista = (LinkedList<Atributo>)ejecutar(hijo.ChildNodes.ElementAt(1));
+                        AnalizarBase analisis = new AnalizarBase();
+                        lista = (LinkedList<Atributo>)analisis.analizar(hijo.ChildNodes.ElementAt(1));
                         newBase = new BaseDeDatos(lista, "sin usar");
                         baseActual = getNombre(lista);
                         if (!baseActual.Equals("sinnombre"))
@@ -103,176 +101,8 @@ namespace cql_teacher_server.CHISON.Gramatica
                             System.Diagnostics.Debug.WriteLine("Error Semantico: La base de datos necesita un nombre, Linea: "
                              + hijo.ChildNodes.ElementAt(0).Token.Location.Line + " Columna : " + hijo.ChildNodes.ElementAt(0).Token.Location.Column);
                         }
-
-
-                        flagBase = false;
                         break;
-
-                    //-------------------------------------- objetos -------------------------------------------------------------------
-                    case "objetos":
-                        //-------------------------- objetos , objeto -----------------------------------------------------------------
-                        if(raiz.ChildNodes.Count() == 3)
-                        {
-                            LinkedList<Atributo> listaA = (LinkedList<Atributo>)ejecutar(raiz.ChildNodes.ElementAt(0));
-                            Atributo aa = (Atributo)ejecutar(raiz.ChildNodes.ElementAt(2));
-                            if( aa != null) listaA.AddLast(aa);
-                            return listaA;
-                        }
-                        else if(raiz.ChildNodes.Count() == 1)
-                        {
-                            //---------------------------- objeto -----------------------------------------------------------------------
-                            LinkedList<Atributo> listaA = new LinkedList<Atributo>();
-                            Atributo aa = (Atributo)ejecutar(raiz.ChildNodes.ElementAt(0));
-                            if (aa != null) listaA.AddLast(aa);
-                            return listaA;
-                        }
-                        break;
-
-                    //------------------------------------ OBJETO -----------------------------------------------------------------------
-                    case "objeto":
-
-
-                        string token = raiz.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                        token = token.TrimEnd();
-
-                        Object valor = null;
-                        string tipo = "";
-                        ParseTreeNode hijoT = raiz.ChildNodes.ElementAt(2);
-                        if (hijoT.ChildNodes.Count() == 2) // -------------------------------------------- [ ] -------------------------------------------------------
-                        {
-                            if (token.Equals("DATA"))
-                            {
-                                tipo = "TABLAS";
-                                LinkedList<Tabla> listaTabla = new LinkedList<Tabla>();
-                                valor = listaTabla;
-                            }
-                            else
-                            {
-                                System.Diagnostics.Debug.WriteLine("Error Semantico: No se le puede asignar una lista al atributo: "
-                                    + token + ", Linea: " + raiz.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
-                                    + raiz.ChildNodes.ElementAt(0).Token.Location.Column);
-                                return null;
-                            }
-                        }
-                        else if (hijoT.ChildNodes.Count() == 3) //---------------------- [ TABLAS ] ------------------------------------------------------------------
-                        {
-                            if (token.Equals("DATA"))
-                            {
-                                if (flagBase)
-                                {
-                                    tipo = "TABLAS";
-                                    valor = (LinkedList<Tabla>)ejecutar(hijoT.ChildNodes.ElementAt(1));
-                                }
-                                
-                            }
-                            else
-                            {
-                                System.Diagnostics.Debug.WriteLine("Error Semantico: No se le puede asignar una lista al atributo: "
-                                    + token + ", Linea: " + raiz.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
-                                    + raiz.ChildNodes.ElementAt(0).Token.Location.Column);
-                                return null;
-                            }
-                        }
-                        else
-                        {
-
-                            tipo = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[1];
-
-                            if (tipo.Equals("hora)"))
-                            {
-                                tipo = "HORA";
-                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                                valorTemp = valorTemp.Replace("\'", string.Empty);
-                                valorTemp = valorTemp.TrimEnd();
-                                valorTemp = valorTemp.TrimStart();
-                                valor = (string)valorTemp;
-                            }
-                            else if (tipo.Equals("fecha)"))
-                            {
-                                tipo = "FECHA";
-                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                                valorTemp = valorTemp.Replace("\'", string.Empty);
-                                valorTemp = valorTemp.TrimEnd();
-                                valorTemp = valorTemp.TrimStart();
-                                valor = (string)valorTemp;
-                            }
-                            else if (tipo.Equals("cadena)"))
-                            {
-                                tipo = "CADENA";
-                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                                valorTemp = valorTemp.TrimEnd();
-                                valor = (string)valorTemp;
-                            }
-                            else if (tipo.Equals("entero)"))
-                            {
-                                tipo = "ENTERO";
-                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                                valorTemp = valorTemp.TrimEnd();
-                                valor = (string)valorTemp;
-                            }
-                            else if (tipo.Equals("decimal)"))
-                            {
-                                tipo = "DECIMAL";
-                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                                valorTemp = valorTemp.TrimEnd();
-                                valor = (string)valorTemp;
-                            }
-                            else if (tipo.Equals("Key symbol)"))
-                            {
-                                tipo = "BOOLEAN";
-                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                                valorTemp = valorTemp.Replace("\"", string.Empty);
-                                valorTemp = valorTemp.TrimEnd();
-                                valorTemp = valorTemp.TrimStart();
-                                valor = (string)valorTemp;
-                            }                            
-                            if (token.Equals("NAME"))
-                            {
-                                if (!tipo.Equals("CADENA")) 
-                                {
-                                    System.Diagnostics.Debug.WriteLine("ERROR NAME SOLO ACEPTA UN VALOR CADENA NO SE ESPERABA "
-                                        + valor + " , Linea : " + hijoT.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
-                                        + hijoT.ChildNodes.ElementAt(0).Token.Location.Column);
-                                    return null;
-                                }
-
-                            }
-                        }
-                        Atributo a = new Atributo(token, valor, tipo);
-                        return a;
-                        break;
-
-
-                    //-------------------------------------------------------------- analizar las tablas ---------------------------------------------------------
-                    case "listatablas":
-                        LinkedList<Tabla> listaTablas = new LinkedList<Tabla>();
-                        LinkedList<Atributo> listaAtri = new LinkedList<Atributo>();
-                        ParseTreeNode hijoTa;
-                        if (raiz.ChildNodes.Count() == 3)
-                        {
-                            listaTablas = (LinkedList<Tabla>)ejecutar(raiz.ChildNodes.ElementAt(0));
-
-                            hijoTa = raiz.ChildNodes.ElementAt(2);
-                        }
-                        else hijoTa = raiz.ChildNodes.ElementAt(0);
-
-                        int linea = hijoTa.ChildNodes.ElementAt(0).Token.Location.Line;
-                        int columna = hijoTa.ChildNodes.ElementAt(0).Token.Location.Column;
-                        listaAtri = (LinkedList<Atributo>)ejecutar(hijoTa.ChildNodes.ElementAt(1));
-
-                        if (buscarAtributo(listaAtri, "NAME") && buscarAtributo(listaAtri, "CQL-TYPE"))
-                        {
-                            Boolean existe = buscarTabla(listaTablas, getNombre(listaAtri));
-                            Tabla t = new Tabla(listaAtri);
-                            if (!existe) listaTablas.AddLast(t);
-                            else System.Diagnostics.Debug.WriteLine("Error semantico ya existe una tabla con este nombre: " + getNombre(listaAtri) + ", Linea: "
-                            + linea + " Columna: " + columna);
-                        }
-                        else System.Diagnostics.Debug.WriteLine("Error semantico las tablas tiene que tener NAME Y CQL-TYPE, Linea: "
-                            + linea + " Columna: " + columna);
-                        return listaTablas;
-
-                        break;
+                    
                 }
             }
             return null;
