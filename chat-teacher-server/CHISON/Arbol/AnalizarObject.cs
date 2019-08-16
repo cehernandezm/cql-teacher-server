@@ -7,13 +7,12 @@ using System.Threading.Tasks;
 
 namespace cql_teacher_server.CHISON.Arbol
 {
-    public class AnalizarTablas
+    public class AnalizarObject
     {
-        string cql_type = "none";
 
         public object analizar(ParseTreeNode raiz)
         {
-            if(raiz != null)
+            if (raiz != null)
             {
                 string etiqueta = raiz.ToString().Split(' ')[0].ToLower();
                 switch (etiqueta)
@@ -51,52 +50,19 @@ namespace cql_teacher_server.CHISON.Arbol
                         ParseTreeNode hijoT = raiz.ChildNodes.ElementAt(2);
                         if (hijoT.ChildNodes.Count() == 2) // -------------------------------------------- [ ] -------------------------------------------------------
                         {
-                            if (token.Equals("DATA"))
-                            {
-                               
-                            }
-                            else if (token.Equals("COLUMNS") && cql_type.Equals("TABLE"))
-                            {
-                                tipo = "COLUMNS";
-                                valor = new LinkedList<Columna>();
-                            }
-                            else
-                            {
-                                System.Diagnostics.Debug.WriteLine("Error Semantico: No se le puede asignar una lista al atributo: "
+
+                            System.Diagnostics.Debug.WriteLine("Error Semantico: No se le puede asignar una lista al atributo: "
                                     + token + ", Linea: " + raiz.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
                                     + raiz.ChildNodes.ElementAt(0).Token.Location.Column);
-                                return null;
-                            }
+                            return null;
+
                         }
                         else if (hijoT.ChildNodes.Count() == 3) //---------------------- [ TABLAS ] ------------------------------------------------------------------
                         {
-                            if (token.Equals("DATA"))
-                            {
-                              
-                            }
-                            else if (token.Equals("COLUMNS") && cql_type.Equals("TABLE"))
-                            {
-                                tipo = "COLUMNS";
-                                AnalizarColumna analisis = new AnalizarColumna();
-                                valor = (LinkedList<Columna>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
-                            }else if(token.Equals("ATTRS") && cql_type.Equals("OBJECT"))
-                            {
-                                tipo = "OBJECT";
-                                AnalizarObject analisis = new AnalizarObject();
-                                valor = (LinkedList<Columna>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
-                            }else if(token.Equals("PARAMETERS") && cql_type.Equals("PROCEDURE"))
-                            {
-                                tipo = "PROCEDURE";
-                                AnalizarProcedure analisis = new AnalizarProcedure();
-                                valor = (LinkedList<Columna>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
-                            }
-                            else
-                            {
-                                System.Diagnostics.Debug.WriteLine("Error Semantico: No se le puede asignar una lista al atributo: "
+                            System.Diagnostics.Debug.WriteLine("Error Semantico: No se le puede asignar una lista al atributo: "
                                     + token + ", Linea: " + raiz.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
                                     + raiz.ChildNodes.ElementAt(0).Token.Location.Column);
-                                return null;
-                            }
+                            return null;
                         }
                         else
                         {
@@ -162,7 +128,6 @@ namespace cql_teacher_server.CHISON.Arbol
                                 }
 
                             }
-                            else if (token.Equals("CQL-TYPE")) cql_type = (String)valor;
                         }
                         Atributo a = new Atributo(token, valor, tipo);
                         return a;
@@ -173,12 +138,12 @@ namespace cql_teacher_server.CHISON.Arbol
                     //-------------------------------------------------------------- analizar las tablas ---------------------------------------------------------
                     case "listatablas":
 
-                        LinkedList<Tabla> listaTablas = new LinkedList<Tabla>();
+                        LinkedList<Columna> listaTablas = new LinkedList<Columna>();
                         LinkedList<Atributo> listaAtri = new LinkedList<Atributo>();
                         ParseTreeNode hijoTa;
                         if (raiz.ChildNodes.Count() == 3)
                         {
-                            listaTablas = (LinkedList<Tabla>)analizar(raiz.ChildNodes.ElementAt(0));
+                            listaTablas = (LinkedList<Columna>)analizar(raiz.ChildNodes.ElementAt(0));
 
                             hijoTa = raiz.ChildNodes.ElementAt(2);
                         }
@@ -190,16 +155,16 @@ namespace cql_teacher_server.CHISON.Arbol
                         listaAtri = (LinkedList<Atributo>)analizar(hijoTa.ChildNodes.ElementAt(1));
 
 
-                        if (buscarAtributo(listaAtri, "NAME") && buscarAtributo(listaAtri, "CQL-TYPE"))
+                        if (buscarAtributo(listaAtri, "NAME") && buscarAtributo(listaAtri, "TYPE"))
                         {
-                            Boolean existe = buscarTabla(listaTablas, getNombre(listaAtri));
-                            Tabla t = new Tabla(listaAtri);
+                            Boolean existe = buscarColumna(listaTablas, getNombre(listaAtri));
+                            Columna t = new Columna(listaAtri);
                             if (!existe) listaTablas.AddLast(t);
-                            else System.Diagnostics.Debug.WriteLine("Error semantico ya existe una tabla con este nombre: " + getNombre(listaAtri) + ", Linea: "
+                            else System.Diagnostics.Debug.WriteLine("Error semantico ya existe una User Type con este nombre: " + getNombre(listaAtri) + ", Linea: "
                                     + linea + " Columna: " + columna);
                         }
-                        else System.Diagnostics.Debug.WriteLine("Error semantico las tablas tiene que tener NAME Y CQL-TYPE, Linea: "
-                                    + linea + " Columna: " + columna); 
+                        else System.Diagnostics.Debug.WriteLine("Error semantico los  User Type tiene que tener NAME Y TYPE, Linea: "
+                                    + linea + " Columna: " + columna);
                         return listaTablas;
 
                         break;
@@ -209,43 +174,45 @@ namespace cql_teacher_server.CHISON.Arbol
         }
 
 
+        /*----------------------------------------------------------------------------------------------------------------------------------------------------
+ * --------------------------------------------------- METODOS VARIOS ---------------------------------------------------------------------------------
+ ------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-    /*----------------------------------------------------------------------------------------------------------------------------------------------------
-     * --------------------------------------------------- METODOS VARIOS ---------------------------------------------------------------------------------
-     ------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
+        //------------------------------------------------ Devuelve el nombre del objeto a buscar ----------------------------------------------------------------
 
-    //------------------------------------------------ Devuelve el nombre del objeto a buscar ----------------------------------------------------------------
-
-    public string getNombre(LinkedList<Atributo> lk)
-    {
-        foreach (Atributo at in lk)
+        public string getNombre(LinkedList<Atributo> lk)
         {
-            if (at.nombre.Equals("NAME")) return (String)at.valor;
-        }
-        return "sinnombre";
-    }
-
-    public Boolean buscarAtributo(LinkedList<Atributo> lk, string atributo)
-    {
-        foreach (Atributo at in lk)
-        {
-            if (at.nombre.Equals(atributo)) return true;
-        }
-        return false;
-    }
-
-    public Boolean buscarTabla(LinkedList<Tabla> lt, string nombre)
-    {
-        foreach (Tabla ta in lt)
-        {
-            foreach (Atributo at in ta.atributos)
+            foreach (Atributo at in lk)
             {
-                if (at.nombre.Equals("NAME") && at.valor.Equals(nombre)) return true;
+                if (at.nombre.Equals("NAME")) return (String)at.valor;
             }
+            return "sinnombre";
         }
-        return false;
-    }
+
+        public Boolean buscarAtributo(LinkedList<Atributo> lk, string atributo)
+        {
+            foreach (Atributo at in lk)
+            {
+                if (at.nombre.Equals(atributo)) return true;
+            }
+            return false;
+        }
+
+        public Boolean buscarColumna(LinkedList<Columna> lt, string nombre)
+        {
+            foreach (Columna ta in lt)
+            {
+                foreach (Atributo at in ta.atributos)
+                {
+                    if (at.nombre.Equals("NAME") && at.valor.Equals(nombre)) return true;
+                }
+            }
+            return false;
+        }
+
+
+
 
     }
 }

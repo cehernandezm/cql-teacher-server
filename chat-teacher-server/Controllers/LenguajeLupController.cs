@@ -38,7 +38,7 @@ namespace cql_teacher_server.Controllers
                 salida += "{\n\t";
                 foreach(Atributo a in bd.atributos)
                 {
-                    if (a.tipo.Equals("TABLAS"))
+                    if (a.tipo.Equals("OBJETOS"))
                     {
                         salida += "\"DATA\": [";
                         foreach(Tabla tb in (LinkedList<Tabla>)a.valor)

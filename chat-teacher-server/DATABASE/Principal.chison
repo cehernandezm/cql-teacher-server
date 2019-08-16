@@ -2,18 +2,20 @@ $<
 	"DATABASES" = [ 
 		<
 			"HORA"= '23:12:00',"FECHA"='2019-12-01',"NAME"="CARLOS",
-			"DATA" = [
+			"Data" = [
 				<
 					"NAME" = "nombre2",
 					"CQL-TYPE" = "TABLE",
 					"COLUMNS" = [
 						<
 							"NAME" = "COLUMNA1",
-							"TYPE" = "STRING"
+							"TYPE" = "STRING",
+							"FK" = "TRUE"
 						>,
 						<
-							"NAME" = "COLUMNA1",
-							"TYPE" = "STRING"
+							"NAME" = "COLUMNA2",
+							"TYPE" = "STRING",
+							"FK" = TRUE
 						>
 					]
 				>

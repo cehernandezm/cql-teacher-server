@@ -21,8 +21,10 @@ namespace cql_teacher_server.CHISON.Gramatica
             #endregion
 
             #region Terminales
-            var TRUE = ToTerm("True");
-            var FALSE = ToTerm("False");
+            var TRUE = ToTerm("TRUE");
+            var FALSE = ToTerm("FALSE");
+            var IN = ToTerm("IN");
+            var OUT = ToTerm("OUT");
             var MENOR = ToTerm("<");
             var MAYOR = ToTerm(">");
             var IGUAL = ToTerm("=");
@@ -82,6 +84,8 @@ namespace cql_teacher_server.CHISON.Gramatica
                       | DECIMAL
                       | FECHA
                       | HORA
+                      | IN
+                      | OUT
                       | LLAVEIZQ + listaTablas + LLAVEDER
                       | LLAVEIZQ + LLAVEDER
                       ;

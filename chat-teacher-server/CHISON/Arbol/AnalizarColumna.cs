@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace cql_teacher_server.CHISON
+namespace cql_teacher_server.CHISON.Arbol
 {
     public class AnalizarColumna
     {
@@ -108,13 +108,13 @@ namespace cql_teacher_server.CHISON
                                 valorTemp = valorTemp.TrimEnd();
                                 valor = (string)valorTemp;
                             }
-                            else if (tipo.Equals("Key symbol)"))
+                            else if (tipo.Equals("Keyword)"))
                             {
-                                tipo = "BOOLEAN";
                                 string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
                                 valorTemp = valorTemp.Replace("\"", string.Empty);
                                 valorTemp = valorTemp.TrimEnd();
                                 valorTemp = valorTemp.TrimStart();
+                                if (valorTemp.Equals("true") || valorTemp.Equals("false")) tipo = "BOOLEAN";
                                 valor = (string)valorTemp;
                             }
                             if (token.Equals("NAME"))
@@ -127,6 +127,16 @@ namespace cql_teacher_server.CHISON
                                     return null;
                                 }
 
+                            }
+                            else if (token.Equals("FK"))
+                            {
+                                if (!tipo.Equals("BOOLEAN"))
+                                {
+                                    System.Diagnostics.Debug.WriteLine("ERROR FK SOLO ACEPTA UN VALOR BOOLEAN NO SE ESPERABA "
+                                        + valor + " , Linea : " + hijoT.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
+                                        + hijoT.ChildNodes.ElementAt(0).Token.Location.Column);
+                                    return null;
+                                }
                             }
                         }
                         Atributo a = new Atributo(token, valor, tipo);
@@ -155,7 +165,7 @@ namespace cql_teacher_server.CHISON
                         listaAtri = (LinkedList<Atributo>)analizar(hijoTa.ChildNodes.ElementAt(1));
 
 
-                        if (buscarAtributo(listaAtri, "NAME") && buscarAtributo(listaAtri, "TYPE"))
+                        if (buscarAtributo(listaAtri, "NAME") && buscarAtributo(listaAtri, "TYPE") && buscarAtributo(listaAtri, "FK"))
                         {
                             Boolean existe = buscarColumna(listaTablas, getNombre(listaAtri));
                             Columna t = new Columna(listaAtri);
@@ -163,7 +173,7 @@ namespace cql_teacher_server.CHISON
                             else System.Diagnostics.Debug.WriteLine("Error semantico ya existe una Columna con este nombre: " + getNombre(listaAtri) + ", Linea: "
                                     + linea + " Columna: " + columna);
                         }
-                        else System.Diagnostics.Debug.WriteLine("Error semantico las Columnas tiene que tener NAME Y TYPE, Linea: "
+                        else System.Diagnostics.Debug.WriteLine("Error semantico las Columnas tiene que tener NAME, TYPE y FK, Linea: "
                                     + linea + " Columna: " + columna);
                         return listaTablas;
 

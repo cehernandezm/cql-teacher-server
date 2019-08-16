@@ -51,9 +51,9 @@ namespace cql_teacher_server.CHISON.Arbol
                         ParseTreeNode hijoT = raiz.ChildNodes.ElementAt(2);
                         if (hijoT.ChildNodes.Count() == 2) // -------------------------------------------- [ ] -------------------------------------------------------
                         {
-                            if (token.Equals("DATA"))
+                            if (token.Equals("Data"))
                             {
-                                tipo = "TABLAS";
+                                tipo = "OBJETOS";
                                 valor = new LinkedList<Tabla>();
                             }
                             else
@@ -66,9 +66,9 @@ namespace cql_teacher_server.CHISON.Arbol
                         }
                         else if (hijoT.ChildNodes.Count() == 3) //---------------------- [ TABLAS ] ------------------------------------------------------------------
                         {
-                            if (token.Equals("DATA"))
+                            if (token.Equals("Data"))
                             {
-                                tipo = "TABLAS";
+                                tipo = "OBJETOS";
                                 AnalizarTablas analisis = new AnalizarTablas();
                                 valor = (LinkedList<Tabla>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
                             }
