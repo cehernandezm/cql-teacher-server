@@ -81,12 +81,12 @@ namespace cql_teacher_server.CHISON.Arbol
                                 valor = (LinkedList<Columna>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
                             }else if(token.Equals("ATTRS") && cql_type.Equals("OBJECT"))
                             {
-                                tipo = "OBJECT";
+                                tipo = "ATTRS";
                                 AnalizarObject analisis = new AnalizarObject();
                                 valor = (LinkedList<Columna>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
                             }else if(token.Equals("PARAMETERS") && cql_type.Equals("PROCEDURE"))
                             {
-                                tipo = "PROCEDURE";
+                                tipo = "PARAMETERS";
                                 AnalizarProcedure analisis = new AnalizarProcedure();
                                 valor = (LinkedList<Columna>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
                             }

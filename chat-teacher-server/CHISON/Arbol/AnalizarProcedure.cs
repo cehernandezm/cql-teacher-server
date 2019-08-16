@@ -107,7 +107,7 @@ namespace cql_teacher_server.CHISON.Arbol
                                 valorTemp = valorTemp.TrimEnd();
                                 valor = (string)valorTemp;
                             }
-                            else if (tipo.Equals("KeyWord)"))
+                            else if (tipo.Equals("Keyword)"))
                             {
                                 
                                 string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
@@ -115,7 +115,7 @@ namespace cql_teacher_server.CHISON.Arbol
                                 valorTemp = valorTemp.TrimEnd();
                                 valorTemp = valorTemp.TrimStart();
                                 if(valorTemp.Equals("true") || valorTemp.Equals("false")) tipo = "BOOLEAN";
-                                else if (valorTemp.Equals("IN") || valorTemp.Equals("OUT")) tipo = "AS";
+                                else if (valorTemp.Equals("in") || valorTemp.Equals("out")) tipo = "AS";
                                 valor = (string)valorTemp;
                             }
 

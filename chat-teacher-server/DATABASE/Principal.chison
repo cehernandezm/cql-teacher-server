@@ -10,12 +10,42 @@ $<
 						<
 							"NAME" = "COLUMNA1",
 							"TYPE" = "STRING",
-							"FK" = "TRUE"
+							"FK" = TRUE
 						>,
 						<
 							"NAME" = "COLUMNA2",
 							"TYPE" = "STRING",
 							"FK" = TRUE
+						>
+					]
+				>,
+				<
+					"CQL-TYPE" = "OBJECT",
+					"NAME" = "ALUMNO",
+					"ATTRS" = [
+						<
+							"NAME" = "Nombre",
+							"TYPE" = "String"
+						>,
+						<
+							"NAME" = "Nombre2",
+							"TYPE" = "Int"
+						>
+					]
+				>,
+				<
+					"CQL-TYPE" = "PROCEDURE",
+					"NAME" = "Procedure1",
+					"PARAMETERS" = [
+						<
+							"NAME" = "Parametro1",
+							"TYPE" = "STRING",
+							"AS" = "HOLA"
+						>,
+						<
+							"NAME" = "Parametro2",
+							"TYPE" = "STRING",
+							"AS" = IN
 						>
 					]
 				>
