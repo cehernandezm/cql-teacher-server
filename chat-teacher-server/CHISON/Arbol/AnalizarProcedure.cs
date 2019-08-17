@@ -167,7 +167,7 @@ namespace cql_teacher_server.CHISON.Arbol
                         listaAtri = (LinkedList<Atributo>)analizar(hijoTa.ChildNodes.ElementAt(1));
 
 
-                        if (buscarAtributo(listaAtri, "NAME") && buscarAtributo(listaAtri, "TYPE") && buscarAtributo(listaAtri, "AS"))
+                        if (buscarAtributo(listaAtri, "NAME") && buscarAtributo(listaAtri, "TYPE") && buscarAtributo(listaAtri, "AS") )
                         {
                             Boolean existe = buscarColumna(listaTablas, getNombre(listaAtri));
                             Columna t = new Columna(listaAtri);
