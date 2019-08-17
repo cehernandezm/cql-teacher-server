@@ -7,6 +7,15 @@ namespace cql_teacher_server.CHISON.Componentes
 {
     public class BaseDeDatos 
     {
+        public string nombre { set; get; }
+        public LinkedList<Tabla> listaTablas { set; get; }
+
+        public BaseDeDatos(string nombre, LinkedList<Tabla> listaTablas)
+        {
+            this.nombre = nombre;
+            this.listaTablas = listaTablas;
+        }
+
         public LinkedList<Atributo> atributos { get; set; }
         public string usuarioActual { get; set; }
 

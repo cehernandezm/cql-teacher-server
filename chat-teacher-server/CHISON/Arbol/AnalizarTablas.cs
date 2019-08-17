@@ -236,10 +236,14 @@ namespace cql_teacher_server.CHISON.Arbol
 
                         if (buscarAtributo(listaAtri, "NAME") && buscarAtributo(listaAtri, "CQL-TYPE"))
                         {
-                            Boolean existe = buscarTabla(listaTablas, getNombre(listaAtri));
-                            Tabla t = new Tabla(listaAtri);
+                            string nombre = (String)valorAtributo(listaAtri, "NAME");
+                            Boolean existe = buscarTabla(listaTablas, nombre);
+                            object cols = valorAtributo(listaAtri, "COLUMNS");
+                            LinkedList<Columna> listaCol = new LinkedList<Columna>();
+                            if (cols != null) listaCol = (LinkedList<Columna>)cols;
+                            Tabla t = new Tabla(nombre,listaCol);
                             if (!existe) listaTablas.AddLast(t);
-                            else System.Diagnostics.Debug.WriteLine("Error semantico ya existe una tabla con este nombre: " + getNombre(listaAtri) + ", Linea: "
+                            else System.Diagnostics.Debug.WriteLine("Error semantico ya existe una tabla con este nombre: " + nombre + ", Linea: "
                                     + linea + " Columna: " + columna);
                         }
                         else System.Diagnostics.Debug.WriteLine("Error semantico las tablas tiene que tener NAME Y CQL-TYPE, Linea: "
@@ -261,14 +265,7 @@ namespace cql_teacher_server.CHISON.Arbol
 
     //------------------------------------------------ Devuelve el nombre del objeto a buscar ----------------------------------------------------------------
 
-    public string getNombre(LinkedList<Atributo> lk)
-    {
-        foreach (Atributo at in lk)
-        {
-            if (at.nombre.Equals("NAME")) return (String)at.valor;
-        }
-        return "sinnombre";
-    }
+
 
     public Boolean buscarAtributo(LinkedList<Atributo> lk, string atributo)
     {
@@ -283,16 +280,20 @@ namespace cql_teacher_server.CHISON.Arbol
     {
         foreach (Tabla ta in lt)
         {
-            foreach (Atributo at in ta.atributos)
-            {
-                if (at.nombre.Equals("NAME") && at.valor.Equals(nombre)) return true;
-            }
+                if (ta.nombre.Equals(nombre)) return true;
         }
         return false;
     }
 
 
-
+    public object valorAtributo(LinkedList<Atributo> lk, string atributo)
+    {
+        foreach (Atributo at in lk)
+        {
+           if (at.nombre.Equals(atributo)) return at.valor;
+        }
+        return null;
+    }
 
     public object analizarImport(string direccion)
         {

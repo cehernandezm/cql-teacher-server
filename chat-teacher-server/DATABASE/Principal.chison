@@ -1,18 +1,35 @@
 $<
 	"DATABASES" = [ 
 		<
-			"HORA"= '23:12:00',"FECHA"='2019-12-01',"NAME"="CARLOS"
+			"NAME"="BASE1",
+			"Data" = [
+				<
+					"NAME" = "TABLA1B1",
+					"CQL-TYPE" = "TABLE",
+					"COLUMNS" = [
+						<
+							"NAME" = "ID",
+							"TYPE" = "Counter",
+							"PK" = TRUE
+						>,
+						<
+							"NAME" = "ID2",
+							"TYPE" = "String",
+							"PK" = TRUE
+						>
+					]
+				>,
+				<
+					"NAME" = "TABLA2B2",
+					"CQL-TYPE" = "TABLA"
+				>
+			]
 			
+		>,
+		<
+			"NAME" = "BASE2"
 		>
 	],
 	"USERS" = [
-		<
-			"NAME" = "CARLOS",
-			"PASSWORD" = "1234"
-		>,
-		<
-			"NAME" = "CARLOS2",
-			"PASSWORD" = "12345"
-		>
 	]
 >$

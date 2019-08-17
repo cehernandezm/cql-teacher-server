@@ -35,56 +35,36 @@ namespace cql_teacher_server.Controllers
         {
             string salida = "";
             LinkedList <BaseDeDatos> global = TablaBaseDeDatos.global;
-            foreach(BaseDeDatos bd in global)
+            salida += "\"BASES\" : [";
+            foreach (BaseDeDatos bd in global)
             {
-                salida += "{\n\t";
-                foreach(Atributo a in bd.atributos)
-                {
-                    if (a.tipo.Equals("OBJETOS"))
-                    {
-                        salida += "\"DATA\": [";
-                        foreach(Tabla tb in (LinkedList<Tabla>)a.valor)
-                        {
-                            salida += "\n\t\t{\n";
-                            foreach(Atributo at in tb.atributos)
-                            {
-                                if (at.tipo.Equals("COLUMNS") || at.tipo.Equals("ATTRS") || at.tipo.Equals("PARAMETERS") || at.tipo.Equals("DATA"))
-                                {
-                                    salida += "\n\t\t\t\"" + at.tipo + "\":[";
-                                    foreach (Columna co in (LinkedList<Columna>)at.valor)
-                                    {
-                                        salida += "\n\t\t\t\t{";
-                                        foreach(Atributo at2 in co.atributos)
-                                        {
-                                            salida += "\n\t\t\t\t\t\"" + at2.nombre + "\": \"" + at2.valor + "\",";
-                                        }
-                                        salida += "\n\t\t\t\t},";
-                                    }
-                                    salida += "\n\t\t\t],";
-                                }else salida += "\n\t\t\t \"" + at.nombre + "\": \"" + at.valor + "\",";
-                            }
-                            salida += "\n\t\t},";
-                        }
-                        salida += "\n\t],";
-                    }
-                    else salida += "\"" + a.nombre + "\": \"" + a.valor + "\",\n\t";
-                }
-                salida += "\n},";
-            }
 
-            LinkedList<Usuario> userGlobal = TablaBaseDeDatos.listaUsuario;
-            salida += "\nUSER{\n";
-            foreach (Usuario us in userGlobal)
-            {
-                
                 salida += "\n\t{";
-                foreach (Atributo a in us.atributos)
+                salida += "\n\t\t \"NAME\" : \"" + bd.nombre + "\",";
+                salida += "\n\t\t \"TABLAS\" : [";
+                foreach (Tabla tb in bd.listaTablas)
                 {
-                   salida += "\n\t\t\"" + a.nombre + "\": \"" + a.valor + "\",";
+                    salida += "\n\t\t\t{";
+                    salida += "\n\t\t\t\t\"NAME\": \"" + tb.nombre + "\",";
+                    salida += "\n\t\t\t\t\"COLUMNAS\": [";
+
+                    foreach (Columna co in tb.columnas)
+                    {
+                        salida += "\n\t\t\t\t\t{";
+                        salida += "\n\t\t\t\t\t\t \"NAME\" : \"" + co.name + "\",";
+                        salida += "\n\t\t\t\t\t\t \"TIPO\" : \"" + co.tipo + "\",";
+                        salida += "\n\t\t\t\t\t\t \"FK\" : \"" + co.pk + "\",";
+                        salida += "\n\t\t\t\t\t},";
+                    }
+
+                    salida += "\n\t\t\t\t]";
+                    salida += "\n\t\t\t},";
                 }
                 salida += "\n\t},";
             }
-            salida += "\n}";
+            salida += "\n],";
+
+
             return salida;
         }
 

@@ -23,10 +23,7 @@ namespace cql_teacher_server.CHISON
         {
             foreach(BaseDeDatos db in global)
             {
-                foreach(Atributo a in db.atributos)
-                {
-                    if (a.nombre.Equals("NAME") && a.valor.Equals(nombre)) return db; 
-                }
+                if (db.nombre.Equals(nombre)) return db;
             }
             return null;
         }

@@ -165,12 +165,21 @@ namespace cql_teacher_server.CHISON.Arbol
                         listaAtri = (LinkedList<Atributo>)analizar(hijoTa.ChildNodes.ElementAt(1));
 
 
-                        if (buscarAtributo(listaAtri, "NAME") && buscarAtributo(listaAtri, "TYPE") && buscarAtributo(listaAtri, "FK"))
+                        if (buscarAtributo(listaAtri, "NAME") && buscarAtributo(listaAtri, "TYPE") && buscarAtributo(listaAtri, "PK"))
                         {
-                            Boolean existe = buscarColumna(listaTablas, getNombre(listaAtri));
-                            Columna t = new Columna(listaAtri);
+                            string nombre = (String)valorAtributo(listaAtri, "NAME");
+                            Boolean existe = buscarColumna(listaTablas, nombre);
+
+                            
+                            string tipoC = (String)valorAtributo(listaAtri, "TYPE");
+                            string pk = (String)valorAtributo(listaAtri, "PK");
+                            bool flag;
+                            bool fk = Boolean.TryParse(pk, out flag);
+                            Boolean pks = (flag) ? fk : false; 
+
+                            Columna t = new Columna(nombre,tipoC,pks);
                             if (!existe) listaTablas.AddLast(t);
-                            else System.Diagnostics.Debug.WriteLine("Error semantico ya existe una Columna con este nombre: " + getNombre(listaAtri) + ", Linea: "
+                            else System.Diagnostics.Debug.WriteLine("Error semantico ya existe una Columna con este nombre: " + nombre + ", Linea: "
                                     + linea + " Columna: " + columna);
                         }
                         else System.Diagnostics.Debug.WriteLine("Error semantico las Columnas tiene que tener NAME, TYPE y FK, Linea: "
@@ -191,14 +200,6 @@ namespace cql_teacher_server.CHISON.Arbol
 
         //------------------------------------------------ Devuelve el nombre del objeto a buscar ----------------------------------------------------------------
 
-        public string getNombre(LinkedList<Atributo> lk)
-        {
-            foreach (Atributo at in lk)
-            {
-                if (at.nombre.Equals("NAME")) return (String)at.valor;
-            }
-            return "sinnombre";
-        }
 
         public Boolean buscarAtributo(LinkedList<Atributo> lk, string atributo)
         {
@@ -213,16 +214,20 @@ namespace cql_teacher_server.CHISON.Arbol
         {
             foreach (Columna ta in lt)
             {
-                foreach (Atributo at in ta.atributos)
-                {
-                    if (at.nombre.Equals("NAME") && at.valor.Equals(nombre)) return true;
-                }
+                if (ta.name.Equals(nombre)) return true;
             }
             return false;
         }
 
 
-
+        public object valorAtributo(LinkedList<Atributo> lk, string atributo)
+        {
+            foreach (Atributo at in lk)
+            {
+                if (at.nombre.Equals(atributo)) return at.valor;
+            }
+            return null;
+        }
 
 
     }

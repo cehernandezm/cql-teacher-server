@@ -95,9 +95,6 @@ namespace cql_teacher_server.CHISON.Gramatica
                     //------------------------------------- bases ----------------------------------------------------------------------
                     case "bases":
                         ParseTreeNode hijo = null;
-                        BaseDeDatos newBase;
-                        string baseActual;
-                        BaseDeDatos oldBase;
                         LinkedList<Atributo> lista;
                         if (raiz.ChildNodes.Count() == 3)
                         {
@@ -112,24 +109,25 @@ namespace cql_teacher_server.CHISON.Gramatica
 
                             AnalizarBase analisis = new AnalizarBase();
                             lista = (LinkedList<Atributo>)analisis.analizar(hijo.ChildNodes.ElementAt(1));
-                            newBase = new BaseDeDatos(lista, "sin usar");
-                            baseActual = getNombre(lista);
-                            if (!baseActual.Equals("sinnombre"))
-                            {
-                                oldBase = TablaBaseDeDatos.getBase(baseActual);
 
-                                if (oldBase == null) global.AddLast(newBase);
-                                else
-                                {
-                                    System.Diagnostics.Debug.WriteLine("Error Semantico: Ya existe una base de datos con este nombre: " + baseActual + ", Linea: "
-                                     + hijo.ChildNodes.ElementAt(0).Token.Location.Line + " Columna : " + hijo.ChildNodes.ElementAt(0).Token.Location.Column);
-                                }
-                            }
-                            else
+                            if (buscarAtributo(lista, "NAME"))
                             {
-                                System.Diagnostics.Debug.WriteLine("Error Semantico: La base de datos necesita un nombre, Linea: "
-                                 + hijo.ChildNodes.ElementAt(0).Token.Location.Line + " Columna : " + hijo.ChildNodes.ElementAt(0).Token.Location.Column);
+                                string nombre = (string)valorAtributo(lista, "NAME");
+                                object res = valorAtributo(lista, "Data");
+
+                                LinkedList<Tabla> listaTa = new LinkedList<Tabla>();
+
+                                if (res != null) listaTa = (LinkedList<Tabla>)res;
+
+                                BaseDeDatos old = TablaBaseDeDatos.getBase(nombre);
+                                BaseDeDatos newBase = new BaseDeDatos(nombre, listaTa);
+                                if (old == null) TablaBaseDeDatos.global.AddLast(newBase);
+                                else System.Diagnostics.Debug.WriteLine("Error Semantico: Una base de datos necesita nombre : , Linea: "
+                                     + hijo.ChildNodes.ElementAt(0).Token.Location.Line + " Columna : " + hijo.ChildNodes.ElementAt(0).Token.Location.Column);
+
+
                             }
+    
                         }
                         
                         break;
@@ -199,13 +197,13 @@ namespace cql_teacher_server.CHISON.Gramatica
 
         //------------------------------------------------ Devuelve el nombre del objeto a buscar ----------------------------------------------------------------
 
-        public string getNombre(LinkedList<Atributo> lk)
+        public object valorAtributo(LinkedList<Atributo> lk, string atributo)
         {
-            foreach(Atributo at in lk)
+            foreach (Atributo at in lk)
             {
-                if (at.nombre.Equals("NAME")) return (String)at.valor;
+                if (at.nombre.Equals(atributo)) return at.valor;
             }
-            return "sinnombre";
+            return null;
         }
 
 
