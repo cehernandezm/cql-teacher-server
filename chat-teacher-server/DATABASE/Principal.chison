@@ -24,6 +24,16 @@ $<
 							"ID2" = "HOLA2"
 						>
 					]
+				>,
+				<
+				"CQL-TYPE" = "OBJECT",
+				"NAME" = "USERTYPE1",
+				"ATTRS" = [
+					<
+						"NAME" = "TYPE1",
+						"TYPE" = "STRING"
+					>
+				]
 				>
 			]
 			

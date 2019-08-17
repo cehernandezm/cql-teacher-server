@@ -138,12 +138,12 @@ namespace cql_teacher_server.CHISON.Arbol
                     //-------------------------------------------------------------- analizar las tablas ---------------------------------------------------------
                     case "listatablas":
 
-                        LinkedList<Columna> listaTablas = new LinkedList<Columna>();
+                        LinkedList<Attrs> listaTablas = new LinkedList<Attrs>();
                         LinkedList<Atributo> listaAtri = new LinkedList<Atributo>();
                         ParseTreeNode hijoTa;
                         if (raiz.ChildNodes.Count() == 3)
                         {
-                            listaTablas = (LinkedList<Columna>)analizar(raiz.ChildNodes.ElementAt(0));
+                            listaTablas = (LinkedList<Attrs>)analizar(raiz.ChildNodes.ElementAt(0));
 
                             hijoTa = raiz.ChildNodes.ElementAt(2);
                         }
@@ -155,12 +155,14 @@ namespace cql_teacher_server.CHISON.Arbol
                         listaAtri = (LinkedList<Atributo>)analizar(hijoTa.ChildNodes.ElementAt(1));
 
 
-                        if (buscarAtributo(listaAtri, "NAME") && buscarAtributo(listaAtri, "TYPE"))
+                        if (buscarAtributo(listaAtri, "NAME") != null && buscarAtributo(listaAtri, "TYPE") != null)
                         {
-                            Boolean existe = buscarColumna(listaTablas, getNombre(listaAtri));
-                            Columna t = new Columna(listaAtri);
+                            string nombre = (string) buscarAtributo(listaAtri, "NAME");
+                            string type = (string)buscarAtributo(listaAtri, "TYPE");
+                            Boolean existe = buscarColumna(listaTablas, nombre);
+                            Attrs t = new Attrs(nombre,type);
                             if (!existe) listaTablas.AddLast(t);
-                            else System.Diagnostics.Debug.WriteLine("Error semantico ya existe una User Type con este nombre: " + getNombre(listaAtri) + ", Linea: "
+                            else System.Diagnostics.Debug.WriteLine("Error semantico ya existe una User Type con este nombre: " + nombre + ", Linea: "
                                     + linea + " Columna: " + columna);
                         }
                         else System.Diagnostics.Debug.WriteLine("Error semantico los  User Type tiene que tener NAME Y TYPE, Linea: "
@@ -179,34 +181,23 @@ namespace cql_teacher_server.CHISON.Arbol
  ------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
-        //------------------------------------------------ Devuelve el nombre del objeto a buscar ----------------------------------------------------------------
 
-        public string getNombre(LinkedList<Atributo> lk)
+       
+
+        public object buscarAtributo(LinkedList<Atributo> lk, string atributo)
         {
             foreach (Atributo at in lk)
             {
-                if (at.nombre.Equals("NAME")) return (String)at.valor;
+                if (at.nombre.Equals(atributo)) return at.valor;
             }
-            return "sinnombre";
+            return null;
         }
 
-        public Boolean buscarAtributo(LinkedList<Atributo> lk, string atributo)
+        public Boolean buscarColumna(LinkedList<Attrs> lt, string nombre)
         {
-            foreach (Atributo at in lk)
+            foreach (Attrs ta in lt)
             {
-                if (at.nombre.Equals(atributo)) return true;
-            }
-            return false;
-        }
-
-        public Boolean buscarColumna(LinkedList<Columna> lt, string nombre)
-        {
-            foreach (Columna ta in lt)
-            {
-                foreach (Atributo at in ta.atributos)
-                {
-                    if (at.nombre.Equals("NAME") && at.valor.Equals(nombre)) return true;
-                }
+                if (ta.name.Equals(nombre)) return true;
             }
             return false;
         }

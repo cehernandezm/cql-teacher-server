@@ -8,12 +8,12 @@ namespace cql_teacher_server.CHISON.Componentes
     public class BaseDeDatos 
     {
         public string nombre { set; get; }
-        public LinkedList<Tabla> listaTablas { set; get; }
+        public Objeto objetos { set; get; }
 
-        public BaseDeDatos(string nombre, LinkedList<Tabla> listaTablas)
+        public BaseDeDatos(string nombre, Objeto objetos)
         {
             this.nombre = nombre;
-            this.listaTablas = listaTablas;
+            this.objetos = objetos;
         }
 
         public LinkedList<Atributo> atributos { get; set; }

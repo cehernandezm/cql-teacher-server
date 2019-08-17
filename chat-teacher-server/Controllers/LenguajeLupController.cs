@@ -38,11 +38,12 @@ namespace cql_teacher_server.Controllers
             salida += "\"BASES\" : [";
             foreach (BaseDeDatos bd in global)
             {
-
+                Objeto objeto = bd.objetos;
                 salida += "\n\t{";
                 salida += "\n\t\t \"NAME\" : \"" + bd.nombre + "\",";
+
                 salida += "\n\t\t \"TABLAS\" : [";
-                foreach (Tabla tb in bd.listaTablas)
+                foreach (Tabla tb in objeto.tablas)
                 {
                     salida += "\n\t\t\t{";
 
@@ -72,6 +73,29 @@ namespace cql_teacher_server.Controllers
                         
                     }
                     salida += "\n\t\t\t\t]";
+
+                    salida += "\n\t\t\t},";
+                }
+                salida += "\n\t},";
+
+                salida += "\n\t\t \"USER_TYPES\" : [";
+                foreach (User_Types tb in objeto.user_types)
+                {
+                    salida += "\n\t\t\t{";
+
+                    salida += "\n\t\t\t\t\"NAME\": \"" + tb.name + "\",";
+
+                    salida += "\n\t\t\t\t\"ATTRS\": [";
+                    foreach (Attrs da in tb.type)
+                    {
+
+                        salida += "\n\t\t\t\t\t{";
+                        salida += "\n\t\t\t\t\t\t \"NAME\" : \"" + da.name + "\",";
+                        salida += "\n\t\t\t\t\t\t \"TYPE\" : \"" + da.type + "\",";
+                        salida += "\n\t\t\t\t\t},";
+
+                    }
+                    salida += "\n\t\t\t\t],";
 
                     salida += "\n\t\t\t},";
                 }

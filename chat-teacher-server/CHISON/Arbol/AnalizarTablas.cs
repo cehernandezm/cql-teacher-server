@@ -48,7 +48,7 @@ namespace cql_teacher_server.CHISON.Arbol
                         string token = raiz.ChildNodes.ElementAt(0).ToString().Split("(")[0];
                         token = token.TrimEnd();
 
-                        Object valor = null;
+                        object valor = null;
                         string tipo = "";
                         ParseTreeNode hijoT = raiz.ChildNodes.ElementAt(2);
                         if (hijoT.ChildNodes.Count() == 2) // -------------------------------------------- [ ] -------------------------------------------------------
@@ -115,10 +115,10 @@ namespace cql_teacher_server.CHISON.Arbol
                                     direccion = direccion.TrimEnd();
                                     direccion += ".chison";
                                     object res = analizarImport(direccion);
-                                    valor = (LinkedList<Columna>)analisis.analizar((ParseTreeNode)res);
+                                    valor = (LinkedList<Attrs>)analisis.analizar((ParseTreeNode)res);
 
                                 }
-                                else valor = (LinkedList<Columna>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
+                                else valor = (LinkedList<Attrs>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
                             }
                             else if(token.Equals("PARAMETERS") && cql_type.Equals("PROCEDURE"))
                             {
@@ -218,12 +218,12 @@ namespace cql_teacher_server.CHISON.Arbol
                     //-------------------------------------------------------------- analizar las tablas ---------------------------------------------------------
                     case "listatablas":
 
-                        LinkedList<Tabla> listaTablas = new LinkedList<Tabla>();
+                        Objeto objeto = new Objeto();
                         LinkedList<Atributo> listaAtri = new LinkedList<Atributo>();
                         ParseTreeNode hijoTa;
                         if (raiz.ChildNodes.Count() == 3)
                         {
-                            listaTablas = (LinkedList<Tabla>)analizar(raiz.ChildNodes.ElementAt(0));
+                            objeto = (Objeto)analizar(raiz.ChildNodes.ElementAt(0));
 
                             hijoTa = raiz.ChildNodes.ElementAt(2);
                         }
@@ -239,27 +239,51 @@ namespace cql_teacher_server.CHISON.Arbol
                         {
                             string nombre = (String)valorAtributo(listaAtri, "NAME");
 
-                            Boolean existe = buscarTabla(listaTablas, nombre);
+                            string tipoO = (String)valorAtributo(listaAtri, "CQL-TYPE");
 
-                            object cols = valorAtributo(listaAtri, "COLUMNS");
-                            LinkedList<Columna> listaCol = new LinkedList<Columna>();
-                            if (cols != null) listaCol = (LinkedList<Columna>)cols;
+                            //------------------------------------- ES UNA TABLA CQL --------------------------------------------------------
+                            if (tipoO.Equals("TABLE"))
+                            {
+                                Boolean existe = buscarTabla(objeto.tablas, nombre);
 
-                            object inf = valorAtributo(listaAtri, "DATA");
-                            LinkedList<Data> listainfo = new LinkedList<Data>();
-                            if (inf != null) listainfo = (LinkedList<Data>)inf;
+                                object cols = valorAtributo(listaAtri, "COLUMNS");
+                                LinkedList<Columna> listaCol = new LinkedList<Columna>();
+                                if (cols != null) listaCol = (LinkedList<Columna>)cols;
+
+                                object inf = valorAtributo(listaAtri, "DATA");
+                                LinkedList<Data> listainfo = new LinkedList<Data>();
+                                if (inf != null) listainfo = (LinkedList<Data>)inf;
 
 
-                            Tabla t = new Tabla(nombre,listaCol,listainfo);
+                                Tabla t = new Tabla(nombre, listaCol, listainfo);
 
 
-                            if (!existe) listaTablas.AddLast(t);
-                            else System.Diagnostics.Debug.WriteLine("Error semantico ya existe una tabla con este nombre: " + nombre + ", Linea: "
-                                    + linea + " Columna: " + columna);
+                                if (!existe) objeto.tablas.AddLast(t);
+                                else System.Diagnostics.Debug.WriteLine("Error semantico ya existe una tabla con este nombre: " + nombre + ", Linea: "
+                                        + linea + " Columna: " + columna);
+                            }
+                            //---------------------------------- SI ES UN USER_TYPE ---------------------------------------------------------------
+                            else if(tipoO.Equals("OBJECT"))
+                            {
+                                Boolean existe = buscarUserType(objeto.user_types, nombre);
+                                if (!existe)
+                                {
+                                    object res = valorAtributo(listaAtri, "ATTRS");
+                                    LinkedList<Attrs> listaAt = new LinkedList<Attrs>();
+                                    if (res != null) listaAt = (LinkedList<Attrs>)res;
+                                    User_Types t = new User_Types(nombre, listaAt);
+
+                                    objeto.user_types.AddLast(t);
+                                }
+                                else System.Diagnostics.Debug.WriteLine("Error semantico ya existe una user_type con este nombre: " + nombre + ", Linea: "
+                                       + linea + " Columna: " + columna);
+                            }
+
+                            
                         }
                         else System.Diagnostics.Debug.WriteLine("Error semantico las tablas tiene que tener NAME Y CQL-TYPE, Linea: "
                                     + linea + " Columna: " + columna); 
-                        return listaTablas;
+                        return objeto;
 
                         break;
                 }
@@ -295,6 +319,16 @@ namespace cql_teacher_server.CHISON.Arbol
         }
         return false;
     }
+
+    
+    public Boolean buscarUserType(LinkedList<User_Types> lt,string nombre)
+        {
+            foreach(User_Types ut in lt)
+            {
+                if (ut.name.Equals(nombre)) return true;
+            }
+            return false;
+        }
 
 
     public object valorAtributo(LinkedList<Atributo> lk, string atributo)

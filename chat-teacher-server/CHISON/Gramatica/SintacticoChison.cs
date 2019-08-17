@@ -114,12 +114,12 @@ namespace cql_teacher_server.CHISON.Gramatica
                                 string nombre = (string)valorAtributo(lista, "NAME");
                                 object res = valorAtributo(lista, "Data");
 
-                                LinkedList<Tabla> listaTa = new LinkedList<Tabla>();
+                                Objeto objeto = new Objeto();
 
-                                if (res != null) listaTa = (LinkedList<Tabla>)res;
+                                if (res != null) objeto = (Objeto)res;
 
                                 BaseDeDatos old = TablaBaseDeDatos.getBase(nombre);
-                                BaseDeDatos newBase = new BaseDeDatos(nombre, listaTa);
+                                BaseDeDatos newBase = new BaseDeDatos(nombre, objeto);
                                 if (old == null) TablaBaseDeDatos.global.AddLast(newBase);
                                 else System.Diagnostics.Debug.WriteLine("Error Semantico: Una base de datos necesita nombre : , Linea: "
                                      + hijo.ChildNodes.ElementAt(0).Token.Location.Line + " Columna : " + hijo.ChildNodes.ElementAt(0).Token.Location.Column);
