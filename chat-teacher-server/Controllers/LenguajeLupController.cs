@@ -100,6 +100,30 @@ namespace cql_teacher_server.Controllers
                     salida += "\n\t\t\t},";
                 }
                 salida += "\n\t},";
+
+                salida += "\n\t\t \"PROCEDURES\" : [";
+                foreach (Procedures tb in objeto.procedures)
+                {
+                    salida += "\n\t\t\t{";
+
+                    salida += "\n\t\t\t\t\"NAME\": \"" + tb.nombre + "\",";
+
+                    salida += "\n\t\t\t\t\"PARAMETERS\": [";
+                    foreach (Parametros da in tb.parametros)
+                    {
+
+                        salida += "\n\t\t\t\t\t{";
+                        salida += "\n\t\t\t\t\t\t \"NAME\" : \"" + da.nombre + "\",";
+                        salida += "\n\t\t\t\t\t\t \"TYPE\" : \"" + da.tipo + "\",";
+                        salida += "\n\t\t\t\t\t\t \"AS\" : \"" + da.ass + "\"";
+                        salida += "\n\t\t\t\t\t},";
+
+                    }
+                    salida += "\n\t\t\t\t],";
+                    salida += "\n\t\t\t\t\"INSTRUCCIONES\": \"" + tb.instruccion + "\",";
+                    salida += "\n\t\t\t},";
+                }
+                salida += "\n\t},";
             }
             salida += "\n],";
 

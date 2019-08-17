@@ -26,14 +26,26 @@ $<
 					]
 				>,
 				<
-				"CQL-TYPE" = "OBJECT",
-				"NAME" = "USERTYPE1",
-				"ATTRS" = [
-					<
-						"NAME" = "TYPE1",
-						"TYPE" = "STRING"
-					>
-				]
+					"CQL-TYPE" = "OBJECT",
+					"NAME" = "USERTYPE1",
+					"ATTRS" = [
+						<
+							"NAME" = "TYPE1",
+							"TYPE" = "STRING"
+						>
+					]
+				>,
+				<
+					"CQL-TYPE" = "PROCEDURE",
+					"NAME" = "Procedure1",
+					"INSTR" = "SELECT * FROM TU CULO",
+					"PARAMETERS" = [
+						<
+							"NAME" = "nombre",
+							"TYPE" = "String",
+							"AS" = IN
+						>
+					]
 				>
 			]
 			

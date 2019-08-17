@@ -75,7 +75,6 @@ namespace cql_teacher_server.CHISON.Arbol
                             string token1 = hijoT.ChildNodes.ElementAt(1).ToString().Split(' ')[0].ToLower();
                             if (token.Equals("DATA"))
                             {
-                                System.Diagnostics.Debug.WriteLine("Entro aqui");
                                 AnalizarData analisis = new AnalizarData();
                                 tipo = "DATA";
                                 if (token1.Equals("importar"))
@@ -122,6 +121,8 @@ namespace cql_teacher_server.CHISON.Arbol
                             }
                             else if(token.Equals("PARAMETERS") && cql_type.Equals("PROCEDURE"))
                             {
+                                System.Diagnostics.Debug.WriteLine("Entro aqui");
+
                                 tipo = "PARAMETERS";
                                 AnalizarProcedure analisis = new AnalizarProcedure();
                                 if (token1.Equals("importar"))
@@ -130,10 +131,10 @@ namespace cql_teacher_server.CHISON.Arbol
                                     direccion = direccion.TrimEnd();
                                     direccion += ".chison";
                                     object res = analizarImport(direccion);
-                                    valor = (LinkedList<Columna>)analisis.analizar((ParseTreeNode)res);
+                                    valor = (LinkedList<Parametros>)analisis.analizar((ParseTreeNode)res);
 
                                 }
-                                else valor = (LinkedList<Columna>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
+                                else valor = (LinkedList<Parametros>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
                             }
                             else
                             {
@@ -278,6 +279,29 @@ namespace cql_teacher_server.CHISON.Arbol
                                 else System.Diagnostics.Debug.WriteLine("Error semantico ya existe una user_type con este nombre: " + nombre + ", Linea: "
                                        + linea + " Columna: " + columna);
                             }
+                            //------------------------------------------- SI ES UN PROCEDURE --------------------------------------------------------------
+                            else if (tipoO.Equals("PROCEDURE"))
+                            {
+                                Boolean existe = buscarProcedure(objeto.procedures, nombre);
+                                if (!existe)
+                                {
+                                    object res = valorAtributo(listaAtri, "PARAMETERS");
+                                    if(res == null) System.Diagnostics.Debug.WriteLine("Entro aqui2");
+
+                                    LinkedList<Parametros> listapa = new LinkedList<Parametros>();
+                                    if (res != null) listapa = (LinkedList<Parametros>)res;
+
+                                    object re2 = valorAtributo(listaAtri, "INSTR");
+                                    string instrucciones = "";
+                                    if (re2 != null) instrucciones = (string)re2;
+
+                                    Procedures procedure = new Procedures(nombre, listapa, instrucciones);
+
+                                    objeto.procedures.AddLast(procedure);
+                                }
+                                else System.Diagnostics.Debug.WriteLine("Error semantico ya existe una procedure con este nombre: " + nombre + ", Linea: "
+                                       + linea + " Columna: " + columna);
+                            }
 
                             
                         }
@@ -330,6 +354,14 @@ namespace cql_teacher_server.CHISON.Arbol
             return false;
         }
 
+    public Boolean buscarProcedure(LinkedList<Procedures> lt,string nombre)
+        {
+            foreach(Procedures pro in lt)
+            {
+                if (pro.nombre.Equals(nombre)) return true;
+            }
+            return false;
+        }
 
     public object valorAtributo(LinkedList<Atributo> lk, string atributo)
     {
