@@ -22,6 +22,8 @@ namespace cql_teacher_server.Controllers
         public IEnumerable<string> Get()
         {
             TablaBaseDeDatos.global = new LinkedList<BaseDeDatos>();
+            TablaBaseDeDatos.listaUsuario = new LinkedList<Usuario>();
+
             LeerArchivo leer = new LeerArchivo();
             
             return new string[] { "value1", "value2" };
@@ -64,10 +66,25 @@ namespace cql_teacher_server.Controllers
                             salida += "\n\t\t},";
                         }
                         salida += "\n\t],";
-                    }else salida += "\"" + a.nombre + "\": \"" + a.valor + "\",\n\t";
+                    }
+                    else salida += "\"" + a.nombre + "\": \"" + a.valor + "\",\n\t";
                 }
-                salida += "\n}";
+                salida += "\n},";
             }
+
+            LinkedList<Usuario> userGlobal = TablaBaseDeDatos.listaUsuario;
+            salida += "\nUSER{\n";
+            foreach (Usuario us in userGlobal)
+            {
+                
+                salida += "\n\t{";
+                foreach (Atributo a in us.atributos)
+                {
+                   salida += "\n\t\t\"" + a.nombre + "\": \"" + a.valor + "\",";
+                }
+                salida += "\n\t},";
+            }
+            salida += "\n}";
             return salida;
         }
 

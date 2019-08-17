@@ -11,6 +11,9 @@ namespace cql_teacher_server.CHISON
     {
         public static LinkedList<BaseDeDatos> global = new LinkedList<BaseDeDatos>();
 
+        public static LinkedList<Usuario> listaUsuario = new LinkedList<Usuario>();
+
+
         public static LinkedList<BaseDeDatos> getTabla()
         {
             return global;
@@ -46,7 +49,18 @@ namespace cql_teacher_server.CHISON
             
             return null;
         }
-        
-        
+
+        public static Usuario getUsuario( string nombre)
+        {
+            foreach(Usuario us in listaUsuario)
+            {
+ 
+               foreach(Atributo a in us.atributos)
+               {
+                   if (a.nombre.Equals("NAME") && a.valor.Equals(nombre)) return us;
+               }
+            }
+            return null;
+        }
     }
 }

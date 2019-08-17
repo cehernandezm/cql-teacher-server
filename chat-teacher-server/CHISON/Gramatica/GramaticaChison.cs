@@ -74,7 +74,8 @@ namespace cql_teacher_server.CHISON.Gramatica
             bases.Rule = bases + COMA + baseU
                        | baseU;
 
-            user.Rule = USERS + IGUAL + LLAVEIZQ + LLAVEDER;
+            user.Rule = USERS + IGUAL + LLAVEIZQ + LLAVEDER
+                       |USERS + IGUAL + LLAVEIZQ + listaTablas + LLAVEDER;
 
             baseU.Rule = MENOR + objetos + MAYOR;
 

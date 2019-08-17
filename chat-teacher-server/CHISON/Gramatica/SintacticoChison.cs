@@ -57,7 +57,7 @@ namespace cql_teacher_server.CHISON.Gramatica
                     //-------------------------------------- Instruccion Superior ------------------------------
                     case "intruccion_superior":
                         ejecutar(raiz.ChildNodes.ElementAt(0));
-                         //ejecutar(raiz.ChildNodes.ElementAt(2));   
+                         ejecutar(raiz.ChildNodes.ElementAt(2));   
                         break;
 
                     //--------------------------------- database ----------------------------------------------------------------
@@ -66,6 +66,20 @@ namespace cql_teacher_server.CHISON.Gramatica
                         else ejecutar(raiz.ChildNodes.ElementAt(3));
                         break;
 
+
+                    //---------------------------------------- usuarios ----------------------------------------------------------------
+
+                    case "user":
+
+                        string usuarioActual = "";
+                        if(raiz.ChildNodes.Count() == 5)
+                        {
+                            AnalizarUsuario analisis = new AnalizarUsuario();
+                            analisis.analizar(raiz.ChildNodes.ElementAt(3)); 
+                        }
+
+
+                        break;
 
                     //------------------------------------- bases ----------------------------------------------------------------------
                     case "bases":
@@ -182,6 +196,7 @@ namespace cql_teacher_server.CHISON.Gramatica
             }
             return "sinnombre";
         }
+
 
         public Boolean buscarAtributo(LinkedList<Atributo> lk, string atributo)
         {
