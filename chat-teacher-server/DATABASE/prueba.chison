@@ -1,8 +1,4 @@
 <
-                            "NAME" = "Nombre",
-                            "TYPE" = "String"
-                        >,
-                        <
-                            "NAME" = "Nombre2",
-                            "TYPE" = "Int"
-                        >
+                            "COLUMNA1" = "HOLA",
+                            "COLUMNA2" = "HOLA2"
+                        >   

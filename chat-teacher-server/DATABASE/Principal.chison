@@ -17,29 +17,9 @@ $<
 							"TYPE" = "STRING",
 							"FK" = TRUE
 						>
-					]
-				>,
-				<
-					"CQL-TYPE" = "OBJECT",
-					"NAME" = "ALUMNO",
-					"ATTRS" = [
+					],
+					"DATA" = [
 						${prueba.chison}$
-					]
-				>,
-				<
-					"CQL-TYPE" = "PROCEDURE",
-					"NAME" = "Procedure1",
-					"PARAMETERS" = [
-						<
-							"NAME" = "Parametro1",
-							"TYPE" = "STRING",
-							"AS" = "HOLA"
-						>,
-						<
-							"NAME" = "Parametro2",
-							"TYPE" = "STRING",
-							"AS" = IN
-						>
 					]
 				>
 			]

@@ -46,7 +46,7 @@ namespace cql_teacher_server.Controllers
                             salida += "\n\t\t{\n";
                             foreach(Atributo at in tb.atributos)
                             {
-                                if (at.tipo.Equals("COLUMNS") || at.tipo.Equals("ATTRS") || at.tipo.Equals("PARAMETERS"))
+                                if (at.tipo.Equals("COLUMNS") || at.tipo.Equals("ATTRS") || at.tipo.Equals("PARAMETERS") || at.tipo.Equals("DATA"))
                                 {
                                     salida += "\n\t\t\t\"" + at.tipo + "\":[";
                                     foreach (Columna co in (LinkedList<Columna>)at.valor)

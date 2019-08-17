@@ -55,7 +55,7 @@ namespace cql_teacher_server.CHISON.Arbol
                         {
                             if (token.Equals("DATA"))
                             {
-                               
+                                valor = new LinkedList<Columna>();
                             }
                             else if (token.Equals("COLUMNS") && cql_type.Equals("TABLE"))
                             {
@@ -75,7 +75,19 @@ namespace cql_teacher_server.CHISON.Arbol
                             string token1 = hijoT.ChildNodes.ElementAt(1).ToString().Split(' ')[0].ToLower();
                             if (token.Equals("DATA"))
                             {
-                              
+                                AnalizarData analisis = new AnalizarData();
+                                tipo = "DATA";
+                                if (token1.Equals("importar"))
+                                {
+                                    string direccion = hijoT.ChildNodes.ElementAt(1).ChildNodes.ElementAt(2).ToString().Split('(')[0];
+                                    direccion = direccion.TrimEnd();
+                                    direccion += ".chison";
+                                    object res = analizarImport(direccion);
+                                    valor = (LinkedList<Columna>)analisis.analizar((ParseTreeNode)res);
+
+                                }
+                                else valor = (LinkedList<Columna>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
+
                             }
                             else if (token.Equals("COLUMNS") && cql_type.Equals("TABLE"))
                             {
@@ -89,8 +101,10 @@ namespace cql_teacher_server.CHISON.Arbol
                                     object res = analizarImport(direccion);
                                     valor = (LinkedList<Columna>)analisis.analizar((ParseTreeNode)res);
 
-                                }else valor = (LinkedList<Columna>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
-                            }else if(token.Equals("ATTRS") && cql_type.Equals("OBJECT"))
+                                }
+                                else valor = (LinkedList<Columna>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
+                            }
+                            else if(token.Equals("ATTRS") && cql_type.Equals("OBJECT"))
                             {
                                 tipo = "ATTRS";
                                 AnalizarObject analisis = new AnalizarObject();
@@ -172,13 +186,13 @@ namespace cql_teacher_server.CHISON.Arbol
                                 valorTemp = valorTemp.TrimEnd();
                                 valor = (string)valorTemp;
                             }
-                            else if (tipo.Equals("Key symbol)"))
+                            else if (tipo.Equals("Keyword)"))
                             {
-                                tipo = "BOOLEAN";
                                 string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
                                 valorTemp = valorTemp.Replace("\"", string.Empty);
                                 valorTemp = valorTemp.TrimEnd();
                                 valorTemp = valorTemp.TrimStart();
+                                if (valorTemp.Equals("true") || valorTemp.Equals("false")) tipo = "BOOLEAN";
                                 valor = (string)valorTemp;
                             }
                             if (token.Equals("NAME"))
