@@ -71,11 +71,22 @@ namespace cql_teacher_server.CHISON.Gramatica
 
                     case "user":
 
-                        string usuarioActual = "";
                         if(raiz.ChildNodes.Count() == 5)
                         {
+                            string token1 = raiz.ChildNodes.ElementAt(3).ToString().Split(' ')[0].ToLower();
                             AnalizarUsuario analisis = new AnalizarUsuario();
-                            analisis.analizar(raiz.ChildNodes.ElementAt(3)); 
+                            if (token1.Equals("importar"))
+                            {
+                                
+                                string direccion = raiz.ChildNodes.ElementAt(3).ChildNodes.ElementAt(2).ToString().Split('(')[0];
+                                direccion = direccion.TrimEnd();
+                                direccion += ".chison";
+                                
+                                object res = analizarImport(direccion);
+                                if (res == null) System.Diagnostics.Debug.WriteLine("ES NULO ");
+
+                                if (res != null) analisis.analizar((ParseTreeNode)res);
+                            }else analisis.analizar(raiz.ChildNodes.ElementAt(3)); 
                         }
 
 
@@ -243,7 +254,7 @@ namespace cql_teacher_server.CHISON.Gramatica
                     if (arbol.ParserMessages.Count() < 1)
                     {
 
-                        return raiz;
+                        return raiz.ChildNodes.ElementAt(0);
 
                     }
 

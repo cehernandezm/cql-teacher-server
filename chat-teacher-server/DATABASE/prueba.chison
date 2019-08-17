@@ -1,4 +1,8 @@
 <
-                            "COLUMNA1" = "HOLA",
-                            "COLUMNA2" = "HOLA2"
-                        >   
+            "NAME" = "CARLOS",
+            "PASSWORD" = "1234"
+        >,
+        <
+            "NAME" = "CARLOS",
+            "PASSWORD" = "12345"
+        >
