@@ -1,7 +1,9 @@
 ﻿using cql_teacher_server.CHISON.Componentes;
+using cql_teacher_server.CHISON.Gramatica;
 using Irony.Parsing;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -64,13 +66,25 @@ namespace cql_teacher_server.CHISON.Arbol
                                 return null;
                             }
                         }
-                        else if (hijoT.ChildNodes.Count() == 3) //---------------------- [ TABLAS ] ------------------------------------------------------------------
+                        else if (hijoT.ChildNodes.Count() == 3) //---------------------- [ TABLAS/importar] ------------------------------------------------------------------
                         {
                             if (token.Equals("Data"))
                             {
+                                string token1 = hijoT.ChildNodes.ElementAt(1).ToString().Split(' ')[0].ToLower();
                                 tipo = "OBJETOS";
                                 AnalizarTablas analisis = new AnalizarTablas();
-                                valor = (LinkedList<Tabla>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
+                                if (token1.Equals("importar"))
+                                {
+                                    string direccion = hijoT.ChildNodes.ElementAt(1).ChildNodes.ElementAt(2).ToString().Split('(')[0];
+                                    direccion = direccion.TrimEnd();
+                                    direccion += ".chison";
+                                    object res = analizarImport(direccion);
+                                    if (res != null) valor = (LinkedList<Tabla>)analisis.analizar((ParseTreeNode)res);
+                                    else valor = new LinkedList<Tabla>();
+                                }
+                                else valor = (LinkedList<Tabla>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
+
+                                
                             }
                             else
                             {
@@ -79,6 +93,9 @@ namespace cql_teacher_server.CHISON.Arbol
                                     + raiz.ChildNodes.ElementAt(0).Token.Location.Column);
                                 return null;
                             }
+                        }else if(hijoT.ChildNodes.Count() == 8)
+                        {
+
                         }
                         else
                         {
@@ -152,5 +169,50 @@ namespace cql_teacher_server.CHISON.Arbol
             }
             return null;
         }
+
+
+
+
+        public object analizarImport(string direccion)
+        {
+            try
+            {
+                string text = System.IO.File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\DATABASE", direccion));
+
+                GramaticaChison gramatica = new GramaticaChison();
+                LanguageData lenguaje = new LanguageData(gramatica);
+                Parser parser = new Parser(lenguaje);
+                ParseTree arbol = parser.Parse(text);
+                ParseTreeNode raiz = arbol.Root;
+
+                if (arbol != null)
+                {
+                    for (int i = 0; i < arbol.ParserMessages.Count(); i++)
+                    {
+                        System.Diagnostics.Debug.WriteLine(arbol.ParserMessages.ElementAt(i).Message + " Linea: " + arbol.ParserMessages.ElementAt(i).Location.Line.ToString()
+                                  + " Columna: " + arbol.ParserMessages.ElementAt(i).Location.Column.ToString() + "\n");
+                    }
+
+                    if (arbol.ParserMessages.Count() < 1)
+                    {
+                        return raiz.ChildNodes.ElementAt(0);
+
+                    }
+
+                }
+                else return null;
+
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine("ERROR CHISON AnanalizarBase: " + e.Message);
+
+            }
+            return null;
+        }
+
+
+
+
     }
 }

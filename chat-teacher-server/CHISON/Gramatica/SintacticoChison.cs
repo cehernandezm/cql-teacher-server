@@ -3,6 +3,7 @@ using cql_teacher_server.CHISON.Componentes;
 using Irony.Parsing;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace cql_teacher_server.CHISON.Gramatica
@@ -68,7 +69,7 @@ namespace cql_teacher_server.CHISON.Gramatica
 
                     //------------------------------------- bases ----------------------------------------------------------------------
                     case "bases":
-                        ParseTreeNode hijo;
+                        ParseTreeNode hijo = null;
                         BaseDeDatos newBase;
                         string baseActual;
                         BaseDeDatos oldBase;
@@ -81,26 +82,31 @@ namespace cql_teacher_server.CHISON.Gramatica
                         }
                         else hijo = raiz.ChildNodes.ElementAt(0);
                         //---------------------------------------------------------- Almacenar la base de datos --------------------------------------------------
-                        AnalizarBase analisis = new AnalizarBase();
-                        lista = (LinkedList<Atributo>)analisis.analizar(hijo.ChildNodes.ElementAt(1));
-                        newBase = new BaseDeDatos(lista, "sin usar");
-                        baseActual = getNombre(lista);
-                        if (!baseActual.Equals("sinnombre"))
+                        if( hijo != null)
                         {
-                            oldBase = TablaBaseDeDatos.getBase(baseActual);
 
-                            if (oldBase == null) global.AddLast(newBase);
+                            AnalizarBase analisis = new AnalizarBase();
+                            lista = (LinkedList<Atributo>)analisis.analizar(hijo.ChildNodes.ElementAt(1));
+                            newBase = new BaseDeDatos(lista, "sin usar");
+                            baseActual = getNombre(lista);
+                            if (!baseActual.Equals("sinnombre"))
+                            {
+                                oldBase = TablaBaseDeDatos.getBase(baseActual);
+
+                                if (oldBase == null) global.AddLast(newBase);
+                                else
+                                {
+                                    System.Diagnostics.Debug.WriteLine("Error Semantico: Ya existe una base de datos con este nombre: " + baseActual + ", Linea: "
+                                     + hijo.ChildNodes.ElementAt(0).Token.Location.Line + " Columna : " + hijo.ChildNodes.ElementAt(0).Token.Location.Column);
+                                }
+                            }
                             else
                             {
-                                System.Diagnostics.Debug.WriteLine("Error Semantico: Ya existe una base de datos con este nombre: " + baseActual + ", Linea: "
+                                System.Diagnostics.Debug.WriteLine("Error Semantico: La base de datos necesita un nombre, Linea: "
                                  + hijo.ChildNodes.ElementAt(0).Token.Location.Line + " Columna : " + hijo.ChildNodes.ElementAt(0).Token.Location.Column);
                             }
                         }
-                        else
-                        {
-                            System.Diagnostics.Debug.WriteLine("Error Semantico: La base de datos necesita un nombre, Linea: "
-                             + hijo.ChildNodes.ElementAt(0).Token.Location.Line + " Columna : " + hijo.ChildNodes.ElementAt(0).Token.Location.Column);
-                        }
+                        
                         break;
                     
                 }
@@ -197,5 +203,46 @@ namespace cql_teacher_server.CHISON.Gramatica
             }
             return false;
         }
+
+
+        public object analizarImport(string direccion)
+        {
+            try
+            {
+                string text = System.IO.File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\DATABASE", direccion));
+
+                GramaticaChison gramatica = new GramaticaChison();
+                LanguageData lenguaje = new LanguageData(gramatica);
+                Parser parser = new Parser(lenguaje);
+                ParseTree arbol = parser.Parse(text);
+                ParseTreeNode raiz = arbol.Root;
+
+                if (arbol != null)
+                {
+                    for (int i = 0; i < arbol.ParserMessages.Count(); i++)
+                    {
+                        System.Diagnostics.Debug.WriteLine(arbol.ParserMessages.ElementAt(i).Message + " Linea: " + arbol.ParserMessages.ElementAt(i).Location.Line.ToString()
+                                  + " Columna: " + arbol.ParserMessages.ElementAt(i).Location.Column.ToString() + "\n");
+                    }
+
+                    if (arbol.ParserMessages.Count() < 1)
+                    {
+
+                        return raiz;
+
+                    }
+
+                }
+                else return null;
+
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine("ERROR CHISON SintacticoChison: " + e.Message);
+
+            }
+            return null;
+        }
+
     }
 }

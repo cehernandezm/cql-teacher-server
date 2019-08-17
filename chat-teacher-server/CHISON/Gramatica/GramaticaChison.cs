@@ -28,7 +28,10 @@ namespace cql_teacher_server.CHISON.Gramatica
             var MENOR = ToTerm("<");
             var MAYOR = ToTerm(">");
             var IGUAL = ToTerm("=");
+            var CHISON = ToTerm(".chison");
             var LLAVEIZQ = ToTerm("[");
+            var CORIZQ = ToTerm("{");
+            var CORDER = ToTerm("}");
             var LLAVEDER = ToTerm("]");
             var COMA = ToTerm(",");
             var DOLAR = ToTerm("$");
@@ -53,17 +56,20 @@ namespace cql_teacher_server.CHISON.Gramatica
 
             NonTerminal listaTablas = new NonTerminal("listaTablas");
             NonTerminal tabla = new NonTerminal("tabla");
-            
+
+            NonTerminal importar = new NonTerminal("importar");
+
             #endregion
 
             #region Gramatica
-            inicio.Rule = DOLAR + MENOR + instruccion_superior + MAYOR + DOLAR;
+            inicio.Rule = DOLAR + MENOR + instruccion_superior + MAYOR + DOLAR
+                        | listaTablas;
 
 
             instruccion_superior.Rule = database + COMA + user;
 
             database.Rule = DATABASES + IGUAL + LLAVEIZQ + LLAVEDER
-                          | DATABASES + IGUAL + LLAVEIZQ + bases + LLAVEDER ;
+                          | DATABASES + IGUAL + LLAVEIZQ + bases + LLAVEDER;
 
             bases.Rule = bases + COMA + baseU
                        | baseU;
@@ -88,6 +94,7 @@ namespace cql_teacher_server.CHISON.Gramatica
                       | OUT
                       | LLAVEIZQ + listaTablas + LLAVEDER
                       | LLAVEIZQ + LLAVEDER
+                      | LLAVEIZQ + importar + LLAVEDER
                       ;
 
             listaTablas.Rule = listaTablas + COMA + tabla
@@ -95,6 +102,9 @@ namespace cql_teacher_server.CHISON.Gramatica
                              ;
 
             tabla.Rule = MENOR + objetos + MAYOR;
+
+            importar.Rule = DOLAR + CORIZQ + ID + CHISON + CORDER + DOLAR;
+
             #endregion
 
             #region Preferencias

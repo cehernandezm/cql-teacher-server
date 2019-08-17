@@ -23,14 +23,7 @@ $<
 					"CQL-TYPE" = "OBJECT",
 					"NAME" = "ALUMNO",
 					"ATTRS" = [
-						<
-							"NAME" = "Nombre",
-							"TYPE" = "String"
-						>,
-						<
-							"NAME" = "Nombre2",
-							"TYPE" = "Int"
-						>
+						${prueba.chison}$
 					]
 				>,
 				<

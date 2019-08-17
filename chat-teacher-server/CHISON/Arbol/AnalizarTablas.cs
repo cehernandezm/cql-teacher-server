@@ -1,7 +1,9 @@
 ﻿using cql_teacher_server.CHISON.Componentes;
+using cql_teacher_server.CHISON.Gramatica;
 using Irony.Parsing;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -70,6 +72,7 @@ namespace cql_teacher_server.CHISON.Arbol
                         }
                         else if (hijoT.ChildNodes.Count() == 3) //---------------------- [ TABLAS ] ------------------------------------------------------------------
                         {
+                            string token1 = hijoT.ChildNodes.ElementAt(1).ToString().Split(' ')[0].ToLower();
                             if (token.Equals("DATA"))
                             {
                               
@@ -78,17 +81,44 @@ namespace cql_teacher_server.CHISON.Arbol
                             {
                                 tipo = "COLUMNS";
                                 AnalizarColumna analisis = new AnalizarColumna();
-                                valor = (LinkedList<Columna>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
+                                if (token1.Equals("importar"))
+                                {
+                                    string direccion = hijoT.ChildNodes.ElementAt(1).ChildNodes.ElementAt(2).ToString().Split('(')[0];
+                                    direccion = direccion.TrimEnd();
+                                    direccion += ".chison";
+                                    object res = analizarImport(direccion);
+                                    valor = (LinkedList<Columna>)analisis.analizar((ParseTreeNode)res);
+
+                                }else valor = (LinkedList<Columna>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
                             }else if(token.Equals("ATTRS") && cql_type.Equals("OBJECT"))
                             {
                                 tipo = "ATTRS";
                                 AnalizarObject analisis = new AnalizarObject();
-                                valor = (LinkedList<Columna>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
-                            }else if(token.Equals("PARAMETERS") && cql_type.Equals("PROCEDURE"))
+                                if (token1.Equals("importar"))
+                                {
+                                    string direccion = hijoT.ChildNodes.ElementAt(1).ChildNodes.ElementAt(2).ToString().Split('(')[0];
+                                    direccion = direccion.TrimEnd();
+                                    direccion += ".chison";
+                                    object res = analizarImport(direccion);
+                                    valor = (LinkedList<Columna>)analisis.analizar((ParseTreeNode)res);
+
+                                }
+                                else valor = (LinkedList<Columna>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
+                            }
+                            else if(token.Equals("PARAMETERS") && cql_type.Equals("PROCEDURE"))
                             {
                                 tipo = "PARAMETERS";
                                 AnalizarProcedure analisis = new AnalizarProcedure();
-                                valor = (LinkedList<Columna>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
+                                if (token1.Equals("importar"))
+                                {
+                                    string direccion = hijoT.ChildNodes.ElementAt(1).ChildNodes.ElementAt(2).ToString().Split('(')[0];
+                                    direccion = direccion.TrimEnd();
+                                    direccion += ".chison";
+                                    object res = analizarImport(direccion);
+                                    valor = (LinkedList<Columna>)analisis.analizar((ParseTreeNode)res);
+
+                                }
+                                else valor = (LinkedList<Columna>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
                             }
                             else
                             {
@@ -246,6 +276,51 @@ namespace cql_teacher_server.CHISON.Arbol
         }
         return false;
     }
+
+
+
+
+    public object analizarImport(string direccion)
+        {
+            try
+            {
+                string text = System.IO.File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\DATABASE", direccion));
+
+                GramaticaChison gramatica = new GramaticaChison();
+                LanguageData lenguaje = new LanguageData(gramatica);
+                Parser parser = new Parser(lenguaje);
+                ParseTree arbol = parser.Parse(text);
+                ParseTreeNode raiz = arbol.Root;
+
+                if (arbol != null)
+                {
+                    for (int i = 0; i < arbol.ParserMessages.Count(); i++)
+                    {
+                        System.Diagnostics.Debug.WriteLine(arbol.ParserMessages.ElementAt(i).Message + " Linea: " + arbol.ParserMessages.ElementAt(i).Location.Line.ToString()
+                                  + " Columna: " + arbol.ParserMessages.ElementAt(i).Location.Column.ToString() + "\n");
+                    }
+
+                    if (arbol.ParserMessages.Count() < 1)
+                    {
+
+                        return raiz.ChildNodes.ElementAt(0);
+
+                    }
+
+                }
+                else return null;
+
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine("ERROR CHISON AnalizarTablas: " + e.Message);
+
+            }
+            return null;
+        }
+
+
+
 
     }
 }
