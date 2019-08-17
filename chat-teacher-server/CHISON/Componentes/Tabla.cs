@@ -10,6 +10,8 @@ namespace cql_teacher_server.CHISON.Componentes
         public string nombre { set; get; }
         public LinkedList<Columna> columnas{set;get;}
 
+        public LinkedList<Data> datos { set; get; }
+
         public LinkedList<Atributo> atributos { set; get; }
 
         public Tabla(LinkedList<Atributo> atributo)
@@ -17,11 +19,11 @@ namespace cql_teacher_server.CHISON.Componentes
             this.atributos = atributo;
         }
 
-        public Tabla(string nombre, LinkedList<Columna> columnas)
+        public Tabla(string nombre, LinkedList<Columna> columnas, LinkedList<Data> datos)
         {
             this.nombre = nombre;
             this.columnas = columnas;
+            this.datos = datos;
         }
-
     }
 }

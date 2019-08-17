@@ -17,17 +17,16 @@ $<
 							"TYPE" = "String",
 							"PK" = TRUE
 						>
+					],
+					"DATA" = [
+						<
+							"ID" = "HOLA",
+							"ID2" = "HOLA2"
+						>
 					]
-				>,
-				<
-					"NAME" = "TABLA2B2",
-					"CQL-TYPE" = "TABLA"
 				>
 			]
 			
-		>,
-		<
-			"NAME" = "BASE2"
 		>
 	],
 	"USERS" = [

@@ -136,12 +136,12 @@ namespace cql_teacher_server.CHISON.Arbol
                     //-------------------------------------------------------------- analizar las tablas ---------------------------------------------------------
                     case "listatablas":
 
-                        LinkedList<Columna> listaTablas = new LinkedList<Columna>();
-                        LinkedList<Atributo> listaAtri = new LinkedList<Atributo>();
+                        LinkedList<Atributo> listaTablas = new LinkedList<Atributo>();
+                        LinkedList<Data> listaData = new LinkedList<Data>();
                         ParseTreeNode hijoTa;
                         if (raiz.ChildNodes.Count() == 3)
                         {
-                            listaTablas = (LinkedList<Columna>)analizar(raiz.ChildNodes.ElementAt(0));
+                            listaData = (LinkedList<Data>)analizar(raiz.ChildNodes.ElementAt(0));
 
                             hijoTa = raiz.ChildNodes.ElementAt(2);
                         }
@@ -150,16 +150,23 @@ namespace cql_teacher_server.CHISON.Arbol
                         int linea = hijoTa.ChildNodes.ElementAt(0).Token.Location.Line;
                         int columna = hijoTa.ChildNodes.ElementAt(0).Token.Location.Column;
 
-                        listaAtri = (LinkedList<Atributo>)analizar(hijoTa.ChildNodes.ElementAt(1));
-                        Columna co = new Columna(listaAtri);
-                        listaTablas.AddLast(co);
-                        return listaTablas;
+                        listaTablas  = (LinkedList<Atributo>)analizar(hijoTa.ChildNodes.ElementAt(1));
+                        Data newData = new Data(listaTablas);
+                        listaData.AddLast(newData);
+                        return listaData;
 
                         break;
                 }
             }
             return null;
         }
+
+
+
+
+
+
+
 
     }
 }

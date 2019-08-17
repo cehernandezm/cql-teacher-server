@@ -83,7 +83,6 @@ namespace cql_teacher_server.CHISON.Gramatica
                                 direccion += ".chison";
                                 
                                 object res = analizarImport(direccion);
-                                if (res == null) System.Diagnostics.Debug.WriteLine("ES NULO ");
 
                                 if (res != null) analisis.analizar((ParseTreeNode)res);
                             }else analisis.analizar(raiz.ChildNodes.ElementAt(3)); 

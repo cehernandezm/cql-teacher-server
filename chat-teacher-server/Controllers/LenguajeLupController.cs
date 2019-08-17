@@ -45,9 +45,10 @@ namespace cql_teacher_server.Controllers
                 foreach (Tabla tb in bd.listaTablas)
                 {
                     salida += "\n\t\t\t{";
-                    salida += "\n\t\t\t\t\"NAME\": \"" + tb.nombre + "\",";
-                    salida += "\n\t\t\t\t\"COLUMNAS\": [";
 
+                    salida += "\n\t\t\t\t\"NAME\": \"" + tb.nombre + "\",";
+
+                    salida += "\n\t\t\t\t\"COLUMNAS\": [";
                     foreach (Columna co in tb.columnas)
                     {
                         salida += "\n\t\t\t\t\t{";
@@ -56,8 +57,22 @@ namespace cql_teacher_server.Controllers
                         salida += "\n\t\t\t\t\t\t \"FK\" : \"" + co.pk + "\",";
                         salida += "\n\t\t\t\t\t},";
                     }
+                    salida += "\n\t\t\t\t],";
 
+                    salida += "\n\t\t\t\t\"INFO\" : [";
+                    foreach (Data da in tb.datos)
+                    {
+                        foreach(Atributo a in da.valores)
+                        {
+                            salida += "\n\t\t\t\t\t{";
+                            salida += "\n\t\t\t\t\t\t \"COLUMNA\" : \"" + a.nombre + "\",";
+                            salida += "\n\t\t\t\t\t\t \"VALOR\" : \"" + a.valor + "\",";
+                            salida += "\n\t\t\t\t\t},";
+                        }
+                        
+                    }
                     salida += "\n\t\t\t\t]";
+
                     salida += "\n\t\t\t},";
                 }
                 salida += "\n\t},";

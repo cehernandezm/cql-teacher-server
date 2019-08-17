@@ -55,7 +55,7 @@ namespace cql_teacher_server.CHISON.Arbol
                         {
                             if (token.Equals("DATA"))
                             {
-                                valor = new LinkedList<Columna>();
+                                valor = new LinkedList<Data>();
                             }
                             else if (token.Equals("COLUMNS") && cql_type.Equals("TABLE"))
                             {
@@ -75,6 +75,7 @@ namespace cql_teacher_server.CHISON.Arbol
                             string token1 = hijoT.ChildNodes.ElementAt(1).ToString().Split(' ')[0].ToLower();
                             if (token.Equals("DATA"))
                             {
+                                System.Diagnostics.Debug.WriteLine("Entro aqui");
                                 AnalizarData analisis = new AnalizarData();
                                 tipo = "DATA";
                                 if (token1.Equals("importar"))
@@ -83,10 +84,10 @@ namespace cql_teacher_server.CHISON.Arbol
                                     direccion = direccion.TrimEnd();
                                     direccion += ".chison";
                                     object res = analizarImport(direccion);
-                                    valor = (LinkedList<Columna>)analisis.analizar((ParseTreeNode)res);
+                                    valor = (LinkedList<Data>)analisis.analizar((ParseTreeNode)res);
 
                                 }
-                                else valor = (LinkedList<Columna>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
+                                else valor = (LinkedList<Data>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
 
                             }
                             else if (token.Equals("COLUMNS") && cql_type.Equals("TABLE"))
@@ -237,11 +238,21 @@ namespace cql_teacher_server.CHISON.Arbol
                         if (buscarAtributo(listaAtri, "NAME") && buscarAtributo(listaAtri, "CQL-TYPE"))
                         {
                             string nombre = (String)valorAtributo(listaAtri, "NAME");
+
                             Boolean existe = buscarTabla(listaTablas, nombre);
+
                             object cols = valorAtributo(listaAtri, "COLUMNS");
                             LinkedList<Columna> listaCol = new LinkedList<Columna>();
                             if (cols != null) listaCol = (LinkedList<Columna>)cols;
-                            Tabla t = new Tabla(nombre,listaCol);
+
+                            object inf = valorAtributo(listaAtri, "DATA");
+                            LinkedList<Data> listainfo = new LinkedList<Data>();
+                            if (inf != null) listainfo = (LinkedList<Data>)inf;
+
+
+                            Tabla t = new Tabla(nombre,listaCol,listainfo);
+
+
                             if (!existe) listaTablas.AddLast(t);
                             else System.Diagnostics.Debug.WriteLine("Error semantico ya existe una tabla con este nombre: " + nombre + ", Linea: "
                                     + linea + " Columna: " + columna);
