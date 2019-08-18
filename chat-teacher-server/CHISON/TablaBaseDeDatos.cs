@@ -51,11 +51,8 @@ namespace cql_teacher_server.CHISON
         {
             foreach(Usuario us in listaUsuario)
             {
- 
-               foreach(Atributo a in us.atributos)
-               {
-                   if (a.nombre.Equals("NAME") && a.valor.Equals(nombre)) return us;
-               }
+
+                if (us.nombre == nombre) return us;
             }
             return null;
         }

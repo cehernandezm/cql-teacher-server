@@ -52,5 +52,21 @@ $<
 		>
 	],
 	"USERS" = [
+		<
+			"NAME" = "USUARIO1",
+			"PASSWORD" ="12345",
+			"PERMISSIONS" = [
+				<
+					"NAME" = "BASE1"
+				>,
+				<
+					"NAME" = "BASE1"
+				>
+			]
+		>,
+		<
+			"NAME" = "USUARIO2",
+			"PASSWORD" ="12345"
+		>
 	]
 >$

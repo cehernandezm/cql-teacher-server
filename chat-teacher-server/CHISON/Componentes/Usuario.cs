@@ -7,12 +7,18 @@ namespace cql_teacher_server.CHISON.Componentes
 {
     public class Usuario
     {
-        public LinkedList<Atributo> atributos { set; get; }
+        public string nombre { set; get; }
+        public string password { set; get; }
 
-        public Usuario(LinkedList<Atributo> atributos)
+        public LinkedList<String> bases { set; get; }
+
+        public Usuario(string nombre, string password, LinkedList<string> bases)
         {
-            this.atributos = atributos;
+            this.nombre = nombre;
+            this.password = password;
+            this.bases = bases;
         }
+
 
         
     }

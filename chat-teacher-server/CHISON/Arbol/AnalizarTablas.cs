@@ -121,7 +121,6 @@ namespace cql_teacher_server.CHISON.Arbol
                             }
                             else if(token.Equals("PARAMETERS") && cql_type.Equals("PROCEDURE"))
                             {
-                                System.Diagnostics.Debug.WriteLine("Entro aqui");
 
                                 tipo = "PARAMETERS";
                                 AnalizarProcedure analisis = new AnalizarProcedure();

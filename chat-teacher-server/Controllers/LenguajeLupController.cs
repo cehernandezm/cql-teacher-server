@@ -125,8 +125,25 @@ namespace cql_teacher_server.Controllers
                 }
                 salida += "\n\t},";
             }
+
             salida += "\n],";
 
+            salida += "\n\"USUARIOS\" : [";
+            foreach(Usuario us in TablaBaseDeDatos.listaUsuario)
+            {
+                salida += "\n\t{";
+                salida += "\n\t\t \"NAME\" : \"" + us.nombre + "\",";
+                salida += "\n\t\t \"PASSWORD\" : \"" + us.password + "\",";
+                salida += "\n\t\t \"PERMISSIONS\" : [";
+                foreach(string dbname in us.bases)
+                {
+                    salida += "\n\t\t\t{";
+                    salida += "\n\t\t\t\t\"NAME\" : \"" + dbname + "\",";
+                    salida += "\n\t\t\t},";
+                }
+                salida += "\n\t\t ]";
+            }
+            salida += "\n],";
 
             return salida;
         }
