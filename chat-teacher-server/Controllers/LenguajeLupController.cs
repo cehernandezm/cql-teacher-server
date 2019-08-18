@@ -158,9 +158,12 @@ namespace cql_teacher_server.Controllers
 
         // POST: api/LenguajeLup
         [HttpPost]
-        public void Post(LenguajeLup codigo)
+        public IEnumerable<string> Post(LenguajeLup codigo)
         {
-            
+            SintacticoLUP sintactico = new SintacticoLUP();
+            object res = sintactico.analizar(codigo.codigo);
+            if (res != null) return new string[] { res.ToString() };
+            else return new string[] { "Hubo un error" };
         }
 
         // PUT: api/LenguajeLup/5
