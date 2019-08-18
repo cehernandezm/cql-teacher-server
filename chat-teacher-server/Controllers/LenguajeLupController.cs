@@ -63,14 +63,22 @@ namespace cql_teacher_server.Controllers
                     salida += "\n\t\t\t\t\"INFO\" : [";
                     foreach (Data da in tb.datos)
                     {
-                        foreach(Atributo a in da.valores)
+                        salida += "\n\t\t\t\t\t{";
+                        foreach (Atributo a in da.valores)
                         {
-                            salida += "\n\t\t\t\t\t{";
                             salida += "\n\t\t\t\t\t\t \"COLUMNA\" : \"" + a.nombre + "\",";
-                            salida += "\n\t\t\t\t\t\t \"VALOR\" : \"" + a.valor + "\",";
-                            salida += "\n\t\t\t\t\t},";
+                            
+                            if (a.valor.GetType() == typeof(LinkedList<object>))
+                            {
+                                salida += "\n\t\t\t\t\t\t \"VALOR\" : [ " + getElementos((LinkedList<object>)a.valor) + "],";
+                            }
+                            else salida += "\n\t\t\t\t\t\t \"VALOR\" : \"" + a.valor + "\",";
+
+
+
                         }
-                        
+                        salida += "\n\t\t\t\t\t},";
+
                     }
                     salida += "\n\t\t\t\t]";
 
@@ -166,6 +174,18 @@ namespace cql_teacher_server.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+        }
+
+
+        public string getElementos(LinkedList<object> lista)
+        {
+            string cadena = "";
+                foreach(object o in lista)
+            {
+                if (o.GetType() == typeof(LinkedList<object>)) cadena += "[ " + getElementos((LinkedList<object>)o) + "],";
+                else cadena += o.ToString() + ",";
+            }
+            return cadena;
         }
     }
 }

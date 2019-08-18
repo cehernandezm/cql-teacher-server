@@ -20,126 +20,126 @@
 >,
 <
   "ID" = 5,
-  "Name" = "Jean Thomas",
+  "Nombre" = "Jean Thomas",
   "Edad" = 18
 >,
 <
   "ID" = 6,
-  "Name" = "Cynthia Stewart",
+  "Nombre" = "Cynthia Stewart",
   "Edad" = 14
 >,
 <
   "ID" = 7,
-  "Name" = "Steven Foster",
+  "Nombre" = "Steven Foster",
   "Edad" = 17
 >,
 <
   "ID" = 8,
-  "Name" = "Nancy Robinson",
+  "Nombre" = "Nancy Robinson",
   "Edad" = 49
 >,
 <
   "ID" = 9,
-  "Name" = "James Hernandez",
+  "Nombre" = "James Hernandez",
   "Edad" = 58
 >,
 <
   "ID" = 10,
-  "Name" = "Julie Alexander",
+  "Nombre" = "Julie Alexander",
   "Edad" = 22
 >,
 <
   "ID" = 11,
-  "Name" = "Terry Lewis",
+  "Nombre" = "Terry Lewis",
   "Edad" = 28
 >,
 <
   "ID" = 12,
-  "Name" = "Brian Barnes",
+  "Nombre" = "Brian Barnes",
   "Edad" = 13
 >,
 <
   "ID" = 13,
-  "Name" = "Kathy Morris",
+  "Nombre" = "Kathy Morris",
   "Edad" = 14
 >,
 <
   "ID" = 14,
-  "Name" = "Clarence Rivera",
+  "Nombre" = "Clarence Rivera",
   "Edad" = 44
 >,
 <
   "ID" = 15,
-  "Name" = "Jose Kelly",
+  "Nombre" = "Jose Kelly",
   "Edad" = 22
 >,
 <
   "ID" = 16,
-  "Name" = "Louis Bennett",
+  "Nombre" = "Louis Bennett",
   "Edad" = 55
 >,
 <
   "ID" = 17,
-  "Name" = "Michael Gray",
+  "Nombre" = "Michael Gray",
   "Edad" = 56
 >,
 <
   "ID" = 18,
-  "Name" = "Randy Wilson",
+  "Nombre" = "Randy Wilson",
   "Edad" = 10
 >,
 <
   "ID" = 19,
-  "Name" = "Gary Griffin",
+  "Nombre" = "Gary Griffin",
   "Edad" = 15
 >,
 <
   "ID" = 20,
-  "Name" = "Joseph Torres",
+  "Nombre" = "Joseph Torres",
   "Edad" = 55
 >,
 <
   "ID" = 21,
-  "Name" = "Eric Perez",
+  "Nombre" = "Eric Perez",
   "Edad" = 45
 >,
 <
   "ID" = 22,
-  "Name" = "Joe Turner",
+  "Nombre" = "Joe Turner",
   "Edad" = 33
 >,
 <
   "ID" = 23,
-  "Name" = "Sharon Flores",
+  "Nombre" = "Sharon Flores",
   "Edad" = 41
 >,
 <
   "ID" = 24,
-  "Name" = "Phillip Wright",
+  "Nombre" = "Phillip Wright",
   "Edad" = 19
 >,
 <
   "ID" = 25,
-  "Name" = "Arthur Baker",
+  "Nombre" = "Arthur Baker",
   "Edad" = 55
 >,
 <
   "ID" = 26,
-  "Name" = "Helen Carter",
+  "Nombre" = "Helen Carter",
   "Edad" = 46
 >,
 <
   "ID" = 27,
-  "Name" = "Betty Jones",
+  "Nombre" = "Betty Jones",
   "Edad" = 51
 >,
 <
   "ID" = 28,
-  "Name" = "Sandra Miller",
+  "Nombre" = "Sandra Miller",
   "Edad" = 55
 >,
 <
   "ID" = 29,
-  "Name" = "Steve Long",
+  "Nombre" = "Steve Long",
   "Edad" = 29
 >

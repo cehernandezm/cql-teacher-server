@@ -1,5 +1,4 @@
-﻿using cql_teacher_server.CHISON.Componentes;
-using Irony.Parsing;
+﻿using Irony.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace cql_teacher_server.CHISON.Arbol
 {
-    public class AnalizarData
+    public class analizarLista
     {
-
         public object analizar(ParseTreeNode raiz)
         {
             if (raiz != null)
@@ -18,28 +16,9 @@ namespace cql_teacher_server.CHISON.Arbol
                 switch (etiqueta)
                 {
 
-                    //-------------------------------------- objetos -------------------------------------------------------------------
-                    case "objetos":
-                        //-------------------------- objetos , objeto -----------------------------------------------------------------
-                        if (raiz.ChildNodes.Count() == 3)
-                        {
-                            LinkedList<Atributo> listaA = (LinkedList<Atributo>)analizar(raiz.ChildNodes.ElementAt(0));
-                            Atributo aa = (Atributo)analizar(raiz.ChildNodes.ElementAt(2));
-                            if (aa != null) listaA.AddLast(aa);
-                            return listaA;
-                        }
-                        else if (raiz.ChildNodes.Count() == 1)
-                        {
-                            //---------------------------- objeto -----------------------------------------------------------------------
-                            LinkedList<Atributo> listaA = new LinkedList<Atributo>();
-                            Atributo aa = (Atributo)analizar(raiz.ChildNodes.ElementAt(0));
-                            if (aa != null) listaA.AddLast(aa);
-                            return listaA;
-                        }
-                        break;
-
-                    //------------------------------------ OBJETO -----------------------------------------------------------------------
-                    case "objeto":
+                   
+                    //------------------------------------ Tipo -----------------------------------------------------------------------
+                    case "tipo":
 
 
                         string token = raiz.ChildNodes.ElementAt(0).ToString().Split("(")[0];
@@ -47,31 +26,27 @@ namespace cql_teacher_server.CHISON.Arbol
 
                         Object valor = null;
                         string tipo = "";
-                        ParseTreeNode hijoT = raiz.ChildNodes.ElementAt(2);
-                        if (hijoT.ChildNodes.Count() == 2)
+                        if (raiz.ChildNodes.Count() == 2)
                         {
                             tipo = "LISTA";
                             valor = new LinkedList<object>();
                         }
-                        else if (hijoT.ChildNodes.Count() == 3) {
-                            analizarLista analisis = new analizarLista();
+                        else if (raiz.ChildNodes.Count() == 3)
+                        {
+                            string token1 = raiz.ChildNodes.ElementAt(1).ToString().Split(' ')[0].ToLower();
                             tipo = "LISTA";
-                            string token1 = hijoT.ChildNodes.ElementAt(1).ToString().Split(' ')[0].ToLower();
-                            if (token1.Equals("listaelements"))
-                            {
-                                valor = (LinkedList<object>) analisis.analizar(hijoT.ChildNodes.ElementAt(1));
-                            }
+                            if (token1.Equals("listaelements")) valor = (LinkedList<object>)analizar(raiz.ChildNodes.ElementAt(1));
                             else valor = new LinkedList<object>();
                         }
                         else
                         {
 
-                            tipo = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[1];
+                            tipo = raiz.ChildNodes.ElementAt(0).ToString().Split("(")[1];
 
                             if (tipo.Equals("hora)"))
                             {
                                 tipo = "HORA";
-                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
+                                string valorTemp = raiz.ChildNodes.ElementAt(0).ToString().Split("(")[0];
                                 valorTemp = valorTemp.Replace("\'", string.Empty);
                                 valorTemp = valorTemp.TrimEnd();
                                 valorTemp = valorTemp.TrimStart();
@@ -80,7 +55,7 @@ namespace cql_teacher_server.CHISON.Arbol
                             else if (tipo.Equals("fecha)"))
                             {
                                 tipo = "FECHA";
-                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
+                                string valorTemp = raiz.ChildNodes.ElementAt(0).ToString().Split("(")[0];
                                 valorTemp = valorTemp.Replace("\'", string.Empty);
                                 valorTemp = valorTemp.TrimEnd();
                                 valorTemp = valorTemp.TrimStart();
@@ -89,27 +64,27 @@ namespace cql_teacher_server.CHISON.Arbol
                             else if (tipo.Equals("cadena)"))
                             {
                                 tipo = "CADENA";
-                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
+                                string valorTemp = raiz.ChildNodes.ElementAt(0).ToString().Split("(")[0];
                                 valorTemp = valorTemp.TrimEnd();
                                 valor = (string)valorTemp;
                             }
                             else if (tipo.Equals("entero)"))
                             {
                                 tipo = "ENTERO";
-                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
+                                string valorTemp = raiz.ChildNodes.ElementAt(0).ToString().Split("(")[0];
                                 valorTemp = valorTemp.TrimEnd();
                                 valor = (string)valorTemp;
                             }
                             else if (tipo.Equals("decimal)"))
                             {
                                 tipo = "DECIMAL";
-                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
+                                string valorTemp = raiz.ChildNodes.ElementAt(0).ToString().Split("(")[0];
                                 valorTemp = valorTemp.TrimEnd();
                                 valor = (string)valorTemp;
                             }
                             else if (tipo.Equals("Keyword)"))
                             {
-                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
+                                string valorTemp = raiz.ChildNodes.ElementAt(0).ToString().Split("(")[0];
                                 valorTemp = valorTemp.Replace("\"", string.Empty);
                                 valorTemp = valorTemp.TrimEnd();
                                 valorTemp = valorTemp.TrimStart();
@@ -121,8 +96,8 @@ namespace cql_teacher_server.CHISON.Arbol
                                 if (!tipo.Equals("CADENA"))
                                 {
                                     System.Diagnostics.Debug.WriteLine("ERROR NAME SOLO ACEPTA UN VALOR CADENA NO SE ESPERABA "
-                                        + valor + " , Linea : " + hijoT.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
-                                        + hijoT.ChildNodes.ElementAt(0).Token.Location.Column);
+                                        + valor + " , Linea : " + raiz.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
+                                        + raiz.ChildNodes.ElementAt(0).Token.Location.Column);
                                     return null;
                                 }
 
@@ -135,14 +110,12 @@ namespace cql_teacher_server.CHISON.Arbol
 
 
                     //-------------------------------------------------------------- analizar las tablas ---------------------------------------------------------
-                    case "listatablas":
-
-                        LinkedList<Atributo> listaTablas = new LinkedList<Atributo>();
-                        LinkedList<Data> listaData = new LinkedList<Data>();
+                    case "listaelements":
+                        LinkedList<object> listaTablas = new LinkedList<object>();
                         ParseTreeNode hijoTa;
                         if (raiz.ChildNodes.Count() == 3)
                         {
-                            listaData = (LinkedList<Data>)analizar(raiz.ChildNodes.ElementAt(0));
+                            listaTablas = (LinkedList<object>)analizar(raiz.ChildNodes.ElementAt(0));
 
                             hijoTa = raiz.ChildNodes.ElementAt(2);
                         }
@@ -150,24 +123,14 @@ namespace cql_teacher_server.CHISON.Arbol
 
                         int linea = hijoTa.ChildNodes.ElementAt(0).Token.Location.Line;
                         int columna = hijoTa.ChildNodes.ElementAt(0).Token.Location.Column;
-
-                        listaTablas  = (LinkedList<Atributo>)analizar(hijoTa.ChildNodes.ElementAt(1));
-                        Data newData = new Data(listaTablas);
-                        listaData.AddLast(newData);
-                        return listaData;
+                        Atributo temp = (Atributo)analizar(hijoTa);
+                        if (temp != null) listaTablas.AddLast(temp.valor);
+                        return listaTablas;
 
                         break;
                 }
             }
             return null;
         }
-
-
-
-
-
-
-
-
     }
 }

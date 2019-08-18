@@ -24,7 +24,7 @@ $<
                         >
                     ],
                     "DATA" = [
-                        ${ estudiantes.chison }$
+					${ estudiantes.chison }$
                     ]  
                 >,
                 <
@@ -85,7 +85,7 @@ $<
                         >
                     ],
                     "DATA" = [
-                        ${ jeansData.chison }$    
+                      ${ jeansData.chison }$    
                     ]  
                 >,
                 <
@@ -108,19 +108,19 @@ $<
                             "AS"   = OUT
                         >
                     ],
-                    "INSTR" = "s"
+                    "INSTR" = ""
                 >
             ]
         >,    
         <
-            "NAME"= "Database2",
-            "Data"= [
-                ${ bd2data.chison }$
-            ]
+        "NAME"= "Database2",
+        "Data"= [
+            ${ bd2data.chison }$
+        ]
         >,
         <
-            "NAME"= "Database3",
-            "Data"= []
+        "NAME"= "Database3",
+        "Data"= []
         >
     ],
     "USERS"= [
@@ -129,10 +129,10 @@ $<
             "PASSWORD"= "1234",
             "PERMISSIONS"= [
                 <
-                    "NAME" = "Database1"
+                    "NAME"= "Database1"
                 >,
                 <
-                    "NAME" = "Database2"
+                    "NAME"="Database2"
                 >
             ]
         >,

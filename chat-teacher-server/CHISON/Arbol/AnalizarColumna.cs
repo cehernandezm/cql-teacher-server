@@ -50,7 +50,6 @@ namespace cql_teacher_server.CHISON.Arbol
                         ParseTreeNode hijoT = raiz.ChildNodes.ElementAt(2);
                         if (hijoT.ChildNodes.Count() == 2) // -------------------------------------------- [ ] -------------------------------------------------------
                         {
-
                             valor = new LinkedList<Columna>();
                            
                         }
