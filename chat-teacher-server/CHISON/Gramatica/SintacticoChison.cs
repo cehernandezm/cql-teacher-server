@@ -25,7 +25,7 @@ namespace cql_teacher_server.CHISON.Gramatica
                 for(int i = 0; i < arbol.ParserMessages.Count(); i++)
                 {
                     System.Diagnostics.Debug.WriteLine(arbol.ParserMessages.ElementAt(i).Message + " Linea: " + arbol.ParserMessages.ElementAt(i).Location.Line.ToString()
-                              + " Columna: " + arbol.ParserMessages.ElementAt(i).Location.Column.ToString() + "\n");
+                              + " Columna: " + arbol.ParserMessages.ElementAt(i).Location.Column.ToString() + " Archivo: Principal \n");
                 }
 
                 if(arbol.ParserMessages.Count() < 1)

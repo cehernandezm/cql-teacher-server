@@ -48,20 +48,8 @@ namespace cql_teacher_server.CHISON.Arbol
                         Object valor = null;
                         string tipo = "";
                         ParseTreeNode hijoT = raiz.ChildNodes.ElementAt(2);
-                        if (hijoT.ChildNodes.Count() == 2) // -------------------------------------------- [ ] -------------------------------------------------------
-                        {
-                            System.Diagnostics.Debug.WriteLine("Error Semantico: No se le puede asignar una lista al atributo: "
-                                    + token + ", Linea: " + raiz.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
-                                    + raiz.ChildNodes.ElementAt(0).Token.Location.Column);
-                            return null;
-                        }
-                        else if (hijoT.ChildNodes.Count() == 3) //---------------------- [ TABLAS ] ------------------------------------------------------------------
-                        {
-                            System.Diagnostics.Debug.WriteLine("Error Semantico: No se le puede asignar una lista al atributo: "
-                                    + token + ", Linea: " + raiz.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
-                                    + raiz.ChildNodes.ElementAt(0).Token.Location.Column);
-                            return null;
-                        }
+                        if (hijoT.ChildNodes.Count() == 2) valor = "";
+                        else if (hijoT.ChildNodes.Count() == 3)  valor = "";
                         else
                         {
 

@@ -1,72 +1,145 @@
 $<
-	"DATABASES" = [ 
-		<
-			"NAME"="BASE1",
-			"Data" = [
-				<
-					"NAME" = "TABLA1B1",
-					"CQL-TYPE" = "TABLE",
-					"COLUMNS" = [
-						<
-							"NAME" = "ID",
-							"TYPE" = "Counter",
-							"PK" = TRUE
-						>,
-						<
-							"NAME" = "ID2",
-							"TYPE" = "String",
-							"PK" = TRUE
-						>
-					],
-					"DATA" = [
-						<
-							"ID" = "HOLA",
-							"ID2" = "HOLA2"
-						>
-					]
-				>,
-				<
-					"CQL-TYPE" = "OBJECT",
-					"NAME" = "USERTYPE1",
-					"ATTRS" = [
-						<
-							"NAME" = "TYPE1",
-							"TYPE" = "STRING"
-						>
-					]
-				>,
-				<
-					"CQL-TYPE" = "PROCEDURE",
-					"NAME" = "Procedure1",
-					"INSTR" = "SELECT * FROM TU CULO",
-					"PARAMETERS" = [
-						<
-							"NAME" = "nombre",
-							"TYPE" = "String",
-							"AS" = IN
-						>
-					]
-				>
-			]
-			
-		>
-	],
-	"USERS" = [
-		<
-			"NAME" = "USUARIO1",
-			"PASSWORD" ="12345",
-			"PERMISSIONS" = [
-				<
-					"NAME" = "BASE1"
-				>,
-				<
-					"NAME" = "BASE1"
-				>
-			]
-		>,
-		<
-			"NAME" = "USUARIO2",
-			"PASSWORD" ="12345"
-		>
-	]
+    "DATABASES"= [
+        <
+            "NAME"= "Database1",
+            "Data"= [
+                <
+                    "CQL-TYPE" = "TABLE",
+                    "NAME"= "Estudiante",
+                    "COLUMNS" = [
+                        <
+                            "NAME" = "ID",
+                            "TYPE" = "Counter",
+                            "PK" = TRUE      
+                        >,
+                        <
+                            "NAME" = "Nombre",
+                            "TYPE" = "String",
+                            "PK" = FALSE      
+                        >,
+                        <
+                            "NAME" = "Edad",
+                            "TYPE" = "Int",
+                            "PK" = FALSE      
+                        >
+                    ],
+                    "DATA" = [
+                        ${ estudiantes.chison }$
+                    ]  
+                >,
+                <
+                    "CQL-TYPE" = "OBJECT",
+                    "NAME" = "Persona",
+                    "ATTRS" = [
+                        < 
+                            "NAME" = "CUI",
+                            "TYPE" = "Double" 
+                        >,
+                        < 
+                            "NAME" = "Nombre",
+                            "TYPE" = "String" 
+                        >
+                    ]
+                >,
+                <
+                    "CQL-TYPE" = "OBJECT",
+                    "NAME" = "Automovil",
+                    "ATTRS" = [
+                        < 
+                            "NAME" = "Marca",
+                            "TYPE" = "String" 
+                        >,
+                        < 
+                            "NAME" = "Fecha_Compra",
+                            "TYPE" = "Date" 
+                        >,
+                        < 
+                            "NAME" = "Kilometraje",
+                            "TYPE" = "Double" 
+                        >,
+                        < 
+                            "NAME" = "Propietario",
+                            "TYPE" = "Persona" 
+                        >
+
+                    ]
+                >,
+                <
+                    "CQL-TYPE" = "TABLE",
+                    "NAME"= "Jeans",
+                    "COLUMNS" = [
+                        <
+                            "NAME" = "ID",
+                            "TYPE" = "Counter",
+                            "PK" = TRUE      
+                        >,
+                        <
+                            "NAME" = "Nombre",
+                            "TYPE" = "String",
+                            "PK" = FALSE      
+                        >,
+                        <
+                        "NAME" = "Tallas",
+                        "TYPE" = "List<Int>",
+                        "PK" = FALSE      
+                        >
+                    ],
+                    "DATA" = [
+                        ${ jeansData.chison }$    
+                    ]  
+                >,
+                <
+                    "CQL-TYPE" = "PROCEDURE",
+                    "NAME" = "Procedure1",
+                    "PARAMETERS" = [
+                        <
+                            "NAME" = "@Nombre",
+                            "TYPE" = "String",
+                            "AS"   = IN
+                        >,
+                        <
+                            "NAME" = "@Id",
+                            "TYPE" = "Int",
+                            "AS"   = IN
+                        >,
+                        <
+                            "NAME" = "@Edad",
+                            "TYPE" = "Int",
+                            "AS"   = OUT
+                        >
+                    ],
+                    "INSTR" = "s"
+                >
+            ]
+        >,    
+        <
+            "NAME"= "Database2",
+            "Data"= [
+                ${ bd2data.chison }$
+            ]
+        >,
+        <
+            "NAME"= "Database3",
+            "Data"= []
+        >
+    ],
+    "USERS"= [
+        <
+            "NAME"="Luis",
+            "PASSWORD"= "1234",
+            "PERMISSIONS"= [
+                <
+                    "NAME" = "Database1"
+                >,
+                <
+                    "NAME" = "Database2"
+                >
+            ]
+        >,
+        <
+            "NAME"="Fernando",
+            "PASSWORD"= "5678",
+            "PERMISSIONS"= []
+        >
+    ]
 >$

@@ -56,15 +56,10 @@ namespace cql_teacher_server.CHISON.Arbol
                             if (token.Equals("PERMISSIONS"))
                             {
                                 tipo = "PERMISSIONS";
-                                valor = new LinkedList<Columna>();
+                                valor = new LinkedList<string>();
                             }
-                            else
-                            {
-                                System.Diagnostics.Debug.WriteLine("Error Semantico: No se le puede asignar una lista al atributo: "
-                                        + token + ", Linea: " + raiz.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
-                                        + raiz.ChildNodes.ElementAt(0).Token.Location.Column);
-                                return null;
-                            }
+                            else valor = new LinkedList<string>();
+                            
 
                         }
                         else if (hijoT.ChildNodes.Count() == 3) //---------------------- [ TABLAS ] ------------------------------------------------------------------
@@ -86,13 +81,8 @@ namespace cql_teacher_server.CHISON.Arbol
                                 }
                                 else valor = (LinkedList<string>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
                             }
-                            else
-                            {
-                                System.Diagnostics.Debug.WriteLine("Error Semantico: No se le puede asignar una lista al atributo: "
-                                        + token + ", Linea: " + raiz.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
-                                        + raiz.ChildNodes.ElementAt(0).Token.Location.Column);
-                                return null;
-                            }
+                            else valor = "";
+                            
                         }
                         else
                         {
@@ -243,7 +233,7 @@ namespace cql_teacher_server.CHISON.Arbol
                     for (int i = 0; i < arbol.ParserMessages.Count(); i++)
                     {
                         System.Diagnostics.Debug.WriteLine(arbol.ParserMessages.ElementAt(i).Message + " Linea: " + arbol.ParserMessages.ElementAt(i).Location.Line.ToString()
-                                  + " Columna: " + arbol.ParserMessages.ElementAt(i).Location.Column.ToString() + "\n");
+                                  + " Columna: " + arbol.ParserMessages.ElementAt(i).Location.Column.ToString() + " Archivo : " + direccion +"\n");
                     }
 
                     if (arbol.ParserMessages.Count() < 1)

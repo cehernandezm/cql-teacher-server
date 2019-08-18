@@ -62,13 +62,17 @@ namespace cql_teacher_server.CHISON.Arbol
                                 tipo = "COLUMNS";
                                 valor = new LinkedList<Columna>();
                             }
-                            else
+                            else if (token.Equals("ATTRS") && cql_type.Equals("OBJECT"))
                             {
-                                System.Diagnostics.Debug.WriteLine("Error Semantico: No se le puede asignar una lista al atributo: "
-                                    + token + ", Linea: " + raiz.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
-                                    + raiz.ChildNodes.ElementAt(0).Token.Location.Column);
-                                return null;
+                                tipo = "OBJECT";
+                                valor = new LinkedList<Attrs>();
                             }
+                            else if (token.Equals("PARAMETERS") && cql_type.Equals("PROCEDURE"))
+                            {
+                                tipo = "PROCEDURE";
+                                valor = new LinkedList<Parametros>();
+                            }
+                            else valor = new LinkedList<Columna>();
                         }
                         else if (hijoT.ChildNodes.Count() == 3) //---------------------- [ TABLAS ] ------------------------------------------------------------------
                         {
@@ -135,13 +139,7 @@ namespace cql_teacher_server.CHISON.Arbol
                                 }
                                 else valor = (LinkedList<Parametros>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
                             }
-                            else
-                            {
-                                System.Diagnostics.Debug.WriteLine("Error Semantico: No se le puede asignar una lista al atributo: "
-                                    + token + ", Linea: " + raiz.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
-                                    + raiz.ChildNodes.ElementAt(0).Token.Location.Column);
-                                return null;
-                            }
+                            else valor = new LinkedList<Columna>();
                         }
                         else
                         {
@@ -388,7 +386,7 @@ namespace cql_teacher_server.CHISON.Arbol
                     for (int i = 0; i < arbol.ParserMessages.Count(); i++)
                     {
                         System.Diagnostics.Debug.WriteLine(arbol.ParserMessages.ElementAt(i).Message + " Linea: " + arbol.ParserMessages.ElementAt(i).Location.Line.ToString()
-                                  + " Columna: " + arbol.ParserMessages.ElementAt(i).Location.Column.ToString() + "\n");
+                                  + " Columna: " + arbol.ParserMessages.ElementAt(i).Location.Column.ToString() + "Archivo: " + direccion +"\n");
                     }
 
                     if (arbol.ParserMessages.Count() < 1)

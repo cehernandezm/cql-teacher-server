@@ -1,0 +1,59 @@
+<
+  	"CQL-TYPE" = "OBJECT",
+  	"NAME" = "Mascota",
+  	"ATTRS" = [
+  		< 
+		    "NAME" = "Nombre",
+    		"TYPE" = "String" 
+  		>,
+  		< 
+    		"NAME" = "Edad",
+    		"TYPE" = "Int" 
+  		>,
+  		< 
+    		"NAME" = "Estado",
+    		"TYPE" = "Int" 
+  		>
+
+  	]
+>,
+<
+  	"CQL-TYPE" = "OBJECT",
+  	"NAME" = "Veterinaria",
+  	"ATTRS" = [
+  		< 
+		    "NAME" = "Nombre",
+    		"TYPE" = "String" 
+  		>,
+  		< 
+    		"NAME" = "Direccion",
+    		"TYPE" = "String" 
+  		>,
+  		< 
+    		"NAME" = "Pacientes",
+    		"TYPE" = "Set<Mascota>" 
+  		>
+  	]
+>,
+<
+    "CQL-TYPE" = "PROCEDURE",
+    "NAME" = "GetNewVeterinaria",
+    "PARAMETERS" = [    
+        <
+            "NAME" = "@Pacientes",
+            "TYPE" = "Set<Mascota>",
+            "AS"   = In
+        >,
+	    <
+            "NAME" = "@Nombre",
+            "TYPE" = "String",
+            "AS"   = In
+        >,
+	    <
+            "NAME" = "@Veterinaria",
+            "TYPE" = "Veterinaria",
+            "AS"   = Out
+        >
+    ],
+    "INSTR" = ""
+>

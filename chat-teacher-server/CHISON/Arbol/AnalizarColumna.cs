@@ -50,19 +50,13 @@ namespace cql_teacher_server.CHISON.Arbol
                         ParseTreeNode hijoT = raiz.ChildNodes.ElementAt(2);
                         if (hijoT.ChildNodes.Count() == 2) // -------------------------------------------- [ ] -------------------------------------------------------
                         {
-                            
-                            System.Diagnostics.Debug.WriteLine("Error Semantico: No se le puede asignar una lista al atributo: "
-                                    + token + ", Linea: " + raiz.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
-                                    + raiz.ChildNodes.ElementAt(0).Token.Location.Column);
-                            return null;
+
+                            valor = new LinkedList<Columna>();
                            
                         }
                         else if (hijoT.ChildNodes.Count() == 3) //---------------------- [ TABLAS ] ------------------------------------------------------------------
                         {
-                            System.Diagnostics.Debug.WriteLine("Error Semantico: No se le puede asignar una lista al atributo: "
-                                    + token + ", Linea: " + raiz.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
-                                    + raiz.ChildNodes.ElementAt(0).Token.Location.Column);
-                            return null;
+                            valor = new LinkedList<Columna>();
                         }
                         else
                         {

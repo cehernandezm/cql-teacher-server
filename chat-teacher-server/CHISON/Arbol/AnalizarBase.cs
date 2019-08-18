@@ -56,15 +56,9 @@ namespace cql_teacher_server.CHISON.Arbol
                             if (token.Equals("Data"))
                             {
                                 tipo = "OBJETOS";
-                                valor = new LinkedList<Tabla>();
+                                valor = new Objeto();
                             }
-                            else
-                            {
-                                System.Diagnostics.Debug.WriteLine("Error Semantico: No se le puede asignar una lista al atributo: "
-                                    + token + ", Linea: " + raiz.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
-                                    + raiz.ChildNodes.ElementAt(0).Token.Location.Column);
-                                return null;
-                            }
+                            else valor = new Objeto();
                         }
                         else if (hijoT.ChildNodes.Count() == 3) //---------------------- [ TABLAS/importar] ------------------------------------------------------------------
                         {
@@ -86,13 +80,8 @@ namespace cql_teacher_server.CHISON.Arbol
 
                                 
                             }
-                            else
-                            {
-                                System.Diagnostics.Debug.WriteLine("Error Semantico: No se le puede asignar una lista al atributo: "
-                                    + token + ", Linea: " + raiz.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
-                                    + raiz.ChildNodes.ElementAt(0).Token.Location.Column);
-                                return null;
-                            }
+                            else valor = new Objeto();
+
                         }
                         else
                         {
@@ -162,13 +151,16 @@ namespace cql_teacher_server.CHISON.Arbol
                         Atributo a = new Atributo(token, valor, tipo);
                         return a;
                         break;
+
+                    case "tipo":
+                        break;
                 }
             }
             return null;
         }
 
 
-
+        
 
         public object analizarImport(string direccion)
         {
@@ -187,7 +179,7 @@ namespace cql_teacher_server.CHISON.Arbol
                     for (int i = 0; i < arbol.ParserMessages.Count(); i++)
                     {
                         System.Diagnostics.Debug.WriteLine(arbol.ParserMessages.ElementAt(i).Message + " Linea: " + arbol.ParserMessages.ElementAt(i).Location.Line.ToString()
-                                  + " Columna: " + arbol.ParserMessages.ElementAt(i).Location.Column.ToString() + "\n");
+                                  + " Columna: " + arbol.ParserMessages.ElementAt(i).Location.Column.ToString() + "Archivo: " + direccion +"\n");
                     }
 
                     if (arbol.ParserMessages.Count() < 1)

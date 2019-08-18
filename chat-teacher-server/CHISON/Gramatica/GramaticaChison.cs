@@ -57,6 +57,8 @@ namespace cql_teacher_server.CHISON.Gramatica
             NonTerminal listaTablas = new NonTerminal("listaTablas");
             NonTerminal tabla = new NonTerminal("tabla");
 
+            NonTerminal listaElements = new NonTerminal("listaElements");
+
             NonTerminal importar = new NonTerminal("importar");
 
             #endregion
@@ -95,10 +97,15 @@ namespace cql_teacher_server.CHISON.Gramatica
                       | HORA
                       | IN
                       | OUT
+                      | LLAVEIZQ + listaElements + LLAVEDER
                       | LLAVEIZQ + listaTablas + LLAVEDER
                       | LLAVEIZQ + LLAVEDER
                       | LLAVEIZQ + importar + LLAVEDER
                       ;
+
+            listaElements.Rule = listaElements + COMA + tipo
+                               | tipo
+                               ;
 
             listaTablas.Rule = listaTablas + COMA + tabla
                              | tabla
@@ -112,7 +119,7 @@ namespace cql_teacher_server.CHISON.Gramatica
 
             #region Preferencias
             this.Root = inicio;
-            instruccion_superior.ErrorRule = SyntaxError + instruccion_superior;
+            inicio.ErrorRule = SyntaxError + inicio;
             #endregion
             
         }
