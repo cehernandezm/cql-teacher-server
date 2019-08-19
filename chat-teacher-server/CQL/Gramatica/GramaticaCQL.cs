@@ -13,6 +13,11 @@ namespace cql_teacher_server.CQL.Gramatica
         {
             #region ER
             StringLiteral CADENA = new StringLiteral("cadena", "\"");
+            var FECHA = new RegexBasedTerminal("fecha", "\\'\\d{4}-(((0)[0-9])|((1)[0-2]))-([0-2][0-9]|(3)[0-1])\\'");
+            var HORA = new RegexBasedTerminal("hora", "\\'(([0-1][0-9])|2[0-3]):([0-2][0-9]):([0-5][0-9])\\'");
+            var ENTERO = new NumberLiteral("entero");
+            var DECIMAL = new RegexBasedTerminal("decimal", "[0-9]+'.'[0-9]+");
+
             IdentifierTerminal ID = new IdentifierTerminal("ID");
 
             CommentTerminal comentarioLinea = new CommentTerminal("comentarioLinea", "//", "\n", "\r\n");
@@ -20,8 +25,29 @@ namespace cql_teacher_server.CQL.Gramatica
             #endregion
 
             #region Terminales
-            var USE = ToTerm("USE");
+            
             var PTCOMA = ToTerm(";");
+            var LLAVEIZQ = ToTerm("[");
+            var LLAVEDER = ToTerm("]");
+
+            var NULO = ToTerm("null");
+            var INT = ToTerm("int");
+            var DECIMAL = ToTerm("double");
+            var STRING = ToTerm("string");
+            var BOOL = ToTerm("boolean");
+            var DATE = ToTerm("date");
+            var TIME = ToTerm("time");
+            var TRUE = ToTerm("true");
+            var FALSE = ToTerm("false");
+
+            var USE = ToTerm("USE");
+            var CREATE = ToTerm("CREATE");
+            var DATABASE = ToTerm("DATABASE");
+
+            var IF = ToTerm("IF");
+            var NOT = ToTerm("NOT");
+            var EXISTS = ToTerm("EXISTS");
+
             #endregion
 
             #region No Terminales
@@ -29,7 +55,10 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal inicio = new NonTerminal("inicio");
             NonTerminal instrucciones = new NonTerminal("instrucciones");
             NonTerminal instruccion = new NonTerminal("instruccion");
+
             NonTerminal use = new NonTerminal("use");
+
+            NonTerminal createDatabase = new NonTerminal("createdatabase");
             #endregion
 
             #region Gramatica
@@ -39,9 +68,16 @@ namespace cql_teacher_server.CQL.Gramatica
                                | instruccion
                                ;
 
-            instruccion.Rule = use + PTCOMA;
+            instruccion.Rule = use + PTCOMA
+                             | createDatabase + PTCOMA
+                             ;
 
             use.Rule = USE + ID;
+
+            createDatabase.Rule = CREATE + DATABASE + ID
+                                | CREATE + DATABASE + IF + NOT + EXISTS + ID
+                                ;
+
 
             #endregion
 
