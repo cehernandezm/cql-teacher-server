@@ -17,6 +17,7 @@ Esta aplicacion simula en un DBMS de una base de datos no relacional.
 ## Built With
 
 * [Visual Studio 2019](https://visualstudio.microsoft.com/es/vs/) - Servidor de la Aplicacion
+* [Graphviz](https://www.graphviz.org/) - Herramienta para Graficar Arboles de Analisis
 
 ## Contributing
 
