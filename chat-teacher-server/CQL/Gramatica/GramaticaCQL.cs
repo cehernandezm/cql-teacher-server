@@ -14,6 +14,9 @@ namespace cql_teacher_server.CQL.Gramatica
             #region ER
             StringLiteral CADENA = new StringLiteral("cadena", "\"");
             IdentifierTerminal ID = new IdentifierTerminal("ID");
+
+            CommentTerminal comentarioLinea = new CommentTerminal("comentarioLinea", "//", "\n", "\r\n");
+            CommentTerminal comentarioBloque = new CommentTerminal("comentarioBloque", "/*", "*/");
             #endregion
 
             #region Terminales
