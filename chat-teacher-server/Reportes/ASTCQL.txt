@@ -1,0 +1,16 @@
+digraph Arbol{ rankdir=TB; 
+ node[shape = box, style = filled, color = white];nodo59237598[label="inicio ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo12822446[label="instrucciones ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo55958266[label="instruccion ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo12587538[label="use ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo46327024[label="use (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo12587538"-> "nodo46327024" 
+nodo20359796[label="Database1 (ID) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo12587538"-> "nodo20359796" 
+"nodo55958266"-> "nodo12587538" 
+nodo29445288[label="; (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo55958266"-> "nodo29445288" 
+"nodo12822446"-> "nodo55958266" 
+"nodo59237598"-> "nodo12822446" 
+
+}

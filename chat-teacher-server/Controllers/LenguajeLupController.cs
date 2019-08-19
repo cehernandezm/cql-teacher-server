@@ -23,6 +23,7 @@ namespace cql_teacher_server.Controllers
         {
             TablaBaseDeDatos.global = new LinkedList<BaseDeDatos>();
             TablaBaseDeDatos.listaUsuario = new LinkedList<Usuario>();
+            TablaBaseDeDatos.listaEnUso = new LinkedList<USO>();
 
             LeerArchivo leer = new LeerArchivo();
             

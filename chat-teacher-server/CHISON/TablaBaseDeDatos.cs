@@ -13,6 +13,7 @@ namespace cql_teacher_server.CHISON
 
         public static LinkedList<Usuario> listaUsuario = new LinkedList<Usuario>();
 
+        public static LinkedList<USO> listaEnUso = new LinkedList<USO>();
 
         public static LinkedList<BaseDeDatos> getTabla()
         {
@@ -56,5 +57,37 @@ namespace cql_teacher_server.CHISON
             }
             return null;
         }
+
+
+        public static Boolean  getEnUso (string nombre , string usuario)
+        {
+            foreach(USO o in listaEnUso)
+            {
+                System.Diagnostics.Debug.WriteLine("Usuario 1" + o.nombre + " Usuario2" + usuario);
+                if (o.bd.Equals(nombre) && !(o.nombre.Equals(usuario))) return true;
+            }
+            return false;
+        }
+
+        public static string getMine(string usuario)
+        {
+            foreach(USO o in listaEnUso)
+            {
+                if (o.nombre.Equals(usuario)) return o.bd;
+            }
+            return "none";
+        }
+
+        public static void deleteMine(string usuario)
+        {
+            var node = listaEnUso.First;
+            while(node != null)
+            {
+                var nextNode = node.Next;
+                if (node.Value.nombre.Equals(usuario)) listaEnUso.Remove(node);
+                node = nextNode;
+            }
+        }
+
     }
 }

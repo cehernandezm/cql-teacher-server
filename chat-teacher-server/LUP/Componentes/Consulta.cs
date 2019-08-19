@@ -1,4 +1,5 @@
-﻿using cql_teacher_server.LUP.Arbol;
+﻿using cql_teacher_server.CQL.Gramatica;
+using cql_teacher_server.LUP.Arbol;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,8 @@ namespace cql_teacher_server.LUP.Componentes
 
         public object ejecutar()
         {
+            SintacticoCQL sintactio = new SintacticoCQL();
+            sintactio.analizar(codigo,usuario);
             string salida = "[+DATA]\n[-DATA]\n[+MESSAGE]\n[-MESSAGE]";
             return salida;
         }
