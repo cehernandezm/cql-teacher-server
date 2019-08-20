@@ -16,7 +16,7 @@ namespace cql_teacher_server.CQL.Gramatica
             var FECHA = new RegexBasedTerminal("fecha", "\\'\\d{4}-(((0)[0-9])|((1)[0-2]))-([0-2][0-9]|(3)[0-1])\\'");
             var HORA = new RegexBasedTerminal("hora", "\\'(([0-1][0-9])|2[0-3]):([0-2][0-9]):([0-5][0-9])\\'");
             var ENTERO = new NumberLiteral("entero");
-            var DECIMAL = new RegexBasedTerminal("decimal", "[0-9]+'.'[0-9]+");
+            var DECIMALN = new RegexBasedTerminal("decimal", "[0-9]+'.'[0-9]+");
 
             IdentifierTerminal ID = new IdentifierTerminal("ID");
 

@@ -19,6 +19,8 @@ namespace cql_teacher_server.CQL.Gramatica
 
         public void analizar(string cadena, string usuario)
         {
+            usuario = usuario.TrimEnd();
+            usuario = usuario.TrimStart();
             GramaticaCQL gramatica = new GramaticaCQL();
             LanguageData lenguaje = new LanguageData(gramatica);
             Parser parser = new Parser(gramatica);
@@ -90,9 +92,33 @@ namespace cql_teacher_server.CQL.Gramatica
                 case "use":
                     string id = hijo.ChildNodes.ElementAt(1).ToString().Split(' ')[0];
                     int linea = hijo.ChildNodes.ElementAt(1).Token.Location.Line;
-                    int columna = hijo.ChildNodes.ElementAt(1).Token.Location.Line;
-                    return new Use(id,linea,columna);
+                    int columna = hijo.ChildNodes.ElementAt(1).Token.Location.Column;
+                    return new Use(id, linea, columna);
 
+                // ----------------------------------- CREATE DATABASE ------------------------------------------------------
+                case "createdatabase":
+                    string idB = "";
+                    int lineaB = 0;
+                    int columnaB = 0;
+                    bool flag = false;
+
+                    //--------------------------------------- CREATE DATABASE ID ------------------------------------------
+                    if (hijo.ChildNodes.Count() == 3)
+                    {
+                        idB = hijo.ChildNodes.ElementAt(2).ToString().Split(' ')[0];
+                        lineaB = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
+                        columnaB = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
+                        flag = false;
+                    }
+                    //---------------------------------------- CREATE DATABASE IF NOT EXISTS ID -----------------------------------------
+                    else
+                    {
+                        idB = hijo.ChildNodes.ElementAt(5).ToString().Split(' ')[0];
+                        lineaB = hijo.ChildNodes.ElementAt(5).Token.Location.Line;
+                        columnaB = hijo.ChildNodes.ElementAt(5).Token.Location.Column;
+                        flag = true;
+                    }
+                    return new DataBase(idB,lineaB,columnaB,flag);
             }
             return null;
         }

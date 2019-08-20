@@ -1,16 +1,24 @@
 digraph Arbol{ rankdir=TB; 
- node[shape = box, style = filled, color = white];nodo59237598[label="inicio ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo12822446[label="instrucciones ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo55958266[label="instruccion ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo12587538[label="use ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo46327024[label="use (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo12587538"-> "nodo46327024" 
-nodo20359796[label="Database1 (ID) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo12587538"-> "nodo20359796" 
-"nodo55958266"-> "nodo12587538" 
-nodo29445288[label="; (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo55958266"-> "nodo29445288" 
-"nodo12822446"-> "nodo55958266" 
-"nodo59237598"-> "nodo12822446" 
+ node[shape = box, style = filled, color = white];nodo66577758[label="inicio ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo38960265[label="instrucciones ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo51628172[label="instruccion ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo51938567[label="createdatabase ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo1280659[label="create (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo51938567"-> "nodo1280659" 
+nodo766079[label="database (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo51938567"-> "nodo766079" 
+nodo40602217[label="IF (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo51938567"-> "nodo40602217" 
+nodo4433887[label="not (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo51938567"-> "nodo4433887" 
+nodo33669461[label="exists (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo51938567"-> "nodo33669461" 
+nodo39650982[label="DataBase2 (ID) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo51938567"-> "nodo39650982" 
+"nodo51628172"-> "nodo51938567" 
+nodo21127276[label="; (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo51628172"-> "nodo21127276" 
+"nodo38960265"-> "nodo51628172" 
+"nodo66577758"-> "nodo38960265" 
 
 }

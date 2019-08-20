@@ -6,7 +6,8 @@
 <
   "ID" = 2,
   "Nombre" = "Eliel Juarez",
-  "Edad" = 21
+  "Edad" = 21,
+  "Hora" = '23:12:00'
 >,
 <
   "ID" = 3,

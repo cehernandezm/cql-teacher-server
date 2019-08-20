@@ -98,14 +98,18 @@ namespace cql_teacher_server.CHISON.Arbol
                                 tipo = "ENTERO";
                                 string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
                                 valorTemp = valorTemp.TrimEnd();
-                                valor = (string)valorTemp;
+                                int salida = 0;
+                                Int32.TryParse(valorTemp, out salida);
+                                valor = (int) salida;
                             }
                             else if (tipo.Equals("decimal)"))
                             {
                                 tipo = "DECIMAL";
                                 string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
                                 valorTemp = valorTemp.TrimEnd();
-                                valor = (string)valorTemp;
+                                Double salida = 0.0;
+                                Double.TryParse(valorTemp, out salida);
+                                valor = (Double)salida;
                             }
                             else if (tipo.Equals("Keyword)"))
                             {

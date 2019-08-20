@@ -52,8 +52,10 @@ namespace cql_teacher_server.CHISON
         {
             foreach(Usuario us in listaUsuario)
             {
-
-                if (us.nombre == nombre) return us;
+                string user = us.nombre.ToString();
+                user = user.TrimEnd();
+                System.Diagnostics.Debug.WriteLine(user + "." + nombre);
+                if (user.Equals(nombre)) return us;
             }
             return null;
         }

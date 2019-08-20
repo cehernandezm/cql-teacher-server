@@ -1,0 +1,403 @@
+$<
+	"DATABASES" = [
+		<
+			"NAME" = "Database1",
+			"Data" = [
+				<
+					"CQL-TYPE" = "TABLE",
+					"NAME" = "Estudiante",
+					"COLUMNS" = [
+						<
+							"NAME" = "ID",
+							"TYPE" = "Counter",
+							"PK" = True
+						>,
+						<
+							"NAME" = "Nombre",
+							"TYPE" = "String",
+							"PK" = False
+						>,
+						<
+							"NAME" = "Edad",
+							"TYPE" = "Int",
+							"PK" = False
+						>
+					],
+					"DATA" = [
+					<
+						"ID" = 1,
+						"Nombre" = "Diana Perez",
+						"Edad" = 19
+					>,
+					<
+						"ID" = 2,
+						"Nombre" = "Eliel Juarez",
+						"Edad" = 21,
+						"Hora" = '23:12:00'
+					>,
+					<
+						"ID" = 3,
+						"Nombre" = "Fabiola Rodriguez",
+						"Edad" = 25
+					>,
+					<
+						"ID" = 4,
+						"Nombre" = "Pilar Vazques",
+						"Edad" = 22
+					>,
+					<
+						"ID" = 5,
+						"Nombre" = "Jean Thomas",
+						"Edad" = 18
+					>,
+					<
+						"ID" = 6,
+						"Nombre" = "Cynthia Stewart",
+						"Edad" = 14
+					>,
+					<
+						"ID" = 7,
+						"Nombre" = "Steven Foster",
+						"Edad" = 17
+					>,
+					<
+						"ID" = 8,
+						"Nombre" = "Nancy Robinson",
+						"Edad" = 49
+					>,
+					<
+						"ID" = 9,
+						"Nombre" = "James Hernandez",
+						"Edad" = 58
+					>,
+					<
+						"ID" = 10,
+						"Nombre" = "Julie Alexander",
+						"Edad" = 22
+					>,
+					<
+						"ID" = 11,
+						"Nombre" = "Terry Lewis",
+						"Edad" = 28
+					>,
+					<
+						"ID" = 12,
+						"Nombre" = "Brian Barnes",
+						"Edad" = 13
+					>,
+					<
+						"ID" = 13,
+						"Nombre" = "Kathy Morris",
+						"Edad" = 14
+					>,
+					<
+						"ID" = 14,
+						"Nombre" = "Clarence Rivera",
+						"Edad" = 44
+					>,
+					<
+						"ID" = 15,
+						"Nombre" = "Jose Kelly",
+						"Edad" = 22
+					>,
+					<
+						"ID" = 16,
+						"Nombre" = "Louis Bennett",
+						"Edad" = 55
+					>,
+					<
+						"ID" = 17,
+						"Nombre" = "Michael Gray",
+						"Edad" = 56
+					>,
+					<
+						"ID" = 18,
+						"Nombre" = "Randy Wilson",
+						"Edad" = 10
+					>,
+					<
+						"ID" = 19,
+						"Nombre" = "Gary Griffin",
+						"Edad" = 15
+					>,
+					<
+						"ID" = 20,
+						"Nombre" = "Joseph Torres",
+						"Edad" = 55
+					>,
+					<
+						"ID" = 21,
+						"Nombre" = "Eric Perez",
+						"Edad" = 45
+					>,
+					<
+						"ID" = 22,
+						"Nombre" = "Joe Turner",
+						"Edad" = 33
+					>,
+					<
+						"ID" = 23,
+						"Nombre" = "Sharon Flores",
+						"Edad" = 41
+					>,
+					<
+						"ID" = 24,
+						"Nombre" = "Phillip Wright",
+						"Edad" = 19
+					>,
+					<
+						"ID" = 25,
+						"Nombre" = "Arthur Baker",
+						"Edad" = 55
+					>,
+					<
+						"ID" = 26,
+						"Nombre" = "Helen Carter",
+						"Edad" = 46
+					>,
+					<
+						"ID" = 27,
+						"Nombre" = "Betty Jones",
+						"Edad" = 51
+					>,
+					<
+						"ID" = 28,
+						"Nombre" = "Sandra Miller",
+						"Edad" = 55
+					>,
+					<
+						"ID" = 29,
+						"Nombre" = "Steve Long",
+						"Edad" = 29
+					>
+					]
+				>,
+				<
+					"CQL-TYPE" = "TABLE",
+					"NAME" = "Jeans",
+					"COLUMNS" = [
+						<
+							"NAME" = "ID",
+							"TYPE" = "Counter",
+							"PK" = True
+						>,
+						<
+							"NAME" = "Nombre",
+							"TYPE" = "String",
+							"PK" = False
+						>,
+						<
+							"NAME" = "Tallas",
+							"TYPE" = "List<Int>",
+							"PK" = False
+						>
+					],
+					"DATA" = [
+					<
+						"ID" = 1,
+						"Nombre" = "Brevvuiks",
+						"Tallas" = [32,30,33]
+					>,
+					<
+						"ID" = 2,
+						"Nombre" = "Xistrod",
+						"Tallas" = []
+					>,
+					<
+						"ID" = 3,
+						"Nombre" = "Qonqix",
+						"Tallas" = [32,36]
+					>,
+					<
+						"ID" = 4,
+						"Nombre" = "Nids",
+						"Tallas" = [32,28,33]
+					>,
+					<
+						"ID" = 5,
+						"Nombre" = "Noltain",
+						"Tallas" = [33]
+					>,
+					<
+						"ID" = 6,
+						"Nombre" = "Bheelzae",
+						"Tallas" = [31,28,34]
+					>,
+					<
+						"ID" = 7,
+						"Nombre" = "Sih'un",
+						"Tallas" = [32,28,29]
+					>,
+					<
+						"ID" = 8,
+						"Nombre" = "Grudoll",
+						"Tallas" = [28,27]
+					>,
+					<
+						"ID" = 9,
+						"Nombre" = "Lahlo",
+						"Tallas" = [27,36,30,31]
+					>,
+					<
+						"ID" = 10,
+						"Nombre" = "Vehlens",
+						"Tallas" = [31,33,29,35]
+					>
+					]
+				>,
+				<
+					"CQL-TYPE" = "OBJECT",
+					"NAME" = "Persona",
+					"ATTRS" = [
+						<
+							"NAME" = "CUI",
+							"TYPE" = "Double",
+						>,
+						<
+							"NAME" = "Nombre",
+							"TYPE" = "String",
+						>
+					]
+				>,
+				<
+					"CQL-TYPE" = "OBJECT",
+					"NAME" = "Automovil",
+					"ATTRS" = [
+						<
+							"NAME" = "Marca",
+							"TYPE" = "String",
+						>,
+						<
+							"NAME" = "Fecha_Compra",
+							"TYPE" = "Date",
+						>,
+						<
+							"NAME" = "Kilometraje",
+							"TYPE" = "Double",
+						>,
+						<
+							"NAME" = "Propietario",
+							"TYPE" = "Persona",
+						>
+					]
+				>,
+				<
+					"CQL-TYPE" = "PROCEDURE",
+					"NAME" = "Procedure1",
+					"PARAMETERS" = [
+						<
+							"NAME" = "@Nombre",
+							"TYPE" = "String",
+							"AS" = in
+						>,
+						<
+							"NAME" = "@Id",
+							"TYPE" = "Int",
+							"AS" = in
+						>,
+						<
+							"NAME" = "@Edad",
+							"TYPE" = "Int",
+							"AS" = out
+						>
+					],
+					"INSTR" = ""
+			]
+		>,
+		<
+			"NAME" = "Database2",
+			"Data" = [
+				<
+					"CQL-TYPE" = "OBJECT",
+					"NAME" = "Mascota",
+					"ATTRS" = [
+						<
+							"NAME" = "Nombre",
+							"TYPE" = "String",
+						>,
+						<
+							"NAME" = "Edad",
+							"TYPE" = "Int",
+						>,
+						<
+							"NAME" = "Estado",
+							"TYPE" = "Int",
+						>
+					]
+				>,
+				<
+					"CQL-TYPE" = "OBJECT",
+					"NAME" = "Veterinaria",
+					"ATTRS" = [
+						<
+							"NAME" = "Nombre",
+							"TYPE" = "String",
+						>,
+						<
+							"NAME" = "Direccion",
+							"TYPE" = "String",
+						>,
+						<
+							"NAME" = "Pacientes",
+							"TYPE" = "Set<Mascota>",
+						>
+					]
+				>,
+				<
+					"CQL-TYPE" = "PROCEDURE",
+					"NAME" = "GetNewVeterinaria",
+					"PARAMETERS" = [
+						<
+							"NAME" = "@Pacientes",
+							"TYPE" = "Set<Mascota>",
+							"AS" = in
+						>,
+						<
+							"NAME" = "@Nombre",
+							"TYPE" = "String",
+							"AS" = in
+						>,
+						<
+							"NAME" = "@Veterinaria",
+							"TYPE" = "Veterinaria",
+							"AS" = out
+						>
+					],
+					"INSTR" = ""
+			]
+		>,
+		<
+			"NAME" = "Database3",
+			"Data" = [
+			]
+		>,
+		<
+			"NAME" = "DataBase2",
+			"Data" = [
+			]
+		>
+	],
+	"USERS" = [
+		<
+			"NAME" = "Luis",
+			"PASSWORD" = "1234",
+			"PERMISSIONS" = [
+			<
+			"NAME" = "Database1"
+			>,
+			<
+			"NAME" = "Database2"
+			>,
+			<
+			"NAME" = "DataBase2"
+			>
+			]
+		>,
+		<
+			"NAME" = "Fernando",
+			"PASSWORD" = "5678",
+			"PERMISSIONS" = [
+			]
+		>
+	]
+>$
