@@ -44,7 +44,7 @@ namespace cql_teacher_server.CQL.Componentes
             if (db != null && !ifnot)
             {
                 Mensaje mes = new Mensaje();
-                mensajes.AddLast(mes.error(" Ya existe una base de datos llamada " + id, linea,columna));
+                mensajes.AddLast(mes.error(" Ya existe una base de datos llamada " + id, linea,columna,"Semantico"));
                 return "";
             }
             if(db == null)

@@ -101,7 +101,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
-                    mensajes.AddLast(mes.error("No se puede sumar " + op1.ToString() + " con " + op2.ToString(), linea1, columna1));
+                    mensajes.AddLast(mes.error("No se puede sumar " + op1.ToString() + " con " + op2.ToString(), linea1, columna1,"Semantico"));
                     return null;
                 }
             }
@@ -115,7 +115,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
-                    mensajes.AddLast(mes.error("No se puede restar " + op1.ToString() + " con " + op2.ToString(), linea1, columna1));
+                    mensajes.AddLast(mes.error("No se puede restar " + op1.ToString() + " con " + op2.ToString(), linea1, columna1,"Semantico"));
                     return null;
                 }
             }
@@ -129,7 +129,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
-                    mensajes.AddLast(mes.error("No se puede multiplicar " + op1.ToString() + " con " + op2.ToString(), linea1, columna1));
+                    mensajes.AddLast(mes.error("No se puede multiplicar " + op1.ToString() + " con " + op2.ToString(), linea1, columna1,"Semantico"));
                     return null;
                 }
             }
@@ -143,7 +143,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
-                    mensajes.AddLast(mes.error("No se puede obtener una potencia de " + op1.ToString() + " con " + op2.ToString(), linea1, columna1));
+                    mensajes.AddLast(mes.error("No se puede obtener una potencia de " + op1.ToString() + " con " + op2.ToString(), linea1, columna1,"Semantico"));
                     return null;
                 }
             }
@@ -159,14 +159,14 @@ namespace cql_teacher_server.CQL.Componentes
                     else
                     {
                         Mensaje mes = new Mensaje();
-                        mensajes.AddLast(mes.error("No se puede obtener el modulo de  " + op1.ToString() + " con " + op2.ToString(), linea1, columna1));
+                        mensajes.AddLast(mes.error("No se puede obtener el modulo de  " + op1.ToString() + " con " + op2.ToString(), linea1, columna1,"Semantico"));
                         return null;
                     }
                 }
                 else
                 {
                     Mensaje mes = new Mensaje();
-                    mensajes.AddLast(mes.error("No se puede obtener el modulo un divisor 0", linea1, columna1));
+                    mensajes.AddLast(mes.error("No se puede obtener el modulo un divisor 0", linea1, columna1,"Semantico"));
                     return null;
                 }
 
@@ -183,14 +183,14 @@ namespace cql_teacher_server.CQL.Componentes
                     else
                     {
                         Mensaje mes = new Mensaje();
-                        mensajes.AddLast(mes.error("No se puede dividir  " + op1.ToString() + " con " + op2.ToString(), linea1, columna1));
+                        mensajes.AddLast(mes.error("No se puede dividir  " + op1.ToString() + " con " + op2.ToString(), linea1, columna1,"Semantico"));
                         return null;
                     }
                 }
                 else
                 {
                     Mensaje mes = new Mensaje();
-                    mensajes.AddLast(mes.error("No se puede dividir entre 0", linea1, columna1));
+                    mensajes.AddLast(mes.error("No se puede dividir entre 0", linea1, columna1,"Semantico"));
                     return null;
                 }
             }
@@ -206,7 +206,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
-                    mensajes.AddLast(mes.error("No se puede conocer el mayor de   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1));
+                    mensajes.AddLast(mes.error("No se puede conocer el mayor de   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1,"Semantico"));
                     return null;
                 }
             }
@@ -222,7 +222,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
-                    mensajes.AddLast(mes.error("No se puede conocer el menor de   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1));
+                    mensajes.AddLast(mes.error("No se puede conocer el menor de   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1,"Semantico"));
                     return null;
                 }
             }
@@ -238,7 +238,120 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
-                    mensajes.AddLast(mes.error("No se puede conocer el menor de   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1));
+                    mensajes.AddLast(mes.error("No se puede conocer el mayor igual de   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1,"Semantico"));
+                    return null;
+                }
+            }
+            //-----------------------------------------------------MENORIGUAL------------------------------------------------------------------------
+            else if (operacion.Equals("MENORIGUAL") && op1 != null && op2 != null)
+            {
+                if (op1.GetType() == typeof(int) && op2.GetType() == typeof(int)) return (int)op1 <= (int)op2;
+                else if (op1.GetType() == typeof(int) && op2.GetType() == typeof(Double)) return (int)op1 <= (Double)op2;
+                else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(int)) return (Double)op1 <= (int)op2;
+                else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(Double)) return (Double)op1 <= (Double)op2;
+                else if (op1.GetType() == typeof(TimeSpan) && op2.GetType() == typeof(TimeSpan)) return (TimeSpan)op1 <= (TimeSpan)op2;
+                else if (op1.GetType() == typeof(DateTime) && op2.GetType() == typeof(DateTime)) return (DateTime)op1 <= (DateTime)op2;
+                else
+                {
+                    Mensaje mes = new Mensaje();
+                    mensajes.AddLast(mes.error("No se puede conocer el menor igual de   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1,"Semantico"));
+                    return null;
+                }
+            }
+            //-----------------------------------------------------IGUALIGUAL------------------------------------------------------------------------
+            else if (operacion.Equals("IGUALIGUAL") && op1 != null && op2 != null)
+            {
+                if (op1.GetType() == typeof(int) && op2.GetType() == typeof(int)) return (int)op1 == (int)op2;
+                else if (op1.GetType() == typeof(int) && op2.GetType() == typeof(Double)) return (int)op1 == (Double)op2;
+                else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(int)) return (Double)op1 == (int)op2;
+                else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(Double)) return (Double)op1 == (Double)op2;
+                else if (op1.GetType() == typeof(TimeSpan) && op2.GetType() == typeof(TimeSpan)) return (TimeSpan)op1 == (TimeSpan)op2;
+                else if (op1.GetType() == typeof(DateTime) && op2.GetType() == typeof(DateTime)) return (DateTime)op1 == (DateTime)op2;
+                else if (op1.GetType() == typeof(string) && op2.GetType() == typeof(string)) return op1.ToString().Equals(op2.ToString());
+                else if (op1.GetType() == typeof(Boolean) && op2.GetType() == typeof(Boolean)) return (Boolean)op1 == (Boolean)op2;
+                else
+                {
+                    Mensaje mes = new Mensaje();
+                    mensajes.AddLast(mes.error("No se puede conocer si es igual   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1,"Semantico"));
+                    return null;
+                }
+            }
+            //-----------------------------------------------------DIFERENTE------------------------------------------------------------------------
+            else if (operacion.Equals("DIFERENTE") && op1 != null && op2 != null)
+            {
+                if (op1.GetType() == typeof(int) && op2.GetType() == typeof(int)) return (int)op1 != (int)op2;
+                else if (op1.GetType() == typeof(int) && op2.GetType() == typeof(Double)) return (int)op1 != (Double)op2;
+                else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(int)) return (Double)op1 != (int)op2;
+                else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(Double)) return (Double)op1 != (Double)op2;
+                else if (op1.GetType() == typeof(TimeSpan) && op2.GetType() == typeof(TimeSpan)) return (TimeSpan)op1 != (TimeSpan)op2;
+                else if (op1.GetType() == typeof(DateTime) && op2.GetType() == typeof(DateTime)) return (DateTime)op1 != (DateTime)op2;
+                else if (op1.GetType() == typeof(string) && op2.GetType() == typeof(string)) return ! op1.ToString().Equals(op2.ToString());
+                else if (op1.GetType() == typeof(Boolean) && op2.GetType() == typeof(Boolean)) return (Boolean)op1 != (Boolean)op2;
+                else
+                {
+                    Mensaje mes = new Mensaje();
+                    mensajes.AddLast(mes.error("No se puede conocer si es diferente   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
+                    return null;
+                }
+            }
+            //----------------------------------------------------- OR -----------------------------------------------------------------------------
+            else if (operacion.Equals("OR") && op1 != null && op2 != null)
+            {
+                if (op1.GetType() == typeof(Boolean) && op2.GetType() == typeof(Boolean)) return (Boolean)op1 || (Boolean)op2;
+                else
+                {
+                    Mensaje mes = new Mensaje();
+                    mensajes.AddLast(mes.error("No se puede aplicar (OR) " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
+                    return null;
+                }
+            }
+            //----------------------------------------------------- AND -----------------------------------------------------------------------------
+            else if (operacion.Equals("AND") && op1 != null && op2 != null)
+            {
+                if (op1.GetType() == typeof(Boolean) && op2.GetType() == typeof(Boolean)) return (Boolean)op1 && (Boolean)op2;
+                else
+                {
+                    Mensaje mes = new Mensaje();
+                    mensajes.AddLast(mes.error("No se puede aplicar (AND) " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
+                    return null;
+                }
+            }
+            //----------------------------------------------------- XOR -----------------------------------------------------------------------------
+            else if (operacion.Equals("XOR") && op1 != null && op2 != null)
+            {
+                if (op1.GetType() == typeof(Boolean) && op2.GetType() == typeof(Boolean))
+                {
+                    if ((Boolean)op1 && (Boolean)op2) return false;
+                    else if (!(Boolean)op1 && !(Boolean)op2) return false;
+                    else return true;
+                }
+                else
+                {
+                    Mensaje mes = new Mensaje();
+                    mensajes.AddLast(mes.error("No se puede aplicar (XOR) " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
+                    return null;
+                }
+            }
+            //------------------------------------------------------ NEGATIVO ( - NUMERO ) ----------------------------------------------------------
+            else if (operacion.Equals("NEGATIVO") && op1 != null)
+            {
+                if (op1.GetType() == typeof(int)) return (int)op1 * -1;
+                else if (op1.GetType() == typeof(Double)) return (Double)op1 * -1;
+                else
+                {
+                    Mensaje mes = new Mensaje();
+                    mensajes.AddLast(mes.error("No se puede convertir a negativo a  " + op1.ToString(), linea1, columna1, "Semantico"));
+                    return null;
+                }
+            }
+            //------------------------------------------------------ NEGATIVO ( - NUMERO ) ----------------------------------------------------------
+            else if (operacion.Equals("NEGACION") && op1 != null)
+            {
+                if (op1.GetType() == typeof(Boolean)) return !(Boolean)op1;
+                else
+                {
+                    Mensaje mes = new Mensaje();
+                    mensajes.AddLast(mes.error("No se puede convertir a negar a  " + op1.ToString(), linea1, columna1, "Semantico"));
                     return null;
                 }
             }

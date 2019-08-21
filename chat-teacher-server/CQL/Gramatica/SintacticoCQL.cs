@@ -142,12 +142,19 @@ namespace cql_teacher_server.CQL.Gramatica
                     //--------------------------------- operador expresion -----------------------------------------------------------
                     else if (hijo.ChildNodes.Count() == 2)
                     {
-
+                        string toke = hijo.ChildNodes.ElementAt(0).Token.Text;
+                        int l1 = hijo.ChildNodes.ElementAt(0).Token.Location.Line;
+                        int c1 = hijo.ChildNodes.ElementAt(0).Token.Location.Column;
+                        string opera = "";
+                        if (toke.Equals("-")) opera = "NEGATIVO";
+                        else if (toke.Equals("!")) opera = "NEGACION";
+                        return new Expresion(resolver_expresion(hijo.ChildNodes.ElementAt(1)), opera, l1, c1);
                     }
                     //--------------------------------------- valor ------------------------------------------------------------------
                     else
                     {
                         string toke = hijo.ChildNodes.ElementAt(0).Term.Name;
+                        if (toke.Equals("expresion")) return resolver_expresion(hijo.ChildNodes.ElementAt(0));
                         string valor = hijo.ChildNodes.ElementAt(0).Token.Text;
                         int l1 = hijo.ChildNodes.ElementAt(0).Token.Location.Line;
                         int c1 = hijo.ChildNodes.ElementAt(0).Token.Location.Column;
@@ -181,11 +188,18 @@ namespace cql_teacher_server.CQL.Gramatica
             }
             else if(raiz.ChildNodes.Count() == 2)
             {
-                return null;
+                string toke = raiz.ChildNodes.ElementAt(0).Token.Text;
+                int l1 = raiz.ChildNodes.ElementAt(0).Token.Location.Line;
+                int c1 = raiz.ChildNodes.ElementAt(0).Token.Location.Column;
+                string opera = "";
+                if (toke.Equals("-")) opera = "NEGATIVO";
+                else if (toke.Equals("!")) opera = "NEGACION";
+                return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(1)),opera,l1,c1);
             }
             else
             {
                 string toke = raiz.ChildNodes.ElementAt(0).Term.Name;
+                if (toke.Equals("expresion")) return resolver_expresion(raiz.ChildNodes.ElementAt(0));
                 string valor = raiz.ChildNodes.ElementAt(0).Token.Text;
                 int l1 = raiz.ChildNodes.ElementAt(0).Token.Location.Line;
                 int c1 = raiz.ChildNodes.ElementAt(0).Token.Location.Column;
@@ -251,6 +265,12 @@ namespace cql_teacher_server.CQL.Gramatica
             else if (token.Equals(">")) return "MAYOR";
             else if (token.Equals("<")) return "MENOR";
             else if (token.Equals(">=")) return "MAYORIGUAL";
+            else if (token.Equals("<=")) return "MENORIGUAL";
+            else if (token.Equals("==")) return "IGUALIGUAL";
+            else if (token.Equals("!=")) return "DIFERENTE";
+            else if (token.Equals("||")) return "OR";
+            else if (token.Equals("&&")) return "AND";
+            else if (token.Equals("^")) return "XOR";
             return "none";
         }
 
