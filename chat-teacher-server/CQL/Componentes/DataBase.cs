@@ -37,13 +37,16 @@ namespace cql_teacher_server.CQL.Componentes
          * @user usuario que esta ejecutando la accion
          * @baseD es la base actual en este caso sera none
          */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD)
+        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes)
         {
             BaseDeDatos db = TablaBaseDeDatos.getBase(id);
             //--------------------------- si existe una base de datos pero  no tiene un if not exist --------------------------------------------
-            if (db != null && !ifnot) return "[+ERROR]\n[+LINE]\n\t" + linea + "\n[-LINE]\n[+COLUMN]\n\t" + columna + "\n[-COLUMN]" +
-                    "\n[+TYPE]\n\tSemantico\n[-TYPE]\n[+DESC]\n\t Ya existe una base de datos llamada " + id + "\n[-DESC]\n[-ERROR]";
-
+            if (db != null && !ifnot)
+            {
+                Mensaje mes = new Mensaje();
+                mensajes.AddLast(mes.error(" Ya existe una base de datos llamada " + id, linea,columna));
+                return "";
+            }
             if(db == null)
             {
                 Objeto ls = new Objeto();
@@ -54,11 +57,11 @@ namespace cql_teacher_server.CQL.Componentes
                 if(us == null ) System.Diagnostics.Debug.WriteLine("Usuario : " + user);
                 if (us != null)
                 {
+                    Mensaje mes = new Mensaje();
                     us.bases.AddLast(id);
                     TablaBaseDeDatos.global.AddLast(newDb);
-                    GuardarArchivo backup= new GuardarArchivo();
-                    backup.guardarArchivo();
-                    return "[+MESSAGE]\n La base de datos " + id + "ha sido creada exitosamente\n[-MESSAGE]";
+                    mensajes.AddLast(mes.message("La base de datos " + id + "ha sido creada exitosamente"));
+                    return "";
                 }
                 else return "none";
 

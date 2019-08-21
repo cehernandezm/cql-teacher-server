@@ -39,18 +39,27 @@ namespace cql_teacher_server.CQL.Componentes
          * return Mensaje LUP de Correcta accion o Incorrecta
          */
 
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD)
+        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string>mensajes)
         {
             BaseDeDatos db = TablaBaseDeDatos.getBase(bd);
-            if (db == null) return "[+ERROR]\n[+LINE]\n\t" + linea + "\n[-LINE]\n[+COLUMN]\n\t" + columna + "\n[-COLUMN]\n" +
-                    "[+TYPE]\n\tSemantico\n[-TYPE]\n[+DESC]\n\t No existe la base de datos a utilizar \n[-DESC]\n[-ERROR]";
-            if (TablaBaseDeDatos.getEnUso(bd,user)) return "[+ERROR]\n[+LINE]\n\t" + linea + "\n[-LINE]\n[+COLUMN]\n\t" + columna + "\n[-COLUMN]\n" +
-                    "[+TYPE]\n\tSemantico\n[-TYPE]\n[+DESC]\n\t La base ya esta siendo utilizada por otro usuario \n[-DESC]\n[-ERROR]";
+            if (db == null)
+            {
+                mensajes.AddLast("[+ERROR]\n[+LINE]\n\t" + linea + "\n[-LINE]\n[+COLUMN]\n\t" + columna + "\n[-COLUMN]\n" +
+                    "[+TYPE]\n\tSemantico\n[-TYPE]\n[+DESC]\n\t No existe la base de datos a utilizar \n[-DESC]\n[-ERROR]");
+                return "";
+            }
+            if (TablaBaseDeDatos.getEnUso(bd, user))
+            {
+                mensajes.AddLast("[+ERROR]\n[+LINE]\n\t" + linea + "\n[-LINE]\n[+COLUMN]\n\t" + columna + "\n[-COLUMN]\n" +
+                    "[+TYPE]\n\tSemantico\n[-TYPE]\n[+DESC]\n\t La base ya esta siendo utilizada por otro usuario \n[-DESC]\n[-ERROR]");
+                return "";
+            }
             baseD = bd;
             USO newU = new USO(baseD, user);
             TablaBaseDeDatos.deleteMine(user);
             TablaBaseDeDatos.listaEnUso.AddLast(newU);
-            return "[+MESSAGE]\n\t Se esta utilizando la base " + baseD + " exitosamente \n[-MESSAGE]";
+            mensajes.AddLast("[+MESSAGE]\n\t Se esta utilizando la base " + baseD + " exitosamente \n[-MESSAGE]");
+            return "";
         }
     }
 }

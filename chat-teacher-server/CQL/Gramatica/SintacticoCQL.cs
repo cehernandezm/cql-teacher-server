@@ -1,6 +1,7 @@
 ﻿using cql_teacher_server.CHISON;
 using cql_teacher_server.CQL.Arbol;
 using cql_teacher_server.CQL.Componentes;
+using cql_teacher_server.Herramientas;
 using Irony.Parsing;
 using System;
 using System.Collections.Generic;
@@ -38,15 +39,22 @@ namespace cql_teacher_server.CQL.Gramatica
                 if(arbol.ParserMessages.Count() < 1)
                 {
                     graficar(raiz);
+
                     LinkedList<InstruccionCQL> listaInstrucciones = instrucciones(raiz.ChildNodes.ElementAt(0));
                     TablaDeSimbolos tablaGlobal = new TablaDeSimbolos();
+                    LinkedList<string> mensajes = new LinkedList<string>();
                     String baseD = TablaBaseDeDatos.getMine(usuario);
                     foreach(InstruccionCQL ins in listaInstrucciones)
                     {
-                        object res = ins.ejecutar(tablaGlobal,usuario, ref baseD);
-                        System.Diagnostics.Debug.WriteLine(res.ToString());
+                        Mensaje mensa = new Mensaje();
+                        object res = ins.ejecutar(tablaGlobal,usuario, ref baseD,mensajes);
+                        if(res != null && ins.GetType() == typeof(Expresion) ) System.Diagnostics.Debug.WriteLine(mensa.message("El resultado de la operacion es: " + res.ToString()));
                     }
 
+                    foreach(string m in mensajes)
+                    {
+                        System.Diagnostics.Debug.WriteLine(m);
+                    }
                 }
             }
 
@@ -84,13 +92,13 @@ namespace cql_teacher_server.CQL.Gramatica
 
         public InstruccionCQL instruccion(ParseTreeNode raiz)
         {
-            string token = raiz.ChildNodes.ElementAt(0).ToString().Split(' ')[0].ToLower();
+            string token = raiz.ChildNodes.ElementAt(0).Term.Name;
             ParseTreeNode hijo = raiz.ChildNodes.ElementAt(0);
             switch (token)
             {
                 //-------------------------------- USE DB ----------------------------------------------------------------
                 case "use":
-                    string id = hijo.ChildNodes.ElementAt(1).ToString().Split(' ')[0];
+                    string id = hijo.ChildNodes.ElementAt(1).Token.Text;
                     int linea = hijo.ChildNodes.ElementAt(1).Token.Location.Line;
                     int columna = hijo.ChildNodes.ElementAt(1).Token.Location.Column;
                     return new Use(id, linea, columna);
@@ -119,12 +127,72 @@ namespace cql_teacher_server.CQL.Gramatica
                         flag = true;
                     }
                     return new DataBase(idB,lineaB,columnaB,flag);
+
+
+                //------------------------------------------- Expresion ---------------------------------------------------------------
+                case "expresion":
+                    //--------------------------------- expresion operador expresion ---------------------------------------------------
+                    if (hijo.ChildNodes.Count() == 3)
+                    {
+                        string toke = hijo.ChildNodes.ElementAt(1).Token.Text;
+                        int l1 = hijo.ChildNodes.ElementAt(1).Token.Location.Line;
+                        int c1 = hijo.ChildNodes.ElementAt(1).Token.Location.Column;
+                        return new Expresion(resolver_expresion(hijo.ChildNodes.ElementAt(0)), resolver_expresion(hijo.ChildNodes.ElementAt(2)), getOperacion(toke), l1, c1);
+                    }
+                    //--------------------------------- operador expresion -----------------------------------------------------------
+                    else if (hijo.ChildNodes.Count() == 2)
+                    {
+
+                    }
+                    //--------------------------------------- valor ------------------------------------------------------------------
+                    else
+                    {
+                        string toke = hijo.ChildNodes.ElementAt(0).Term.Name;
+                        string valor = hijo.ChildNodes.ElementAt(0).Token.Text;
+                        int l1 = hijo.ChildNodes.ElementAt(0).Token.Location.Line;
+                        int c1 = hijo.ChildNodes.ElementAt(0).Token.Location.Column;
+                        valor = valor.TrimEnd();
+                        valor = valor.TrimStart();
+                        return getValor(toke, valor, l1, c1);
+                    }
+                    return null;
             }
             return null;
         }
 
 
 
+
+        /*
+         * Metodo que resuelve las expresiones aritmeticas,logicas
+         * 
+         */
+
+
+         public Expresion resolver_expresion(ParseTreeNode raiz)
+        {
+            if(raiz.ChildNodes.Count() == 3)
+            {
+                string toke = raiz.ChildNodes.ElementAt(1).Token.Text;
+                int l1 = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
+                int c1 = raiz.ChildNodes.ElementAt(1).Token.Location.Column;
+                return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), resolver_expresion(raiz.ChildNodes.ElementAt(2)), getOperacion(toke), l1, c1);
+
+            }
+            else if(raiz.ChildNodes.Count() == 2)
+            {
+                return null;
+            }
+            else
+            {
+                string toke = raiz.ChildNodes.ElementAt(0).Term.Name;
+                string valor = raiz.ChildNodes.ElementAt(0).Token.Text;
+                int l1 = raiz.ChildNodes.ElementAt(0).Token.Location.Line;
+                int c1 = raiz.ChildNodes.ElementAt(0).Token.Location.Column;
+
+                return getValor(toke, valor, l1, c1);
+            }
+        }
 
 
 
@@ -167,6 +235,41 @@ namespace cql_teacher_server.CQL.Gramatica
         }
 
 
+        /*
+         * Metodo que devulve que operacion es
+         * @raiz es el nodo a buscar su operacion
+         */
 
+        public string getOperacion(string token)
+        {
+            if (token.Equals("+")) return "SUMA";
+            else if (token.Equals("-")) return "RESTA";
+            else if (token.Equals("*")) return "MULTIPLICACION";
+            else if (token.Equals("**")) return "POTENCIA";
+            else if (token.Equals("%")) return "MODULO";
+            else if (token.Equals("/")) return "DIVISION";
+            return "none";
+        }
+
+
+        /*
+         * Metodo que devuelve que tipo de valor es
+         * @raiz es el nodo a buscar su valor
+         */
+
+        public Expresion getValor(string token, string valor, int l1, int c1)
+        {
+            System.Diagnostics.Debug.WriteLine(valor);
+            if (token.Equals("entero")) return new Expresion(valor, "ENTERO", l1, c1);
+            else if (token.Equals("decimal")) return new Expresion(valor, "DECIMAL", l1, c1);
+            else if (token.Equals("cadena"))
+            {
+                valor = valor.TrimEnd('"');
+                valor = valor.TrimStart('"');
+                return new Expresion(valor, "CADENA", l1, c1);
+            }
+            else if (valor.Equals("True") || valor.Equals("False")) return new Expresion(valor, "BOOLEAN", l1, c1);
+            return null;
+        }
     }
 }
