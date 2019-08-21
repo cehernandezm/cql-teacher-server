@@ -10,10 +10,8 @@ namespace cql_teacher_server.LUP.Gramatica
     {
         public GramaticaLUP() : base(caseSensitive: false)
         {
-            #region ER
-            var CUERPO = new RegexBasedTerminal("Cuerpo", "[^\n []+");
 
-            #endregion
+            
 
             #region Terminales
 
@@ -32,6 +30,12 @@ namespace cql_teacher_server.LUP.Gramatica
 
             #endregion
 
+            #region ER
+            var CUERPO = new RegexBasedTerminal("Cuerpo", "[^\n\\[]+");
+
+            #endregion
+
+
             #region No Terminales
 
             NonTerminal inicio = new NonTerminal("inicio");
@@ -46,6 +50,9 @@ namespace cql_teacher_server.LUP.Gramatica
 
 
             #endregion
+            
+           
+
 
             #region Gramatica
 

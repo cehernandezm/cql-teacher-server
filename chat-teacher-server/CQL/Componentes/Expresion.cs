@@ -85,7 +85,7 @@ namespace cql_teacher_server.CQL.Componentes
             //---------------------------------------------------------------------------------------------------------------------------------
 
             //-------------------------------------------------- SUMA -------------------------------------------------------------------------
-            if (operacion.Equals("SUMA"))
+            if (operacion.Equals("SUMA") && op1 != null && op2 != null)
             {
                 if (op1.GetType() == typeof(int) && op2.GetType() == typeof(int)) return (int)op1 + (int)op2;
                 else if (op1.GetType() == typeof(int) && op2.GetType() == typeof(Double)) return (Double)((int)op1 + (Double)op2);
@@ -106,7 +106,7 @@ namespace cql_teacher_server.CQL.Componentes
                 }
             }
             //--------------------------------------------------- RESTA ----------------------------------------------------------------------
-            else if (operacion.Equals("RESTA"))
+            else if (operacion.Equals("RESTA") && op1 != null && op2 != null)
             {
                 if (op1.GetType() == typeof(int) && op2.GetType() == typeof(int)) return (int)op1 - (int)op2;
                 else if (op1.GetType() == typeof(int) && op2.GetType() == typeof(Double)) return (Double)((int)op1 - (Double)op2);
@@ -120,9 +120,9 @@ namespace cql_teacher_server.CQL.Componentes
                 }
             }
             //---------------------------------------------------- MULTIPLICACION --------------------------------------------------------------
-            else if (operacion.Equals("MULTIPLICACION"))
+            else if (operacion.Equals("MULTIPLICACION") && op1 != null && op2 != null)
             {
-                if(op1.GetType() == typeof(int) && op2.GetType() == typeof(int)) return (int)op1 * (int)op2;
+                if (op1.GetType() == typeof(int) && op2.GetType() == typeof(int)) return (int)op1 * (int)op2;
                 else if (op1.GetType() == typeof(int) && op2.GetType() == typeof(Double)) return (Double)((int)op1 * (Double)op2);
                 else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(int)) return (Double)((Double)op1 * (int)op2);
                 else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(Double)) return (Double)((Double)op1 * (Double)op2);
@@ -134,12 +134,12 @@ namespace cql_teacher_server.CQL.Componentes
                 }
             }
             //----------------------------------------------------- POTENCIA -------------------------------------------------------------------
-            else if (operacion.Equals("POTENCIA"))
+            else if (operacion.Equals("POTENCIA") && op1 != null && op2 != null)
             {
-                if (op1.GetType() == typeof(int) && op2.GetType() == typeof(int)) return (Double)(Math.Pow((int)op1 , (int)op2));
-                else if (op1.GetType() == typeof(int) && op2.GetType() == typeof(Double)) return (Double)(Math.Pow((int)op1 , (Double)op2));
-                else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(int)) return (Double)(Math.Pow((Double)op1 , (int)op2));
-                else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(Double)) return (Double)(Math.Pow((Double)op1 , (Double)op2));
+                if (op1.GetType() == typeof(int) && op2.GetType() == typeof(int)) return (Double)(Math.Pow((int)op1, (int)op2));
+                else if (op1.GetType() == typeof(int) && op2.GetType() == typeof(Double)) return (Double)(Math.Pow((int)op1, (Double)op2));
+                else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(int)) return (Double)(Math.Pow((Double)op1, (int)op2));
+                else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(Double)) return (Double)(Math.Pow((Double)op1, (Double)op2));
                 else
                 {
                     Mensaje mes = new Mensaje();
@@ -148,7 +148,7 @@ namespace cql_teacher_server.CQL.Componentes
                 }
             }
             //-------------------------------------------------------MODULO --------------------------------------------------------------------
-            else if (operacion.Equals("MODULO"))
+            else if (operacion.Equals("MODULO") && op1 != null && op2 != null)
             {
                 if (!op2.ToString().Equals("0"))
                 {
@@ -169,10 +169,10 @@ namespace cql_teacher_server.CQL.Componentes
                     mensajes.AddLast(mes.error("No se puede obtener el modulo un divisor 0", linea1, columna1));
                     return null;
                 }
-               
+
             }
             //------------------------------------------------------DIVISION -------------------------------------------------------------------
-            else if (operacion.Equals("DIVISION"))
+            else if (operacion.Equals("DIVISION") && op1 != null && op2 != null)
             {
                 if (!op2.ToString().Equals("0"))
                 {
@@ -194,6 +194,54 @@ namespace cql_teacher_server.CQL.Componentes
                     return null;
                 }
             }
+            //-----------------------------------------------------MAYOR------------------------------------------------------------------------
+            else if (operacion.Equals("MAYOR") && op1 != null && op2 != null)
+            {
+                if (op1.GetType() == typeof(int) && op2.GetType() == typeof(int)) return (int)op1 > (int)op2;
+                else if (op1.GetType() == typeof(int) && op2.GetType() == typeof(Double)) return (int)op1 > (Double)op2;
+                else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(int)) return (Double)op1 > (int)op2;
+                else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(Double)) return (Double)op1 > (Double)op2;
+                else if (op1.GetType() == typeof(TimeSpan) && op2.GetType() == typeof(TimeSpan)) return (TimeSpan)op1 > (TimeSpan)op2;
+                else if (op1.GetType() == typeof(DateTime) && op2.GetType() == typeof(DateTime)) return (DateTime)op1 > (DateTime)op2;
+                else
+                {
+                    Mensaje mes = new Mensaje();
+                    mensajes.AddLast(mes.error("No se puede conocer el mayor de   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1));
+                    return null;
+                }
+            }
+            //-----------------------------------------------------MENOR------------------------------------------------------------------------
+            else if (operacion.Equals("MENOR") && op1 != null && op2 != null)
+            {
+                if (op1.GetType() == typeof(int) && op2.GetType() == typeof(int)) return (int)op1 < (int)op2;
+                else if (op1.GetType() == typeof(int) && op2.GetType() == typeof(Double)) return (int)op1 < (Double)op2;
+                else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(int)) return (Double)op1 < (int)op2;
+                else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(Double)) return (Double)op1 < (Double)op2;
+                else if (op1.GetType() == typeof(TimeSpan) && op2.GetType() == typeof(TimeSpan)) return (TimeSpan)op1 < (TimeSpan)op2;
+                else if (op1.GetType() == typeof(DateTime) && op2.GetType() == typeof(DateTime)) return (DateTime)op1 < (DateTime)op2;
+                else
+                {
+                    Mensaje mes = new Mensaje();
+                    mensajes.AddLast(mes.error("No se puede conocer el menor de   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1));
+                    return null;
+                }
+            }
+            //-----------------------------------------------------MAYORIGUAL------------------------------------------------------------------------
+            else if (operacion.Equals("MAYORIGUAL") && op1 != null && op2 != null)
+            {
+                if (op1.GetType() == typeof(int) && op2.GetType() == typeof(int)) return (int)op1 >= (int)op2;
+                else if (op1.GetType() == typeof(int) && op2.GetType() == typeof(Double)) return (int)op1 >= (Double)op2;
+                else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(int)) return (Double)op1 >= (int)op2;
+                else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(Double)) return (Double)op1 >= (Double)op2;
+                else if (op1.GetType() == typeof(TimeSpan) && op2.GetType() == typeof(TimeSpan)) return (TimeSpan)op1 >= (TimeSpan)op2;
+                else if (op1.GetType() == typeof(DateTime) && op2.GetType() == typeof(DateTime)) return (DateTime)op1 >= (DateTime)op2;
+                else
+                {
+                    Mensaje mes = new Mensaje();
+                    mensajes.AddLast(mes.error("No se puede conocer el menor de   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1));
+                    return null;
+                }
+            }
             //------------------------------------------------- ENTERO -------------------------------------------------------------------------
             else if (operacion.Equals("ENTERO")) return Int32.Parse(valor.ToString());
             //------------------------------------------------- DOUBLE -------------------------------------------------------------------------
@@ -202,7 +250,10 @@ namespace cql_teacher_server.CQL.Componentes
             else if (operacion.Equals("CADENA")) return valor.ToString();
             //--------------------------------------------------- BOOLEAN ----------------------------------------------------------------------
             else if (operacion.Equals("BOOLEAN")) return Boolean.Parse(valor.ToString());
-
+            //---------------------------------------------------- HORA ------------------------------------------------------------------------
+            else if (operacion.Equals("HORA")) return TimeSpan.Parse(valor.ToString());
+            //-----------------------------------------------------FECHA------------------------------------------------------------------------
+            else if (operacion.Equals("FECHA")) return DateTime.Parse(valor.ToString());
             return null;
         }
     }

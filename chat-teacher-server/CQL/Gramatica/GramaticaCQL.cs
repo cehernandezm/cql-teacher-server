@@ -15,7 +15,7 @@ namespace cql_teacher_server.CQL.Gramatica
             StringLiteral CADENA = new StringLiteral("cadena", "\"");
             var FECHA = new RegexBasedTerminal("fecha", "\\'\\d{4}-(((0)[0-9])|((1)[0-2]))-([0-2][0-9]|(3)[0-1])\\'");
             var HORA = new RegexBasedTerminal("hora", "\\'(([0-1][0-9])|2[0-3]):([0-2][0-9]):([0-5][0-9])\\'");
-            var DECIMALN = new RegexBasedTerminal("decimal", "[0-9]+.[0-9]+");
+            var DECIMALN = new RegexBasedTerminal("decimal", "[0-9]+\\.[0-9]+");
             var ENTERO = new NumberLiteral("entero");
             
 
@@ -27,9 +27,7 @@ namespace cql_teacher_server.CQL.Gramatica
 
             #region Terminales
             
-            var PTCOMA = ToTerm(";");
-            var LLAVEIZQ = ToTerm("[");
-            var LLAVEDER = ToTerm("]");
+
 
             var NULO = ToTerm("null");
             var INT = ToTerm("int");
@@ -55,8 +53,6 @@ namespace cql_teacher_server.CQL.Gramatica
             var TERNARIO = ToTerm("?");
 
             var DOSPTS = ToTerm(":");
-            var PARIZQ = ToTerm("(");
-            var PARDER = ToTerm("(");
 
             var DIVISION = ToTerm("/");
             var MODULO = ToTerm("%");
@@ -79,13 +75,7 @@ namespace cql_teacher_server.CQL.Gramatica
 
 
 
-            RegisterOperators(1, Associativity.Left, OR);
-            RegisterOperators(2, Associativity.Left, AND,XOR);
-            RegisterOperators(3, Associativity.Right, NEGACION);
-            RegisterOperators(4, Associativity.Left, IGUAIG,MAYOR,MAYORIG,MENOR,MENORIG);
-            RegisterOperators(5, Associativity.Left, SUMA,RESTA);
-            RegisterOperators(6, Associativity.Left, POR,DIVISION,MODULO);
-            RegisterOperators(7, Associativity.Left, POTENCIA);
+            
 
 
 
@@ -113,9 +103,9 @@ namespace cql_teacher_server.CQL.Gramatica
                                | instruccion
                                ;
 
-            instruccion.Rule = use + PTCOMA
-                             | createDatabase + PTCOMA
-                             | expresion
+            instruccion.Rule = use + ";"
+                             | createDatabase + ";"
+                             | expresion + ";"
                              ;
 
             use.Rule = USE + ID;
@@ -130,20 +120,20 @@ namespace cql_teacher_server.CQL.Gramatica
                            | expresion + AND + expresion
                            | expresion + XOR + expresion
                            | NEGACION + expresion
+                           | expresion + IGUAIG + expresion
+                           | expresion + DIFERENTE + expresion
                            | expresion + MAYOR + expresion 
                            | expresion + MENOR + expresion
                            | expresion + MAYORIG + expresion
                            | expresion + MENORIG + expresion
-                           | expresion + IGUAIG + expresion 
-                           | expresion + DIFERENTE + expresion
                            | expresion + SUMA + expresion 
                            | expresion +  RESTA + expresion
                            | expresion + DIVISION + expresion 
                            | expresion + POR + expresion 
                            | expresion + MODULO + expresion 
-                           | expresion + POTENCIA + expresion 
-                           | PARIZQ + expresion + PARDER
+                           | expresion + POTENCIA + expresion
                            | RESTA + expresion
+                           | ToTerm("(") + expresion + ToTerm(")")
                            | ENTERO
                            | ID
                            | CADENA
@@ -158,6 +148,21 @@ namespace cql_teacher_server.CQL.Gramatica
             #endregion
 
             #region Preferencias
+
+            RegisterOperators(1, Associativity.Left, OR);
+            RegisterOperators(2, Associativity.Left, AND, XOR);
+            RegisterOperators(3, Associativity.Left, IGUAIG, DIFERENTE);
+            RegisterOperators(4, Associativity.Left, MAYOR, MAYORIG, MENOR, MENORIG);
+            RegisterOperators(5, Associativity.Left, SUMA, RESTA);
+            RegisterOperators(6, Associativity.Left, POR, DIVISION, MODULO);
+            RegisterOperators(7, Associativity.Right, POTENCIA);
+            RegisterOperators(8, Associativity.Right, NEGACION);
+            RegisterOperators(9, Associativity.Neutral, ToTerm("("), ToTerm(")"));
+
+            this.MarkPunctuation("(", ")",";");
+
+
+
             this.Root = inicio;
             inicio.ErrorRule = SyntaxError + inicio;
             #endregion

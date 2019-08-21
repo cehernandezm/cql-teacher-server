@@ -165,7 +165,7 @@ namespace cql_teacher_server.CQL.Gramatica
 
         /*
          * Metodo que resuelve las expresiones aritmeticas,logicas
-         * 
+         * @raiz nodo principal de la lista de expresiones
          */
 
 
@@ -248,6 +248,9 @@ namespace cql_teacher_server.CQL.Gramatica
             else if (token.Equals("**")) return "POTENCIA";
             else if (token.Equals("%")) return "MODULO";
             else if (token.Equals("/")) return "DIVISION";
+            else if (token.Equals(">")) return "MAYOR";
+            else if (token.Equals("<")) return "MENOR";
+            else if (token.Equals(">=")) return "MAYORIGUAL";
             return "none";
         }
 
@@ -268,8 +271,20 @@ namespace cql_teacher_server.CQL.Gramatica
                 valor = valor.TrimStart('"');
                 return new Expresion(valor, "CADENA", l1, c1);
             }
+            else if (token.Equals("hora"))
+            {
+                valor = valor.TrimEnd('\'');
+                valor = valor.TrimStart('\'');
+                return new Expresion(valor, "HORA", l1, c1);
+            }
+            else if (token.Equals("fecha"))
+            {
+                valor = valor.TrimEnd('\'');
+                valor = valor.TrimStart('\'');
+                return new Expresion(valor, "FECHA", l1, c1);
+            }
             else if (valor.Equals("True") || valor.Equals("False")) return new Expresion(valor, "BOOLEAN", l1, c1);
-            return null;
+            else return new Expresion(null, "NULL", l1, c1);
         }
     }
 }

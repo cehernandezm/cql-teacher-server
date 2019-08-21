@@ -78,14 +78,18 @@ namespace cql_teacher_server.LUP.Gramatica
 
         public Object instruccion(ParseTreeNode actual)
         {
-            string token = actual.ToString().Split(' ')[0].ToLower();
+            string token = actual.Term.Name;
             switch (token)
             {
                 //------------------------------------------- SI EL PAQUETE ES DE LOGUEO --------------------------------------------------------------------------------
                 case "login":
 
-                    string usuario = actual.ChildNodes.ElementAt(8).ToString().Split(' ')[0];
-                    string password = actual.ChildNodes.ElementAt(17).ToString().Split(' ')[0];
+                    string usuario = actual.ChildNodes.ElementAt(8).Token.Text;
+                    usuario = usuario.TrimEnd();
+                    usuario = usuario.TrimStart();
+                    string password = actual.ChildNodes.ElementAt(17).Token.Text;
+                    password = password.TrimEnd();
+                    password = password.TrimStart();
                     return new Usuario(usuario, password);
 
                     break;
@@ -93,13 +97,17 @@ namespace cql_teacher_server.LUP.Gramatica
                 //------------------------------------------ SI EL PAQUETE ES DE LOGOUT -------------------------------------------------------------------------------
 
                 case "logout":
-                    string user = actual.ChildNodes.ElementAt(8).ToString().Split(' ')[0];
+                    string user = actual.ChildNodes.ElementAt(8).Token.Text;
+                    user = user.TrimEnd();
+                    user = user.TrimStart();
                     return new Logout(user);
                     break;
                 //------------------------------------------- SI EL PAQUETE ES DE CONSULTA ----------------------------------------------------------------
 
                 case "query":
-                    string userq = actual.ChildNodes.ElementAt(8).ToString().Split(' ')[0];
+                    string userq = actual.ChildNodes.ElementAt(8).Token.Text;
+                    userq = userq.TrimStart();
+                    userq = userq.TrimEnd();
                     string sql =(string) instruccion(actual.ChildNodes.ElementAt(13));
                     return new Consulta(userq, sql);
                     break;
@@ -114,12 +122,12 @@ namespace cql_teacher_server.LUP.Gramatica
                     if(actual.ChildNodes.Count == 2)
                     {
                         //----------------------------------- expresion_cuerpo CUERPO------------------------------------------------------------------
-                        string cuerpo = actual.ChildNodes.ElementAt(1).ToString().Split("(")[0];
+                        string cuerpo = actual.ChildNodes.ElementAt(1).Token.Text;
                         return instruccion(actual.ChildNodes.ElementAt(0)) + cuerpo;
                     }
                     else
                     {
-                        return actual.ChildNodes.ElementAt(0).ToString().Split("(")[0];
+                        return actual.ChildNodes.ElementAt(0).Token.Text;
                     }
                     break;
 
