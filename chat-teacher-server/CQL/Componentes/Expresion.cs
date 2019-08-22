@@ -367,6 +367,26 @@ namespace cql_teacher_server.CQL.Componentes
             else if (operacion.Equals("HORA")) return TimeSpan.Parse(valor.ToString());
             //-----------------------------------------------------FECHA------------------------------------------------------------------------
             else if (operacion.Equals("FECHA")) return DateTime.Parse(valor.ToString());
+            //----------------------------------------------------- ID --------------------------------------------------------------------------
+            else if (operacion.Equals("ID"))
+            {
+                object a = ts.getValor(valor.ToString().TrimStart().TrimEnd());
+                if( a == null)
+                {
+                    Mensaje me = new Mensaje();
+                    mensajes.AddLast(me.error("La variable " + valor + " no ha sido instanciada", linea1, columna1, "Semantico"));
+                    return null;
+                }else if(a.ToString().Equals("none"))
+                {
+                    Mensaje me = new Mensaje();
+                    mensajes.AddLast(me.error("La variable " + valor + " no existe en este ambito", linea1, columna1, "Semantico"));
+                    return null;
+                }
+                else
+                {
+                    return a;
+                }
+            }
             //----------------------------------------------------- NULL ------------------------------------------------------------------------
             return null;
         }

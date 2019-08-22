@@ -151,7 +151,7 @@ namespace cql_teacher_server.CQL.Gramatica
                            | RESTA + expresion
                            | ToTerm("(") + expresion + ToTerm(")")
                            | ENTERO
-                           | ID
+                           | ToTerm("@") + ID
                            | CADENA
                            | FECHA
                            | HORA

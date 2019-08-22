@@ -76,50 +76,55 @@ namespace cql_teacher_server.CQL.Componentes
                 }
                 else
                 {
-                    if(tipo.Equals("string") && a.GetType() == typeof(string))
+                    if ( a != null)
                     {
-                        ts.AddLast(new Simbolo(tipo, id));
-                        ts.setValor(id, (string)a);
-                    }
-                    else if (tipo.Equals("int") && a.GetType() == typeof(int))
-                    {
-                        ts.AddLast(new Simbolo(tipo, id));
-                        ts.setValor(id, (int)a);
-                    }
-                    else if (tipo.Equals("int") && a.GetType() == typeof(Double))
-                    {
-                        ts.AddLast(new Simbolo(tipo, id));
-                        ts.setValor(id, Convert.ToInt32((Double)a));
-                    }
-                    else if (tipo.Equals("double") && a.GetType() == typeof(Double))
-                    {
-                        ts.AddLast(new Simbolo(tipo, id));
-                        ts.setValor(id, (Double)a);
-                    }
-                    else if (tipo.Equals("double") && a.GetType() == typeof(int))
-                    {
-                        ts.AddLast(new Simbolo(tipo, id));
-                        ts.setValor(id, Convert.ToDouble((int)a));
-                    }
-                    else if (tipo.Equals("boolean") && a.GetType() == typeof(Boolean))
-                    {
-                        ts.AddLast(new Simbolo(tipo, id));
-                        ts.setValor(id, (Boolean)a);
-                    }
-                    else if (tipo.Equals("date") && a.GetType() == typeof(DateTime))
-                    {
-                        ts.AddLast(new Simbolo(tipo, id));
-                        ts.setValor(id, (DateTime)a);
-                    }
-                    else if (tipo.Equals("time") && a.GetType() == typeof(TimeSpan))
-                    {
-                        ts.AddLast(new Simbolo(tipo, id));
-                        ts.setValor(id, (TimeSpan)a);
-                    }
-                    else
+
+                   
+                        if(tipo.Equals("string") && a.GetType() == typeof(string))
+                        {
+                            ts.AddLast(new Simbolo(tipo, id));
+                            ts.setValor(id, (string)a);
+                        }
+                        else if (tipo.Equals("int") && a.GetType() == typeof(int))
+                        {
+                            ts.AddLast(new Simbolo(tipo, id));
+                            ts.setValor(id, (int)a);
+                        }
+                        else if (tipo.Equals("int") && a.GetType() == typeof(Double))
+                        {
+                            ts.AddLast(new Simbolo(tipo, id));
+                            ts.setValor(id, Convert.ToInt32((Double)a));
+                        }
+                        else if (tipo.Equals("double") && a.GetType() == typeof(Double))
+                        {
+                            ts.AddLast(new Simbolo(tipo, id));
+                            ts.setValor(id, (Double)a);
+                        }
+                        else if (tipo.Equals("double") && a.GetType() == typeof(int))
+                        {
+                            ts.AddLast(new Simbolo(tipo, id));
+                            ts.setValor(id, Convert.ToDouble((int)a));
+                        }
+                        else if (tipo.Equals("boolean") && a.GetType() == typeof(Boolean))
+                        {
+                            ts.AddLast(new Simbolo(tipo, id));
+                            ts.setValor(id, (Boolean)a);
+                        }
+                        else if (tipo.Equals("date") && a.GetType() == typeof(DateTime))
+                        {
+                            ts.AddLast(new Simbolo(tipo, id));
+                            ts.setValor(id, (DateTime)a);
+                        }
+                        else if (tipo.Equals("time") && a.GetType() == typeof(TimeSpan))
+                        {
+                            ts.AddLast(new Simbolo(tipo, id));
+                            ts.setValor(id, (TimeSpan)a);
+                        }
+                        else
                     {
                         Mensaje me = new Mensaje();
                         mensajes.AddLast(me.error("La variable " + id + " no se le puede asignar este valor " + a.ToString(), l, c, "Semantico"));
+                    }
                     }
                 }
             }

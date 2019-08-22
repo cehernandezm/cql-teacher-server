@@ -80,13 +80,7 @@ namespace cql_teacher_server.CQL.Gramatica
                 LinkedList<InstruccionCQL> lista = instrucciones(raiz.ChildNodes.ElementAt(0));
                 object res = instruccion(raiz.ChildNodes.ElementAt(1));
                 if (res.GetType() == typeof(InstruccionCQL)) lista.AddLast((InstruccionCQL)res);
-                else
-                {
-                    foreach(InstruccionCQL i in (LinkedList<InstruccionCQL>)res)
-                    {
-                        lista.AddLast(i);
-                    }
-                }
+                else lista = new LinkedList<InstruccionCQL>(lista.Union((LinkedList<InstruccionCQL>)res));          
                 return lista;
             }
             //------------------  instruccion -------------
@@ -95,13 +89,7 @@ namespace cql_teacher_server.CQL.Gramatica
                 LinkedList<InstruccionCQL> lista = new LinkedList<InstruccionCQL>();
                 object res = instruccion(raiz.ChildNodes.ElementAt(0));
                 if (res.GetType() == typeof(InstruccionCQL)) lista.AddLast((InstruccionCQL)res);
-                else
-                {
-                    foreach (InstruccionCQL i in (LinkedList<InstruccionCQL>)res)
-                    {
-                        lista.AddLast(i);
-                    }
-                }
+                else lista = new LinkedList<InstruccionCQL>(lista.Union((LinkedList<InstruccionCQL>)res));
                 return lista;
             }
         }
@@ -158,41 +146,8 @@ namespace cql_teacher_server.CQL.Gramatica
                 //------------------------------------------- Expresion ---------------------------------------------------------------
                 case "expresion":
                     LinkedList<InstruccionCQL> le = new LinkedList<InstruccionCQL>();
-                    //--------------------------------- expresion operador expresion ---------------------------------------------------
-                    if (hijo.ChildNodes.Count() == 3)
-                    {
-                        string toke = hijo.ChildNodes.ElementAt(1).Token.Text;
-                        int l1 = hijo.ChildNodes.ElementAt(1).Token.Location.Line;
-                        int c1 = hijo.ChildNodes.ElementAt(1).Token.Location.Column;
-                        le.AddLast(new Expresion(resolver_expresion(hijo.ChildNodes.ElementAt(0)), resolver_expresion(hijo.ChildNodes.ElementAt(2)), getOperacion(toke), l1, c1));
-                        return le;
-                    }
-                    //--------------------------------- operador expresion -----------------------------------------------------------
-                    else if (hijo.ChildNodes.Count() == 2)
-                    {
-                        string toke = hijo.ChildNodes.ElementAt(0).Token.Text;
-                        int l1 = hijo.ChildNodes.ElementAt(0).Token.Location.Line;
-                        int c1 = hijo.ChildNodes.ElementAt(0).Token.Location.Column;
-                        string opera = "";
-                        if (toke.Equals("-")) opera = "NEGATIVO";
-                        else if (toke.Equals("!")) opera = "NEGACION";
-                        le.AddLast(new Expresion(resolver_expresion(hijo.ChildNodes.ElementAt(1)), opera, l1, c1));
-                        return le;
-                    }
-                    //--------------------------------------- valor ------------------------------------------------------------------
-                    else
-                    {
-                        string toke = hijo.ChildNodes.ElementAt(0).Term.Name;
-                        if (toke.Equals("expresion")) return resolver_expresion(hijo.ChildNodes.ElementAt(0));
-                        string valor = hijo.ChildNodes.ElementAt(0).Token.Text;
-                        int l1 = hijo.ChildNodes.ElementAt(0).Token.Location.Line;
-                        int c1 = hijo.ChildNodes.ElementAt(0).Token.Location.Column;
-                        valor = valor.TrimEnd();
-                        valor = valor.TrimStart();
-                        le.AddLast(getValor(toke, valor, l1, c1));
-                        return le;
-                    }
-                    return null;
+                    le.AddLast(resolver_expresion(hijo));
+                    return le;
 
                 //----------------------------------------------- DECLARACION DE VARIABLE -----------------------------------------------
                 case "declaracion":
@@ -226,8 +181,11 @@ namespace cql_teacher_server.CQL.Gramatica
                     int lA = 0;
                     int cA = 0;
                     string iA = "";
-                    if (tokenA.Equals("declaracion")) { }
-                    tA = hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Text;
+                    if (tokenA.Equals("declaracion")) {
+                         LinkedList<InstruccionCQL> listaTemp = (LinkedList<InstruccionCQL>)instruccion(hijo);
+                         liA = new LinkedList<InstruccionCQL>(liA.Union(listaTemp));
+                         tA = declaracionTipo(hijo.ChildNodes.ElementAt(0));
+                    }else tA = hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Text;
                     lA = hijo.ChildNodes.ElementAt(1).Token.Location.Line;
                     cA = hijo.ChildNodes.ElementAt(1).Token.Location.Column;
                     iA = hijo.ChildNodes.ElementAt(1).Token.Text;
@@ -373,6 +331,11 @@ namespace cql_teacher_server.CQL.Gramatica
                 return new Expresion(valor, "FECHA", l1, c1);
             }
             else if (valor.Equals("True") || valor.Equals("False")) return new Expresion(valor, "BOOLEAN", l1, c1);
+            else if (token.Equals("ID"))
+            {
+                System.Diagnostics.Debug.WriteLine("ID");
+                return new Expresion(valor, "ID", l1, c1);
+            }
             else return new Expresion(null, "NULL", l1, c1);
         }
 
