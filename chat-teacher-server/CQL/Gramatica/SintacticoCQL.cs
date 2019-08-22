@@ -208,7 +208,7 @@ namespace cql_teacher_server.CQL.Gramatica
 
          public Expresion resolver_expresion(ParseTreeNode raiz)
         {
-            if(raiz.ChildNodes.Count() == 3)
+            if (raiz.ChildNodes.Count() == 3)
             {
                 string toke = raiz.ChildNodes.ElementAt(1).Token.Text;
                 int l1 = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
@@ -216,15 +216,27 @@ namespace cql_teacher_server.CQL.Gramatica
                 return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), resolver_expresion(raiz.ChildNodes.ElementAt(2)), getOperacion(toke), l1, c1);
 
             }
-            else if(raiz.ChildNodes.Count() == 2)
+            else if (raiz.ChildNodes.Count() == 2)
             {
-                string toke = raiz.ChildNodes.ElementAt(0).Token.Text;
-                int l1 = raiz.ChildNodes.ElementAt(0).Token.Location.Line;
-                int c1 = raiz.ChildNodes.ElementAt(0).Token.Location.Column;
-                string opera = "";
-                if (toke.Equals("-")) opera = "NEGATIVO";
-                else if (toke.Equals("!")) opera = "NEGACION";
-                return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(1)),opera,l1,c1);
+                string iden = raiz.ChildNodes.ElementAt(0).Term.Name;
+                if (iden.Equals("tipovariable"))
+                {
+                    int l1 = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
+                    int c1 = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Column;
+                    string tipov = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Text.TrimEnd().TrimStart().ToLower();
+                    return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(1)), "CONVERSION", l1, c1, tipov);
+                }
+                else
+                {
+                    string toke = raiz.ChildNodes.ElementAt(0).Token.Text;
+                    int l1 = raiz.ChildNodes.ElementAt(0).Token.Location.Line;
+                    int c1 = raiz.ChildNodes.ElementAt(0).Token.Location.Column;
+                    string opera = "";
+                    if (toke.Equals("-")) opera = "NEGATIVO";
+                    else if (toke.Equals("!")) opera = "NEGACION";
+                    return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(1)), opera, l1, c1);
+                }
+                
             }
             else
             {

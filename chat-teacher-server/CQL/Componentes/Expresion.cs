@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using cql_teacher_server.Herramientas;
+using System.Globalization;
 
 namespace cql_teacher_server.CQL.Componentes
 {
@@ -19,6 +20,27 @@ namespace cql_teacher_server.CQL.Componentes
         int linea1 { set; get; }
         int columna1 { set; get; }
 
+        string casteo { set; get; }
+
+        /* 
+         * Constructor de la clase para casteos explicitos:
+         * CADENA,ENTERO,DECIMAL,FECHA,HORA,BOOLEAN
+         * @a expresion a evalular
+         * @casteo a que se quiere convertir
+         * @operacion tipo de operacion
+         * @l1 linea del operador izquierdo
+         * @c1 columna del operador izquierdo
+         */
+        public Expresion(Expresion a, string operacion, int linea1, int columna1, string casteo)
+        {
+            this.a = a;
+            this.operacion = operacion;
+            this.linea1 = linea1;
+            this.columna1 = columna1;
+            this.casteo = casteo;
+        }
+
+
         /*
          * Constructor de la clase para una operacion binario:
          * SUMA,RESTA,MULTIPLICACION,DIVISION,MODULAR,MENOR,MAYOR,MENORIGUAL,MAYORIGUAL,IGUAL,POTENCIA
@@ -28,7 +50,7 @@ namespace cql_teacher_server.CQL.Componentes
          * @l1 linea del operador izquierdo
          * @c1 columna del operador izquierdo
          */
-        public Expresion(Expresion a, Expresion b, string operacion,int l1 , int c1)
+        public Expresion(Expresion a, Expresion b, string operacion, int l1, int c1)
         {
             this.a = a;
             this.b = b;
@@ -52,6 +74,7 @@ namespace cql_teacher_server.CQL.Componentes
             this.linea1 = l1;
             this.columna1 = c1;
         }
+
         /* 
          * Constructor de la clase para valores puntuales:
          * CADENA,ENTERO,DECIMAL,FECHA,HORA,BOOLEAN
@@ -69,6 +92,11 @@ namespace cql_teacher_server.CQL.Componentes
         }
 
 
+
+
+
+
+
         /*
          * Metodo de la implementacion de la clase InstruccionCQL
          * @ts Tabla de simbolos global
@@ -76,10 +104,10 @@ namespace cql_teacher_server.CQL.Componentes
          * @baseD base de datos en la que se realizara la accion, es pasada por referencia
          */
 
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD,LinkedList<string> mensajes)
+        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes)
         {
-            object op1 = (a == null) ? null : a.ejecutar(ts, user, ref baseD,mensajes);
-            object op2 = (b == null) ? null : b.ejecutar(ts, user, ref baseD,mensajes);
+            object op1 = (a == null) ? null : a.ejecutar(ts, user, ref baseD, mensajes);
+            object op2 = (b == null) ? null : b.ejecutar(ts, user, ref baseD, mensajes);
 
             //-------------------------------------------------- TIPO DE OPERACION ------------------------------------------------------------
             //---------------------------------------------------------------------------------------------------------------------------------
@@ -101,7 +129,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
-                    mensajes.AddLast(mes.error("No se puede sumar " + op1.ToString() + " con " + op2.ToString(), linea1, columna1,"Semantico"));
+                    mensajes.AddLast(mes.error("No se puede sumar " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                     return null;
                 }
             }
@@ -115,7 +143,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
-                    mensajes.AddLast(mes.error("No se puede restar " + op1.ToString() + " con " + op2.ToString(), linea1, columna1,"Semantico"));
+                    mensajes.AddLast(mes.error("No se puede restar " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                     return null;
                 }
             }
@@ -129,7 +157,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
-                    mensajes.AddLast(mes.error("No se puede multiplicar " + op1.ToString() + " con " + op2.ToString(), linea1, columna1,"Semantico"));
+                    mensajes.AddLast(mes.error("No se puede multiplicar " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                     return null;
                 }
             }
@@ -143,7 +171,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
-                    mensajes.AddLast(mes.error("No se puede obtener una potencia de " + op1.ToString() + " con " + op2.ToString(), linea1, columna1,"Semantico"));
+                    mensajes.AddLast(mes.error("No se puede obtener una potencia de " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                     return null;
                 }
             }
@@ -159,14 +187,14 @@ namespace cql_teacher_server.CQL.Componentes
                     else
                     {
                         Mensaje mes = new Mensaje();
-                        mensajes.AddLast(mes.error("No se puede obtener el modulo de  " + op1.ToString() + " con " + op2.ToString(), linea1, columna1,"Semantico"));
+                        mensajes.AddLast(mes.error("No se puede obtener el modulo de  " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                         return null;
                     }
                 }
                 else
                 {
                     Mensaje mes = new Mensaje();
-                    mensajes.AddLast(mes.error("No se puede obtener el modulo un divisor 0", linea1, columna1,"Semantico"));
+                    mensajes.AddLast(mes.error("No se puede obtener el modulo un divisor 0", linea1, columna1, "Semantico"));
                     return null;
                 }
 
@@ -183,14 +211,14 @@ namespace cql_teacher_server.CQL.Componentes
                     else
                     {
                         Mensaje mes = new Mensaje();
-                        mensajes.AddLast(mes.error("No se puede dividir  " + op1.ToString() + " con " + op2.ToString(), linea1, columna1,"Semantico"));
+                        mensajes.AddLast(mes.error("No se puede dividir  " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                         return null;
                     }
                 }
                 else
                 {
                     Mensaje mes = new Mensaje();
-                    mensajes.AddLast(mes.error("No se puede dividir entre 0", linea1, columna1,"Semantico"));
+                    mensajes.AddLast(mes.error("No se puede dividir entre 0", linea1, columna1, "Semantico"));
                     return null;
                 }
             }
@@ -206,7 +234,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
-                    mensajes.AddLast(mes.error("No se puede conocer el mayor de   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1,"Semantico"));
+                    mensajes.AddLast(mes.error("No se puede conocer el mayor de   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                     return null;
                 }
             }
@@ -222,7 +250,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
-                    mensajes.AddLast(mes.error("No se puede conocer el menor de   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1,"Semantico"));
+                    mensajes.AddLast(mes.error("No se puede conocer el menor de   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                     return null;
                 }
             }
@@ -238,7 +266,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
-                    mensajes.AddLast(mes.error("No se puede conocer el mayor igual de   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1,"Semantico"));
+                    mensajes.AddLast(mes.error("No se puede conocer el mayor igual de   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                     return null;
                 }
             }
@@ -254,7 +282,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
-                    mensajes.AddLast(mes.error("No se puede conocer el menor igual de   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1,"Semantico"));
+                    mensajes.AddLast(mes.error("No se puede conocer el menor igual de   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                     return null;
                 }
             }
@@ -272,7 +300,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
-                    mensajes.AddLast(mes.error("No se puede conocer si es igual   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1,"Semantico"));
+                    mensajes.AddLast(mes.error("No se puede conocer si es igual   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                     return null;
                 }
             }
@@ -285,7 +313,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(Double)) return (Double)op1 != (Double)op2;
                 else if (op1.GetType() == typeof(TimeSpan) && op2.GetType() == typeof(TimeSpan)) return (TimeSpan)op1 != (TimeSpan)op2;
                 else if (op1.GetType() == typeof(DateTime) && op2.GetType() == typeof(DateTime)) return (DateTime)op1 != (DateTime)op2;
-                else if (op1.GetType() == typeof(string) && op2.GetType() == typeof(string)) return ! op1.ToString().Equals(op2.ToString());
+                else if (op1.GetType() == typeof(string) && op2.GetType() == typeof(string)) return !op1.ToString().Equals(op2.ToString());
                 else if (op1.GetType() == typeof(Boolean) && op2.GetType() == typeof(Boolean)) return (Boolean)op1 != (Boolean)op2;
                 else
                 {
@@ -355,6 +383,76 @@ namespace cql_teacher_server.CQL.Componentes
                     return null;
                 }
             }
+            //------------------------------------------------------- CONVERSION EXPLICITA --------------------------------------------------------
+            else if (operacion.Equals("CONVERSION") && op1 != null)
+            {
+                if (casteo.Equals("string")) return op1.ToString();
+                else if (op1.GetType() == typeof(string) && casteo.Equals("int"))
+                {
+                    Boolean salida = false;
+                    int datoS = 0;
+                    Boolean conver = Int32.TryParse(op1.ToString(), out datoS);
+                    if (!conver)
+                    {
+                        Mensaje men = new Mensaje();
+                        mensajes.AddLast(men.error("No se puede castear: " + op1 + " to (int)", linea1, columna1, "Semantico"));
+                        return null;
+                    }
+                    else return datoS;
+                }
+                else if (op1.GetType() == typeof(string) && casteo.Equals("time"))
+                {
+                    try
+                    {
+                        TimeSpan result = TimeSpan.ParseExact(op1.ToString(), "hh\\:mm\\:ss", CultureInfo.InvariantCulture);
+                        return result;
+                    }
+                    catch (Exception e)
+                    {
+                        Mensaje men = new Mensaje();
+                        mensajes.AddLast(men.error("No se puede castear: " + op1 + " to (Time)", linea1, columna1, "Semantico"));
+                        return null;
+                    }
+
+
+                }
+                else if (op1.GetType() == typeof(string) && casteo.Equals("double"))
+                {
+                    Boolean salida = false;
+                    Double result;
+
+                    Boolean conver = Double.TryParse(op1.ToString(), out result);
+                    if (!conver)
+                    {
+                        Mensaje men = new Mensaje();
+                        mensajes.AddLast(men.error("No se puede castear: " + op1 + " to (Double)", linea1, columna1, "Semantico"));
+                        return null;
+                    }
+                    else return result;
+                }
+                else if (op1.GetType() == typeof(string) && casteo.Equals("date"))
+                {
+
+                    try
+                    {
+                        DateTime result = DateTime.ParseExact(op1.ToString(), "yyyy\\-MM\\-dd", CultureInfo.InvariantCulture);
+                        return result;
+                    }
+                    catch (Exception e)
+                    {
+                        Mensaje men = new Mensaje();
+                        mensajes.AddLast(men.error("No se puede castear: " + op1 + " to (Date)", linea1, columna1, "Semantico"));
+                        return null;
+                    }
+
+                }
+                else
+                {
+                    Mensaje men = new Mensaje();
+                    mensajes.AddLast(men.error("No se puede castear: " + op1 + " to (" + casteo + ")", linea1, columna1, "Semantico"));
+                    return null;
+                }
+            }
             //------------------------------------------------- ENTERO -------------------------------------------------------------------------
             else if (operacion.Equals("ENTERO")) return Int32.Parse(valor.ToString());
             //------------------------------------------------- DOUBLE -------------------------------------------------------------------------
@@ -371,12 +469,13 @@ namespace cql_teacher_server.CQL.Componentes
             else if (operacion.Equals("ID"))
             {
                 object a = ts.getValor(valor.ToString().TrimStart().TrimEnd());
-                if( a == null)
+                if (a == null)
                 {
                     Mensaje me = new Mensaje();
                     mensajes.AddLast(me.error("La variable " + valor + " no ha sido instanciada", linea1, columna1, "Semantico"));
                     return null;
-                }else if(a.ToString().Equals("none"))
+                }
+                else if (a.ToString().Equals("none"))
                 {
                     Mensaje me = new Mensaje();
                     mensajes.AddLast(me.error("La variable " + valor + " no existe en este ambito", linea1, columna1, "Semantico"));

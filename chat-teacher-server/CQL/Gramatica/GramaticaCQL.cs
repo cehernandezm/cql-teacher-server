@@ -150,6 +150,7 @@ namespace cql_teacher_server.CQL.Gramatica
                            | expresion + POTENCIA + expresion
                            | RESTA + expresion
                            | ToTerm("(") + expresion + ToTerm(")")
+                           | ToTerm("(") + tipoVariable + ToTerm(")") + expresion
                            | ENTERO
                            | ToTerm("@") + ID
                            | CADENA
