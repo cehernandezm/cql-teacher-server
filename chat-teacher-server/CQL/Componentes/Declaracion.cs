@@ -116,13 +116,17 @@ namespace cql_teacher_server.CQL.Componentes
                         ts.AddLast(new Simbolo(tipo, id));
                         ts.setValor(id, (TimeSpan)a);
                     }
+                    else
+                    {
+                        Mensaje me = new Mensaje();
+                        mensajes.AddLast(me.error("La variable " + id + " no se le puede asignar este valor " + a.ToString(), l, c, "Semantico"));
+                    }
                 }
             }
             else
             {
                 Mensaje me = new Mensaje();
-                System.Diagnostics.Debug.WriteLine("Sho error");
-                mensajes.AddLast(me.error("La variable " + id + "ya existe en este ambito",l,c,"Semantico"));
+                mensajes.AddLast(me.error("La variable " + id + " ya existe en este ambito",l,c,"Semantico"));
             }
 
             return null;
