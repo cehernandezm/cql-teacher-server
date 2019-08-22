@@ -22,8 +22,9 @@ namespace cql_teacher_server.CQL.Arbol
 
         public object getValor(string id)
         {
-            foreach(Simbolo s in this)
+            for(int i = this.Count() - 1;  i >= 0; i--)
             {
+                Simbolo s = this.ElementAt(i);
                 if (s.nombre.Equals(id)) return s.valor;
             }
             return "none";

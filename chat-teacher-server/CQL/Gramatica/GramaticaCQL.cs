@@ -37,8 +37,10 @@ namespace cql_teacher_server.CQL.Gramatica
             var DATE = ToTerm("date");
             var TIME = ToTerm("time");
 
+
             var TRUE = ToTerm("true");
             var FALSE = ToTerm("false");
+            var NULL = ToTerm("null");
 
             var MAYOR = ToTerm(">");
             var MENOR = ToTerm("<");
@@ -60,6 +62,8 @@ namespace cql_teacher_server.CQL.Gramatica
             var POR = ToTerm("*");
             var RESTA = ToTerm("-");
             var SUMA = ToTerm("+");
+
+            
 
 
             var USE = ToTerm("USE");
@@ -94,6 +98,13 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal createDatabase = new NonTerminal("createdatabase");
 
             NonTerminal expresion = new NonTerminal("expresion");
+
+            NonTerminal tipoVariable = new NonTerminal("tipovariable");
+
+            NonTerminal declaracion = new NonTerminal("declaracion");
+
+            NonTerminal declaracionA = new NonTerminal("declaracionA");
+
             #endregion
 
             #region Gramatica
@@ -105,16 +116,21 @@ namespace cql_teacher_server.CQL.Gramatica
 
             instruccion.Rule = use + ";"
                              | createDatabase + ";"
-                             | expresion + ";"
+                             | declaracion + ";"
+                             | declaracionA + ";" 
                              ;
+
+            //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
 
             use.Rule = USE + ID;
 
+            //--------------------------------------------------- BASES DE DATOS-----------------------------------------------------------------------------
             createDatabase.Rule = CREATE + DATABASE + ID
                                 | CREATE + DATABASE + IF + NOT + EXISTS + ID
                                 ;
 
 
+            //---------------------------------------------------------- EXPRESIONES ------------------------------------------------------------------------
 
             expresion.Rule = expresion + OR + expresion
                            | expresion + AND + expresion
@@ -142,8 +158,30 @@ namespace cql_teacher_server.CQL.Gramatica
                            | TRUE
                            | FALSE
                            | DECIMALN
+                           | NULL
                            ;
 
+            //------------------------------------------------------ TIPO DE VARIABLES --------------------------------------------------------------------------
+
+            tipoVariable.Rule = STRING
+                              | INT
+                              | BOOL
+                              | DECIMAL
+                              | DATE
+                              | TIME
+                              | ID
+                              ;
+
+            //------------------------------------------------------- DECLARACION DE VARIABLE --------------------------------------------------------------------
+
+            declaracion.Rule = declaracion + "," + "@" + ID
+                             | tipoVariable + "@" + ID
+                             ;
+            //--------------------------------------------------------- DECLARAR Y ASIGNAR UNA VARIABLE ------------------------------------------------------------
+
+            declaracionA.Rule = tipoVariable + "@" + ID + "=" + expresion
+                              | declaracion + "," + "@" + ID + "=" + expresion
+                              ;
 
             #endregion
 
@@ -159,7 +197,7 @@ namespace cql_teacher_server.CQL.Gramatica
             RegisterOperators(8, Associativity.Right, NEGACION);
             RegisterOperators(9, Associativity.Neutral, ToTerm("("), ToTerm(")"));
 
-            this.MarkPunctuation("(", ")",";");
+            this.MarkPunctuation("(", ")",";", "@",",");
 
 
 

@@ -367,6 +367,7 @@ namespace cql_teacher_server.CQL.Componentes
             else if (operacion.Equals("HORA")) return TimeSpan.Parse(valor.ToString());
             //-----------------------------------------------------FECHA------------------------------------------------------------------------
             else if (operacion.Equals("FECHA")) return DateTime.Parse(valor.ToString());
+            //----------------------------------------------------- NULL ------------------------------------------------------------------------
             return null;
         }
     }
