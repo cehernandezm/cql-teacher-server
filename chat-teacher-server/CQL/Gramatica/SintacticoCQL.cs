@@ -1,4 +1,5 @@
 ﻿using cql_teacher_server.CHISON;
+using cql_teacher_server.CHISON.Componentes;
 using cql_teacher_server.CQL.Arbol;
 using cql_teacher_server.CQL.Componentes;
 using cql_teacher_server.Herramientas;
@@ -185,7 +186,8 @@ namespace cql_teacher_server.CQL.Gramatica
                          LinkedList<InstruccionCQL> listaTemp = (LinkedList<InstruccionCQL>)instruccion(hijo);
                          liA = new LinkedList<InstruccionCQL>(liA.Union(listaTemp));
                          tA = declaracionTipo(hijo.ChildNodes.ElementAt(0));
-                    }else tA = hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Text;
+                    }
+                    else tA = hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Text;
                     lA = hijo.ChildNodes.ElementAt(1).Token.Location.Line;
                     cA = hijo.ChildNodes.ElementAt(1).Token.Location.Column;
                     iA = hijo.ChildNodes.ElementAt(1).Token.Text;
@@ -194,8 +196,70 @@ namespace cql_teacher_server.CQL.Gramatica
                     Declaracion aA = new Declaracion(tA, resolver_expresion(hijo.ChildNodes.ElementAt(3)), iA, lA, cA);
                     liA.AddLast(aA);
                     return liA;
+
+                //--------------------------------------------------- CREACION DE UN USER_TYPE ----------------------------------------------------
+                case "usertype":
+                    LinkedList<InstruccionCQL> lU = new LinkedList<InstruccionCQL>();
+                    int lUT = 0;
+                    int cUT = 0;
+                    Boolean flagU = false;
+                    LinkedList<Attrs> atribuU = new LinkedList<Attrs>();
+                    string idU = "";
+                    if (hijo.ChildNodes.Count() == 4)
+                    {
+                        idU = hijo.ChildNodes.ElementAt(2).Token.Text;
+                        idU = idU.ToLower().TrimEnd().TrimStart();
+                        atribuU = getListaUserType(hijo.ChildNodes.ElementAt(3));
+                        lUT = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
+                        cUT = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
+
+                    }
+                    else
+                    {
+                        idU = hijo.ChildNodes.ElementAt(5).Token.Text;
+                        idU = idU.ToLower().TrimEnd().TrimStart();
+                        atribuU = getListaUserType(hijo.ChildNodes.ElementAt(6));
+                        lUT = hijo.ChildNodes.ElementAt(5).Token.Location.Line;
+                        cUT = hijo.ChildNodes.ElementAt(5).Token.Location.Column;
+                        flagU = true;
+                    }
+                    lU.AddLast(new UserType(idU, atribuU, lUT, cUT, flagU));
+                    return lU;
             }
             return null;
+        }
+
+
+
+
+        public LinkedList<Attrs> getListaUserType(ParseTreeNode raiz)
+        {
+            LinkedList<Attrs> lista = new LinkedList<Attrs>();
+            string id = "";
+            string tipo = "";
+            if (raiz.ChildNodes.Count() == 3)
+            {
+                lista = getListaUserType(raiz.ChildNodes.ElementAt(0));
+
+                id = raiz.ChildNodes.ElementAt(1).Token.Text;
+                id = id.ToLower().TrimEnd().TrimStart();
+
+                tipo = raiz.ChildNodes.ElementAt(2).ChildNodes.ElementAt(0).Token.Text;
+                tipo = tipo.ToLower().TrimEnd().TrimStart();
+            }
+            else
+            {
+                id = raiz.ChildNodes.ElementAt(0).Token.Text;
+                id = id.ToLower().TrimEnd().TrimStart();
+
+                tipo = raiz.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).Token.Text;
+                tipo = tipo.ToLower().TrimEnd().TrimStart();
+            }
+
+            Attrs a = new Attrs(id, tipo);
+            lista.AddLast(a);
+            return lista;
+
         }
 
 

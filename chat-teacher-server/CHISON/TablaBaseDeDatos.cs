@@ -54,12 +54,19 @@ namespace cql_teacher_server.CHISON
             {
                 string user = us.nombre.ToString();
                 user = user.TrimEnd();
-                System.Diagnostics.Debug.WriteLine(user + "." + nombre);
                 if (user.Equals(nombre)) return us;
             }
             return null;
         }
 
+        public static Boolean getPermiso(Usuario user, string bdC)
+        {
+            foreach(string bd in user.bases)
+            {
+                if (bd.Equals(bdC)) return true;
+            }
+            return false;
+        }
 
         public static Boolean  getEnUso (string nombre , string usuario)
         {
@@ -89,6 +96,16 @@ namespace cql_teacher_server.CHISON
                 if (node.Value.nombre.Equals(usuario)) listaEnUso.Remove(node);
                 node = nextNode;
             }
+        }
+
+        public static Boolean getUserType(string nombre, BaseDeDatos db)
+        {
+            Objeto o = db.objetos;
+            foreach(User_Types a in o.user_types)
+            {
+                if (a.name.Equals(nombre)) return true;
+            }
+            return false;
         }
 
     }

@@ -68,6 +68,7 @@ namespace cql_teacher_server.CQL.Gramatica
 
             var USE = ToTerm("USE");
             var CREATE = ToTerm("CREATE");
+            var TYPE = ToTerm("TYPE");
             var DATABASE = ToTerm("DATABASE");
 
             var IF = ToTerm("IF");
@@ -105,6 +106,10 @@ namespace cql_teacher_server.CQL.Gramatica
 
             NonTerminal declaracionA = new NonTerminal("declaracionA");
 
+            NonTerminal user_type = new NonTerminal("usertype");
+
+            NonTerminal lista_user_type = new NonTerminal("listausertype");
+
             #endregion
 
             #region Gramatica
@@ -117,7 +122,8 @@ namespace cql_teacher_server.CQL.Gramatica
             instruccion.Rule = use + ";"
                              | createDatabase + ";"
                              | declaracion + ";"
-                             | declaracionA + ";" 
+                             | declaracionA + ";"
+                             | user_type + ";"
                              ;
 
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
@@ -183,6 +189,16 @@ namespace cql_teacher_server.CQL.Gramatica
             declaracionA.Rule = tipoVariable + "@" + ID + "=" + expresion
                               | declaracion + "," + "@" + ID + "=" + expresion
                               ;
+
+            //---------------------------------------------------------- CREACION DE USER TYPES ---------------------------------------------------------------------
+            user_type.Rule = CREATE + TYPE + IF + NOT + EXISTS + ID + "(" + lista_user_type + ")"
+                           | CREATE + TYPE + ID + "(" + lista_user_type  +")"
+                           ;
+
+            //---------------------------------------------------------- Lista de atributos de un user_type ----------------------------------------------------------
+            lista_user_type.Rule = lista_user_type + "," + ID + tipoVariable 
+                                 | ID + tipoVariable 
+                                 ;
 
             #endregion
 

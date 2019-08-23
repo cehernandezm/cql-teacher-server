@@ -1,6 +1,7 @@
 ﻿using cql_teacher_server.CHISON;
 using cql_teacher_server.CHISON.Componentes;
 using cql_teacher_server.CQL.Arbol;
+using cql_teacher_server.Herramientas;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,17 +42,22 @@ namespace cql_teacher_server.CQL.Componentes
 
         public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string>mensajes)
         {
+            Mensaje mensa = new Mensaje();
             BaseDeDatos db = TablaBaseDeDatos.getBase(bd);
             if (db == null)
             {
-                mensajes.AddLast("[+ERROR]\n[+LINE]\n\t" + linea + "\n[-LINE]\n[+COLUMN]\n\t" + columna + "\n[-COLUMN]\n" +
-                    "[+TYPE]\n\tSemantico\n[-TYPE]\n[+DESC]\n\t No existe la base de datos a utilizar \n[-DESC]\n[-ERROR]");
+                mensajes.AddLast(mensa.error("La base de datos: " + bd + " no existe ", linea, columna, "Semantico"));
                 return "";
             }
             if (TablaBaseDeDatos.getEnUso(bd, user))
             {
-                mensajes.AddLast("[+ERROR]\n[+LINE]\n\t" + linea + "\n[-LINE]\n[+COLUMN]\n\t" + columna + "\n[-COLUMN]\n" +
-                    "[+TYPE]\n\tSemantico\n[-TYPE]\n[+DESC]\n\t La base ya esta siendo utilizada por otro usuario \n[-DESC]\n[-ERROR]");
+                mensajes.AddLast(mensa.error("La base de datos: " + bd + " esta siendo utilizada por otro usuario ", linea, columna, "Semantico"));
+                return "";
+            }
+            Usuario usu = TablaBaseDeDatos.getUsuario(user);
+            if( usu == null)
+            {
+                mensajes.AddLast(mensa.error("El usuario: " + user + " no existe ", linea, columna, "Semantico"));
                 return "";
             }
             baseD = bd;

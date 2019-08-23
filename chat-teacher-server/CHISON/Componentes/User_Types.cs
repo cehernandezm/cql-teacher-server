@@ -10,6 +10,8 @@ namespace cql_teacher_server.CHISON.Componentes
         public string name { set; get;}
         public LinkedList<Attrs> type { set; get; }
 
+
+
         public User_Types(string name, LinkedList<Attrs> type)
         {
             this.name = name;
