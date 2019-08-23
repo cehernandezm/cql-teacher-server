@@ -230,7 +230,10 @@ namespace cql_teacher_server.CQL.Gramatica
         }
 
 
-
+        /*
+         * Metodo que obtiene los atributos de un Usertype
+         * @raiz nodo del arbol donde se encuentran los atributos
+         */
 
         public LinkedList<Attrs> getListaUserType(ParseTreeNode raiz)
         {
@@ -274,6 +277,15 @@ namespace cql_teacher_server.CQL.Gramatica
         {
             if (raiz.ChildNodes.Count() == 3)
             {
+                string iden = raiz.ChildNodes.ElementAt(0).Term.Name;
+                if (iden.Equals("expresion"))
+                {
+                    int le = raiz.ChildNodes.ElementAt(2).Token.Location.Line;
+                    int ce = raiz.ChildNodes.ElementAt(2).Token.Location.Column;
+                    string idA = raiz.ChildNodes.ElementAt(2).Token.Text;
+                    idA = idA.ToLower().TrimEnd().TrimStart();
+                    return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), "ACCESOUSER", le, ce, idA);
+                }
                 string toke = raiz.ChildNodes.ElementAt(1).Token.Text;
                 int l1 = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
                 int c1 = raiz.ChildNodes.ElementAt(1).Token.Location.Column;
@@ -293,6 +305,15 @@ namespace cql_teacher_server.CQL.Gramatica
                 else
                 {
                     string toke = raiz.ChildNodes.ElementAt(0).Token.Text;
+                    if (toke.Equals("new"))
+                    {
+                        int ln = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
+                        int cn = raiz.ChildNodes.ElementAt(1).Token.Location.Column;
+                        string tipoA = raiz.ChildNodes.ElementAt(1).Token.Text;
+                        tipoA = tipoA.ToLower().TrimEnd().TrimStart();
+
+                        return new Expresion("INSTANCIA", ln, cn, tipoA);
+                    }
                     int l1 = raiz.ChildNodes.ElementAt(0).Token.Location.Line;
                     int c1 = raiz.ChildNodes.ElementAt(0).Token.Location.Column;
                     string opera = "";

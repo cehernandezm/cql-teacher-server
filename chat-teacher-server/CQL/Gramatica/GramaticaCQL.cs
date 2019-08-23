@@ -70,6 +70,7 @@ namespace cql_teacher_server.CQL.Gramatica
             var CREATE = ToTerm("CREATE");
             var TYPE = ToTerm("TYPE");
             var DATABASE = ToTerm("DATABASE");
+            var NEW = ToTerm("new");
 
             var IF = ToTerm("IF");
             var NOT = ToTerm("NOT");
@@ -157,7 +158,9 @@ namespace cql_teacher_server.CQL.Gramatica
                            | RESTA + expresion
                            | ToTerm("(") + expresion + ToTerm(")")
                            | ToTerm("(") + tipoVariable + ToTerm(")") + expresion
-                           | ENTERO
+                           | NEW + ID 
+                           | expresion + "." + ID
+                           |ENTERO
                            | ToTerm("@") + ID
                            | CADENA
                            | FECHA

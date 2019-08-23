@@ -108,5 +108,14 @@ namespace cql_teacher_server.CHISON
             return false;
         }
 
+        public static User_Types getUserTypeV(string nombre, BaseDeDatos db)
+        {
+            Objeto o = db.objetos;
+            foreach (User_Types a in o.user_types)
+            {
+                if (a.name.Equals(nombre)) return a;
+            }
+            return null;
+        }
     }
 }

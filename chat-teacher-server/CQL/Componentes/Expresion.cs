@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using cql_teacher_server.Herramientas;
 using System.Globalization;
+using cql_teacher_server.CHISON.Componentes;
+using cql_teacher_server.CHISON;
 
 namespace cql_teacher_server.CQL.Componentes
 {
@@ -22,8 +24,12 @@ namespace cql_teacher_server.CQL.Componentes
 
         string casteo { set; get; }
 
+        string tipoA { set; get; }
+
+  
+
         /* 
-         * Constructor de la clase para casteos explicitos:
+         * Constructor de la clase para casteos explicitos tambien sirve para acceder a User Types:
          * CADENA,ENTERO,DECIMAL,FECHA,HORA,BOOLEAN
          * @a expresion a evalular
          * @casteo a que se quiere convertir
@@ -90,6 +96,25 @@ namespace cql_teacher_server.CQL.Componentes
             this.linea1 = linea1;
             this.columna1 = columna1;
         }
+
+
+        /*
+         * Constructor de la clase para instacias de user types
+         * @operacion el tipo de operacion que se realizara
+         * @linea1 es la linea del id
+         * @columna1 el la columna del id
+         * @tipoB es el tipo de Instancia
+         */
+
+        public Expresion(string operacion, int linea1, int columna1, string tipoB)
+        {
+            this.operacion = operacion;
+            this.linea1 = linea1;
+            this.columna1 = columna1;
+            this.tipoA = tipoB;
+        }
+
+
 
 
 
@@ -453,6 +478,57 @@ namespace cql_teacher_server.CQL.Componentes
                     return null;
                 }
             }
+            //-------------------------------------------------------- INSTANCIA -------------------------------------------------------------------
+            else if (operacion.Equals("INSTANCIA"))
+            {
+                BaseDeDatos db = TablaBaseDeDatos.getBase(baseD);
+                if (db != null)
+                {
+                    User_Types a = TablaBaseDeDatos.getUserTypeV(tipoA.ToLower(), db);
+                    if(a != null)
+                    {
+                        LinkedList<Atributo> lista = getAtributos(a,db);
+                        if (lista != null)
+                        {
+                            return new InstanciaUserType(tipoA, lista);
+                        }
+                        else return null;
+
+                    }
+                    else
+                    {
+                        Mensaje men = new Mensaje();
+                        mensajes.AddLast(men.error("No existe el USER TYPE " + tipoA , linea1, columna1, "Semantico"));
+                        return null;
+                    }
+                }
+                else
+                {
+                    Mensaje men = new Mensaje();
+                    mensajes.AddLast(men.error("No se puede acceder a la base de datos: " + baseD + " asegurese de usar el comando USE", linea1, columna1, "Semantico"));
+                    return null;
+                }
+            }
+            //--------------------------------------------------------- ACCESO A USER TYPES ------------------------------------------------------
+            else if(operacion.Equals("ACCESOUSER") && op1 != null)
+            {
+                if(op1.GetType() == typeof(LinkedList<Atributo>))
+                {
+                    foreach (Atributo a in (LinkedList<Atributo>)op1)
+                    {
+                        if (a.nombre.Equals(casteo)) return a.valor;
+                    }
+                    Mensaje men = new Mensaje();
+                    mensajes.AddLast(men.error("No se encontro el atributo: " + casteo, linea1, columna1, "Semantico"));
+                    return null;
+                }
+                else
+                {
+                    Mensaje men = new Mensaje();
+                    mensajes.AddLast(men.error("Se necesita un User Type para acceder a sus atributos  ", linea1, columna1, "Semantico"));
+                    return null;
+                }
+            }
             //------------------------------------------------- ENTERO -------------------------------------------------------------------------
             else if (operacion.Equals("ENTERO")) return Int32.Parse(valor.ToString());
             //------------------------------------------------- DOUBLE -------------------------------------------------------------------------
@@ -489,5 +565,45 @@ namespace cql_teacher_server.CQL.Componentes
             //----------------------------------------------------- NULL ------------------------------------------------------------------------
             return null;
         }
+
+
+        /*
+         * Metodo que recorre un USER TYPE y crear una declaracion de cada atributo
+         * @u User type que se recorrera
+         * @bd base de datos donde se encuentra el user type
+         */
+        private LinkedList<Atributo> getAtributos(User_Types u, BaseDeDatos bd)
+        {
+            LinkedList<Atributo> at = new LinkedList<Atributo>();
+            foreach(Attrs a in u.type)
+            {
+                Atributo att;
+                if (a.type.ToLower().Equals("string")) att = new Atributo(a.name.ToLower(), null, "string");
+                else if (a.type.ToLower().Equals("date")) att = new Atributo(a.name.ToLower(), null, "date");
+                else if (a.type.ToLower().Equals("time")) att = new Atributo(a.name.ToLower(), null, "time");
+                else if (a.type.ToLower().Equals("int")) att = new Atributo(a.name.ToLower(), 0, "int");
+                else if (a.type.ToLower().Equals("double")) att = new Atributo(a.name.ToLower(), 0.0, "double");
+                else if (a.type.ToLower().Equals("boolean")) att = new Atributo(a.name.ToLower(), false, "boolean");
+                else
+                {
+                    User_Types temp = TablaBaseDeDatos.getUserTypeV(a.name.ToLower(), bd);
+
+                    if (temp != null)
+                    {
+                        LinkedList<Atributo> tempA = getAtributos(temp, bd);
+                        if (tempA != null)
+                        {
+                            att = new Atributo(a.name.ToLower(), tempA, a.type.ToLower());
+                        }
+                        else return null;
+                    }
+                    else return null;
+                }
+                at.AddLast(att);
+            }
+            return at;
+        }
     }
+
+
 }
