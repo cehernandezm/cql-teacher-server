@@ -586,7 +586,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else if (a.type.ToLower().Equals("boolean")) att = new Atributo(a.name.ToLower(), false, "boolean");
                 else
                 {
-                    User_Types temp = TablaBaseDeDatos.getUserTypeV(a.name.ToLower(), bd);
+                    User_Types temp = TablaBaseDeDatos.getUserTypeV(a.type.ToLower(), bd);
 
                     if (temp != null)
                     {
