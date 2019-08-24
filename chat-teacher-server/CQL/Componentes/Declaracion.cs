@@ -147,7 +147,7 @@ namespace cql_teacher_server.CQL.Componentes
                             if (tipo.Equals(ins.tipo.ToLower()))
                             {
                                 ts.AddLast(new Simbolo(tipo, id));
-                                ts.setValor(id, ins.lista);
+                                ts.setValor(id, ins);
                             }
                             else
                             {

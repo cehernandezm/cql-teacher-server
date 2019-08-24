@@ -512,9 +512,10 @@ namespace cql_teacher_server.CQL.Componentes
             //--------------------------------------------------------- ACCESO A USER TYPES ------------------------------------------------------
             else if(operacion.Equals("ACCESOUSER") && op1 != null)
             {
-                if(op1.GetType() == typeof(LinkedList<Atributo>))
+                if(op1.GetType() == typeof(InstanciaUserType))
                 {
-                    foreach (Atributo a in (LinkedList<Atributo>)op1)
+                    InstanciaUserType temp = (InstanciaUserType)op1;
+                    foreach (Atributo a in temp.lista)
                     {
                         if (a.nombre.Equals(casteo)) return a.valor;
                     }
@@ -591,9 +592,10 @@ namespace cql_teacher_server.CQL.Componentes
                     if (temp != null)
                     {
                         LinkedList<Atributo> tempA = getAtributos(temp, bd);
+                        InstanciaUserType tm = new InstanciaUserType(a.type, tempA);
                         if (tempA != null)
                         {
-                            att = new Atributo(a.name.ToLower(), tempA, a.type.ToLower());
+                            att = new Atributo(a.name.ToLower(), tm, a.type.ToLower());
                         }
                         else return null;
                     }
