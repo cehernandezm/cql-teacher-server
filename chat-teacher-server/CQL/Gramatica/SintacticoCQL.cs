@@ -225,6 +225,24 @@ namespace cql_teacher_server.CQL.Gramatica
                     }
                     lU.AddLast(new UserType(idU, atribuU, lUT, cUT, flagU));
                     return lU;
+
+
+                //------------------------------------------------------ ASIGNACION DE VARIABLES --------------------------------------------------
+                case "asignacion":
+                    LinkedList<InstruccionCQL> lAs = new LinkedList<InstruccionCQL>();
+                    string idAs = "";
+                    int liAs = 0;
+                    int coAs = 0;
+
+                    idAs = hijo.ChildNodes.ElementAt(0).Token.Text;
+                    idAs = idAs.ToLower().TrimEnd().TrimStart();
+
+                    liAs = hijo.ChildNodes.ElementAt(0).Token.Location.Line;
+                    coAs = hijo.ChildNodes.ElementAt(0).Token.Location.Column;
+
+                    lAs.AddLast(new Asignacion(idAs,liAs,coAs,resolver_expresion(hijo.ChildNodes.ElementAt(2))));
+
+                    return lAs;
             }
             return null;
         }
@@ -277,8 +295,8 @@ namespace cql_teacher_server.CQL.Gramatica
         {
             if (raiz.ChildNodes.Count() == 3)
             {
-                string iden = raiz.ChildNodes.ElementAt(0).Term.Name;
-                if (iden.Equals("expresion"))
+                string toketemp = raiz.ChildNodes.ElementAt(1).Token.Text;
+                if (toketemp.Equals("."))
                 {
                     int le = raiz.ChildNodes.ElementAt(2).Token.Location.Line;
                     int ce = raiz.ChildNodes.ElementAt(2).Token.Location.Column;

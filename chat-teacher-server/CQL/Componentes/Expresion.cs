@@ -336,7 +336,7 @@ namespace cql_teacher_server.CQL.Componentes
             //-----------------------------------------------------IGUALIGUAL------------------------------------------------------------------------
             else if (operacion.Equals("IGUALIGUAL") )
             {
-                if(op1 != null && op2 != null)
+                if (op1 != null && op2 != null)
                 {
                     if (op1.GetType() == typeof(int) && op2.GetType() == typeof(int)) return (int)op1 == (int)op2;
                     else if (op1.GetType() == typeof(int) && op2.GetType() == typeof(Double)) return (int)op1 == (Double)op2;
@@ -354,7 +354,7 @@ namespace cql_teacher_server.CQL.Componentes
                         return null;
                     }
                 }
-                else if(op1 != null && op2 == null)
+                else if (op1 != null && op2 == null)
                 {
                     if (op1.GetType() == typeof(InstanciaUserType) && op2 == null) return ((InstanciaUserType)op1).lista == null;
                     else
@@ -374,12 +374,7 @@ namespace cql_teacher_server.CQL.Componentes
                         return null;
                     }
                 }
-                else
-                {
-                    Mensaje mes = new Mensaje();
-                    mensajes.AddLast(mes.error("No se puede conocer si es igual   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
-                    return null;
-                }
+                else return true;
             }
             //-----------------------------------------------------DIFERENTE------------------------------------------------------------------------
             else if (operacion.Equals("DIFERENTE") && op1 != null && op2 != null)
@@ -731,12 +726,21 @@ namespace cql_teacher_server.CQL.Componentes
                     else
                     {
                         Mensaje men = new Mensaje();
-                        mensaje.AddLast(men.error("No conincide el tipo: " + at.tipo + " con el valor: " + operador1, linea1, columna1, "Semantico"));
+                        mensaje.AddLast(men.error("No coincide el tipo: " + at.tipo + " con el valor: " + operador1, linea1, columna1, "Semantico"));
                         return null;
-
                     }
                 }
-                else return null;
+                else
+                {
+                    if (at.tipo.Equals("string") || at.tipo.Equals("int") || at.tipo.Equals("double") || at.tipo.Equals("map") || at.tipo.Equals("boolean") || at.tipo.Equals("date") || at.tipo.Equals("time"))
+                    {
+                        Mensaje men = new Mensaje();
+                        mensaje.AddLast(men.error("No coincide el tipo: " + at.tipo + " con el valor: null " , linea1, columna1, "Semantico"));
+                        return null;
+                    }
+                    InstanciaUserType temp = new InstanciaUserType(at.tipo, null);
+                    listaAtributo.AddLast(new Atributo(at.nombre, temp, temp.tipo.ToLower()));
+                }
             }
             return listaAtributo;
         }

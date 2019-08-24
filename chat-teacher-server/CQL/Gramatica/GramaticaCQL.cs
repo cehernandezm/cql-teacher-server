@@ -114,6 +114,8 @@ namespace cql_teacher_server.CQL.Gramatica
 
             NonTerminal asigna_UserType = new NonTerminal("asignausertype");
 
+            NonTerminal asignacion = new NonTerminal("asignacion");
+
             #endregion
 
             #region Gramatica
@@ -128,6 +130,7 @@ namespace cql_teacher_server.CQL.Gramatica
                              | declaracion + ";"
                              | declaracionA + ";"
                              | user_type + ";"
+                             | asignacion + ";"
                              ;
 
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
@@ -212,6 +215,11 @@ namespace cql_teacher_server.CQL.Gramatica
             lista_user_type.Rule = lista_user_type + "," + ID + tipoVariable 
                                  | ID + tipoVariable 
                                  ;
+
+
+            //--------------------------------------------------------- ASIGNACION DE VARIABLES ----------------------------------------------------------------------
+            asignacion.Rule = "@" + ID + "=" + expresion;
+
 
             #endregion
 
