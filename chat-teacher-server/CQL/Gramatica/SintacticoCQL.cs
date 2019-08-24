@@ -323,6 +323,16 @@ namespace cql_teacher_server.CQL.Gramatica
                 }
                 
             }
+            else if(raiz.ChildNodes.Count() == 5)
+            {
+                LinkedList<Expresion> lista = resolver_user_type(raiz.ChildNodes.ElementAt(1));
+                string idAs = raiz.ChildNodes.ElementAt(4).Token.Text;
+                idAs = idAs.ToLower().TrimEnd().TrimStart();
+                int lAs = raiz.ChildNodes.ElementAt(4).Token.Location.Line;
+                int cAs = raiz.ChildNodes.ElementAt(4).Token.Location.Column;
+
+                return new Expresion("ASIGNACIONUSER", lAs, cAs, lista, idAs);
+            }
             else
             {
                 string toke = raiz.ChildNodes.ElementAt(0).Term.Name;
@@ -333,6 +343,27 @@ namespace cql_teacher_server.CQL.Gramatica
 
                 return getValor(toke, valor, l1, c1);
             }
+        }
+
+        /*
+         * Metodo que se encarga de regresar un lista de expresiones para asignarsela a un UserType
+         * @raiz nodo del arbol para recorrer
+         * @return LinkedList<Expresiones> 
+         */
+
+        public LinkedList<Expresion> resolver_user_type(ParseTreeNode raiz)
+        {
+            LinkedList<Expresion> lista = new LinkedList<Expresion>();
+            ParseTreeNode hijo;
+            if (raiz.ChildNodes.Count() == 2)
+            {
+                lista = resolver_user_type(raiz.ChildNodes.ElementAt(0));
+                hijo = raiz.ChildNodes.ElementAt(1);
+            }
+            else hijo = raiz.ChildNodes.ElementAt(0);
+            lista.AddLast(resolver_expresion(hijo));
+            return lista;
+
         }
 
 

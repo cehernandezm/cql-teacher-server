@@ -26,6 +26,8 @@ namespace cql_teacher_server.CQL.Componentes
 
         string tipoA { set; get; }
 
+        LinkedList<Expresion> listaUser { set; get; }
+        string idAs { set; get; }
   
 
         /* 
@@ -113,6 +115,26 @@ namespace cql_teacher_server.CQL.Componentes
             this.columna1 = columna1;
             this.tipoA = tipoB;
         }
+
+        /*
+         * Constructor de la clase para asignar valores a un usertype
+         * @operacion el tipo de operacion que se realizara
+         * @linea1 es la linea del id
+         * @columna es la columna del id
+         * @lista es una lista de valores a asignar
+         * @idAs es la referencia a que USER TYPE nos referimos
+         */
+
+
+        public Expresion(string operacion, int linea1, int columna1, LinkedList<Expresion> lista, string idAs)
+        {
+            this.operacion = operacion;
+            this.linea1 = linea1;
+            this.columna1 = columna1;
+            this.listaUser = lista;
+            this.idAs = idAs;
+        }
+
 
 
 
@@ -312,16 +334,46 @@ namespace cql_teacher_server.CQL.Componentes
                 }
             }
             //-----------------------------------------------------IGUALIGUAL------------------------------------------------------------------------
-            else if (operacion.Equals("IGUALIGUAL") && op1 != null && op2 != null)
+            else if (operacion.Equals("IGUALIGUAL") )
             {
-                if (op1.GetType() == typeof(int) && op2.GetType() == typeof(int)) return (int)op1 == (int)op2;
-                else if (op1.GetType() == typeof(int) && op2.GetType() == typeof(Double)) return (int)op1 == (Double)op2;
-                else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(int)) return (Double)op1 == (int)op2;
-                else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(Double)) return (Double)op1 == (Double)op2;
-                else if (op1.GetType() == typeof(TimeSpan) && op2.GetType() == typeof(TimeSpan)) return (TimeSpan)op1 == (TimeSpan)op2;
-                else if (op1.GetType() == typeof(DateTime) && op2.GetType() == typeof(DateTime)) return (DateTime)op1 == (DateTime)op2;
-                else if (op1.GetType() == typeof(string) && op2.GetType() == typeof(string)) return op1.ToString().Equals(op2.ToString());
-                else if (op1.GetType() == typeof(Boolean) && op2.GetType() == typeof(Boolean)) return (Boolean)op1 == (Boolean)op2;
+                if(op1 != null && op2 != null)
+                {
+                    if (op1.GetType() == typeof(int) && op2.GetType() == typeof(int)) return (int)op1 == (int)op2;
+                    else if (op1.GetType() == typeof(int) && op2.GetType() == typeof(Double)) return (int)op1 == (Double)op2;
+                    else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(int)) return (Double)op1 == (int)op2;
+                    else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(Double)) return (Double)op1 == (Double)op2;
+                    else if (op1.GetType() == typeof(TimeSpan) && op2.GetType() == typeof(TimeSpan)) return (TimeSpan)op1 == (TimeSpan)op2;
+                    else if (op1.GetType() == typeof(DateTime) && op2.GetType() == typeof(DateTime)) return (DateTime)op1 == (DateTime)op2;
+                    else if (op1.GetType() == typeof(string) && op2.GetType() == typeof(string)) return op1.ToString().Equals(op2.ToString());
+                    else if (op1.GetType() == typeof(Boolean) && op2.GetType() == typeof(Boolean)) return (Boolean)op1 == (Boolean)op2;
+                    else if (op1.GetType() == typeof(InstanciaUserType) && op2.GetType() == typeof(InstanciaUserType)) return ((InstanciaUserType)op1).tipo.Equals(((InstanciaUserType)op2).tipo);
+                    else
+                    {
+                        Mensaje mes = new Mensaje();
+                        mensajes.AddLast(mes.error("No se puede conocer si es igual   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
+                        return null;
+                    }
+                }
+                else if(op1 != null && op2 == null)
+                {
+                    if (op1.GetType() == typeof(InstanciaUserType) && op2 == null) return ((InstanciaUserType)op1).lista == null;
+                    else
+                    {
+                        Mensaje mes = new Mensaje();
+                        mensajes.AddLast(mes.error("No se puede conocer si es igual   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
+                        return null;
+                    }
+                }
+                else if (op2 != null && op1 == null)
+                {
+                    if (op2.GetType() == typeof(InstanciaUserType) && op1 == null) return ((InstanciaUserType)op2).lista == null;
+                    else
+                    {
+                        Mensaje mes = new Mensaje();
+                        mensajes.AddLast(mes.error("No se puede conocer si es igual   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
+                        return null;
+                    }
+                }
                 else
                 {
                     Mensaje mes = new Mensaje();
@@ -530,6 +582,45 @@ namespace cql_teacher_server.CQL.Componentes
                     return null;
                 }
             }
+            //------------------------------------------------------- ASIGNACION DE VALORES A UN USER TYPE ---------------------------------------
+            else if (operacion.Equals("ASIGNACIONUSER"))
+            {
+                BaseDeDatos db = TablaBaseDeDatos.getBase(baseD);
+                if(db != null)
+                {
+                    User_Types a = TablaBaseDeDatos.getUserTypeV(idAs.ToLower(), db);
+                    if(a != null)
+                    {
+                        LinkedList<Atributo> listaA = getAtributos(a, db);
+                        if (listaA.Count() == listaUser.Count())
+                        {
+                            LinkedList<Atributo> newLista = compareListas(listaA, listaUser, ts, user, ref baseD, mensajes);
+                            if (newLista == null) return null;
+
+                            InstanciaUserType ius = new InstanciaUserType(idAs.ToLower(), newLista);
+                            return ius;
+                        }
+                        else
+                        {
+                            Mensaje men = new Mensaje();
+                            mensajes.AddLast(men.error("La cantidad de atributos no con cuerda con la del user type" + idAs, linea1, columna1, "Semantico"));
+                            return null;
+                        }
+                    }
+                    else
+                    {
+                        Mensaje men = new Mensaje();
+                        mensajes.AddLast(men.error("No existe el USER TYPE " + idAs, linea1, columna1, "Semantico"));
+                        return null;
+                    }
+                }
+                else
+                {
+                    Mensaje men = new Mensaje();
+                    mensajes.AddLast(men.error("No se puede acceder a la base de datos: " + baseD + " asegurese de usar el comando USE", linea1, columna1, "Semantico"));
+                    return null;
+                }
+            }
             //------------------------------------------------- ENTERO -------------------------------------------------------------------------
             else if (operacion.Equals("ENTERO")) return Int32.Parse(valor.ToString());
             //------------------------------------------------- DOUBLE -------------------------------------------------------------------------
@@ -604,6 +695,50 @@ namespace cql_teacher_server.CQL.Componentes
                 at.AddLast(att);
             }
             return at;
+        }
+
+        /*
+         * Metodo que recorre la lista de expresiones y la lista de atributos y los compara
+         * 
+         */
+
+        public LinkedList<Atributo> compareListas(LinkedList<Atributo> a , LinkedList<Expresion> e, TablaDeSimbolos ts, string user,ref string baseD, LinkedList<string> mensaje)
+        {
+            LinkedList<Atributo> listaAtributo = new LinkedList<Atributo>();
+            for (int i = 0; i < a.Count(); i++)
+            {
+                Atributo at = a.ElementAt(i);
+                object operador1 = e.ElementAt(i).ejecutar(ts, user, ref baseD, mensaje);
+                if (operador1 != null)
+                {
+                    if (at.tipo.Equals("string") && (operador1.GetType() == typeof(string))) listaAtributo.AddLast(new Atributo(at.nombre, (string)operador1, "string"));
+                    else if (at.tipo.Equals("int") && (operador1.GetType() == typeof(int))) listaAtributo.AddLast(new Atributo(at.nombre, (int)operador1, "int"));
+                    else if (at.tipo.Equals("double") && (operador1.GetType() == typeof(Double))) listaAtributo.AddLast(new Atributo(at.nombre, (Double)operador1, "double"));
+                    else if (at.tipo.Equals("boolean") && (operador1.GetType() == typeof(Boolean))) listaAtributo.AddLast(new Atributo(at.nombre, (Boolean)operador1, "boolean"));
+                    else if (at.tipo.Equals("date") && (operador1.GetType() == typeof(DateTime))) listaAtributo.AddLast(new Atributo(at.nombre, (DateTime)operador1, "date"));
+                    else if (at.tipo.Equals("time") && (operador1.GetType() == typeof(TimeSpan))) listaAtributo.AddLast(new Atributo(at.nombre, (TimeSpan)operador1, "time"));
+                    else if (operador1.GetType() == typeof(InstanciaUserType))
+                    {
+                        InstanciaUserType temp = (InstanciaUserType)operador1;
+                        if(at.tipo.Equals(temp.tipo.ToLower())) listaAtributo.AddLast(new Atributo(at.nombre, temp, temp.tipo.ToLower()));
+                        else
+                        {
+                            Mensaje men = new Mensaje();
+                            mensaje.AddLast(men.error("No conincide el tipo: " + at.tipo + " con el Tipo: " + temp.tipo, linea1, columna1, "Semantico"));
+                            return null;
+                        }
+                    }
+                    else
+                    {
+                        Mensaje men = new Mensaje();
+                        mensaje.AddLast(men.error("No conincide el tipo: " + at.tipo + " con el valor: " + operador1, linea1, columna1, "Semantico"));
+                        return null;
+
+                    }
+                }
+                else return null;
+            }
+            return listaAtributo;
         }
     }
 

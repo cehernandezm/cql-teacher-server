@@ -71,6 +71,7 @@ namespace cql_teacher_server.CQL.Gramatica
             var TYPE = ToTerm("TYPE");
             var DATABASE = ToTerm("DATABASE");
             var NEW = ToTerm("new");
+            var AS = ToTerm("AS");
 
             var IF = ToTerm("IF");
             var NOT = ToTerm("NOT");
@@ -110,6 +111,8 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal user_type = new NonTerminal("usertype");
 
             NonTerminal lista_user_type = new NonTerminal("listausertype");
+
+            NonTerminal asigna_UserType = new NonTerminal("asignausertype");
 
             #endregion
 
@@ -160,7 +163,8 @@ namespace cql_teacher_server.CQL.Gramatica
                            | ToTerm("(") + tipoVariable + ToTerm(")") + expresion
                            | NEW + ID 
                            | expresion + "." + ID
-                           |ENTERO
+                           | "{" + asigna_UserType + "}"  + AS + ID
+                           | ENTERO
                            | ToTerm("@") + ID
                            | CADENA
                            | FECHA
@@ -170,6 +174,12 @@ namespace cql_teacher_server.CQL.Gramatica
                            | DECIMALN
                            | NULL
                            ;
+
+
+            //-------------------------------------------------------- asignacion de valores de un usertype ----------------------------------------------------
+            asigna_UserType.Rule = asigna_UserType + "," + expresion
+                                 | expresion
+                                 ;
 
             //------------------------------------------------------ TIPO DE VARIABLES --------------------------------------------------------------------------
 
