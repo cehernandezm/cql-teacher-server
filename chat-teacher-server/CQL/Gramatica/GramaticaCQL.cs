@@ -119,6 +119,8 @@ namespace cql_teacher_server.CQL.Gramatica
 
             NonTerminal asignacion = new NonTerminal("asignacion");
 
+            NonTerminal asignacionA = new NonTerminal("asignaciona");
+
             #endregion
 
             #region Gramatica
@@ -228,8 +230,17 @@ namespace cql_teacher_server.CQL.Gramatica
                             | "@" + ID + ToTerm("*=") + expresion
                             | "@" + ID + ToTerm("-=") + expresion
                             | "@" + ID + ToTerm("/=") + expresion
+                            | asignacionA + ToTerm("=") + expresion
+                            | asignacionA + ToTerm("+=") + expresion
+                            | asignacionA + ToTerm("*=") + expresion
+                            | asignacionA + ToTerm("-=") + expresion
+                            | asignacionA + ToTerm("/=") + expresion
                             ;
 
+            //-------------------------------------------------------- asignacion de un atributo ----------------------------------------------------------------------
+            asignacionA.Rule = asignacionA + "." + ID
+                             | ToTerm("@") + ID
+                             ;
 
             #endregion
 

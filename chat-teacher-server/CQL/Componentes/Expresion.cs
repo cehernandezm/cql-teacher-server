@@ -334,7 +334,7 @@ namespace cql_teacher_server.CQL.Componentes
                 }
             }
             //-----------------------------------------------------IGUALIGUAL------------------------------------------------------------------------
-            else if (operacion.Equals("IGUALIGUAL") )
+            else if (operacion.Equals("IGUALIGUAL"))
             {
                 if (op1 != null && op2 != null)
                 {
@@ -359,7 +359,7 @@ namespace cql_teacher_server.CQL.Componentes
                     if (op1.GetType() == typeof(InstanciaUserType) && op2 == null) return ((InstanciaUserType)op1).lista == null;
                     else if (op1.GetType() == typeof(string) && op2 == null) return (string)op1 == null;
                     else if (op1.GetType() == typeof(DateTime) && op2 == null) return (DateTime)op1 == null;
-                    else if (op1.GetType() == typeof(TimeSpan) && op2 == null) return (TimeSpan)op1 == null; 
+                    else if (op1.GetType() == typeof(TimeSpan) && op2 == null) return (TimeSpan)op1 == null;
                     {
                         Mensaje mes = new Mensaje();
                         mensajes.AddLast(mes.error("No se puede conocer si es igual   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
@@ -565,9 +565,9 @@ namespace cql_teacher_server.CQL.Componentes
                 if (db != null)
                 {
                     User_Types a = TablaBaseDeDatos.getUserTypeV(tipoA.ToLower(), db);
-                    if(a != null)
+                    if (a != null)
                     {
-                        LinkedList<Atributo> lista = getAtributos(a,db);
+                        LinkedList<Atributo> lista = getAtributos(a, db);
                         if (lista != null)
                         {
                             return new InstanciaUserType(tipoA, lista);
@@ -578,7 +578,7 @@ namespace cql_teacher_server.CQL.Componentes
                     else
                     {
                         Mensaje men = new Mensaje();
-                        mensajes.AddLast(men.error("No existe el USER TYPE " + tipoA , linea1, columna1, "Semantico"));
+                        mensajes.AddLast(men.error("No existe el USER TYPE " + tipoA, linea1, columna1, "Semantico"));
                         return null;
                     }
                 }
@@ -590,14 +590,42 @@ namespace cql_teacher_server.CQL.Componentes
                 }
             }
             //--------------------------------------------------------- ACCESO A USER TYPES ------------------------------------------------------
-            else if(operacion.Equals("ACCESOUSER") && op1 != null)
+            else if (operacion.Equals("ACCESOUSER") && op1 != null)
             {
-                if(op1.GetType() == typeof(InstanciaUserType))
+                if (op1.GetType() == typeof(InstanciaUserType))
                 {
                     InstanciaUserType temp = (InstanciaUserType)op1;
                     foreach (Atributo a in temp.lista)
                     {
                         if (a.nombre.Equals(casteo)) return a.valor;
+                    }
+                    Mensaje men = new Mensaje();
+                    mensajes.AddLast(men.error("No se encontro el atributo: " + casteo, linea1, columna1, "Semantico"));
+                    return null;
+                }
+                else
+                {
+                    Mensaje men = new Mensaje();
+                    mensajes.AddLast(men.error("Se necesita un User Type para acceder a sus atributos  ", linea1, columna1, "Semantico"));
+                    return null;
+                }
+            }
+            //--------------------------------------------------------- OBTENER EL ATRIBUTO DE ALGUN USER TYPE ------------------------------------------------------
+            else if (operacion.Equals("GETATRIBUTO") && op1 != null)
+            {
+                if (op1.GetType() == typeof(InstanciaUserType))
+                {
+                    InstanciaUserType temp = (InstanciaUserType)op1;
+                    foreach (Atributo a in temp.lista)
+                    {
+                        if (a.nombre.Equals(casteo))
+                        {
+                            if(a.valor != null)
+                            {
+                                if (a.valor.GetType() == typeof(InstanciaUserType)) return (InstanciaUserType)a.valor;
+                            }
+                            return (InstanciaUserType)op1;
+                        }
                     }
                     Mensaje men = new Mensaje();
                     mensajes.AddLast(men.error("No se encontro el atributo: " + casteo, linea1, columna1, "Semantico"));

@@ -13,6 +13,7 @@ namespace cql_teacher_server.CQL.Gramatica
 {
     public class SintacticoCQL
     {
+        bool flagEx = false;
         /*
          * Metodo que analizar la cadena 
          * @cadena es el string a analizar
@@ -162,9 +163,9 @@ namespace cql_teacher_server.CQL.Gramatica
                     if (tokend.Equals("declaracion"))
                     {
                         lista = (LinkedList<InstruccionCQL>)instruccion(hijo);
-                        t = declaracionTipo(hijo.ChildNodes.ElementAt(0)); 
+                        t = declaracionTipo(hijo.ChildNodes.ElementAt(0));
                     }
-                    else  t = hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Text;
+                    else t = hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Text;
                     l = hijo.ChildNodes.ElementAt(1).Token.Location.Line;
                     c = hijo.ChildNodes.ElementAt(1).Token.Location.Column;
                     i = hijo.ChildNodes.ElementAt(1).Token.Text;
@@ -183,9 +184,9 @@ namespace cql_teacher_server.CQL.Gramatica
                     int cA = 0;
                     string iA = "";
                     if (tokenA.Equals("declaracion")) {
-                         LinkedList<InstruccionCQL> listaTemp = (LinkedList<InstruccionCQL>)instruccion(hijo);
-                         liA = new LinkedList<InstruccionCQL>(liA.Union(listaTemp));
-                         tA = declaracionTipo(hijo.ChildNodes.ElementAt(0));
+                        LinkedList<InstruccionCQL> listaTemp = (LinkedList<InstruccionCQL>)instruccion(hijo);
+                        liA = new LinkedList<InstruccionCQL>(liA.Union(listaTemp));
+                        tA = declaracionTipo(hijo.ChildNodes.ElementAt(0));
                     }
                     else tA = hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Text;
                     lA = hijo.ChildNodes.ElementAt(1).Token.Location.Line;
@@ -230,10 +231,57 @@ namespace cql_teacher_server.CQL.Gramatica
                 //------------------------------------------------------ ASIGNACION DE VARIABLES --------------------------------------------------
                 case "asignacion":
                     LinkedList<InstruccionCQL> lAs = new LinkedList<InstruccionCQL>();
+                    string nameT = hijo.ChildNodes.ElementAt(0).Term.Name;
+                    nameT = nameT.ToLower().TrimEnd().TrimStart();
                     string idAs = "";
                     string operaAs = "";
                     int liAs = 0;
                     int coAs = 0;
+                    if (nameT.Equals("asignaciona"))
+                    {
+                        liAs = hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).Token.Location.Line;
+                        coAs = hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).Token.Location.Column;
+                        idAs = hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).Token.Text;
+                        idAs = idAs.ToLower().TrimEnd().TrimStart();
+                        operaAs = hijo.ChildNodes.ElementAt(1).Token.Text;
+                        if (operaAs.Equals("="))  lAs.AddLast(new Asignacion(idAs, liAs, coAs, resolver_expresion(hijo.ChildNodes.ElementAt(0)), resolver_expresion(hijo.ChildNodes.ElementAt(2)), "ASIGNACIONA"));
+                        else if (operaAs.Equals("+="))
+                        {
+                            flagEx = true;
+                            Expresion opa = resolver_expresion(hijo.ChildNodes.ElementAt(0));
+                            Expresion ge = new Expresion(opa, resolver_expresion(hijo.ChildNodes.ElementAt(2)), "SUMA", liAs, coAs);
+                            flagEx = false;
+                            lAs.AddLast(new Asignacion(idAs, liAs, coAs, resolver_expresion(hijo.ChildNodes.ElementAt(0)), ge, "ASIGNACIONA"));
+                        }
+                        else if (operaAs.Equals("-="))
+                        {
+                            flagEx = true;
+                            Expresion opa = resolver_expresion(hijo.ChildNodes.ElementAt(0));
+                            Expresion ge = new Expresion(opa, resolver_expresion(hijo.ChildNodes.ElementAt(2)), "RESTA", liAs, coAs);
+                            flagEx = false;
+                            lAs.AddLast(new Asignacion(idAs, liAs, coAs, resolver_expresion(hijo.ChildNodes.ElementAt(0)), ge, "ASIGNACIONA"));
+                        }
+                        else if (operaAs.Equals("*="))
+                        {
+                            flagEx = true;
+                            Expresion opa = resolver_expresion(hijo.ChildNodes.ElementAt(0));
+                            Expresion ge = new Expresion(opa, resolver_expresion(hijo.ChildNodes.ElementAt(2)), "MULTIPLICACION", liAs, coAs);
+                            flagEx = false;
+                            lAs.AddLast(new Asignacion(idAs, liAs, coAs, resolver_expresion(hijo.ChildNodes.ElementAt(0)), ge, "ASIGNACIONA"));
+                        }
+                        else 
+                        {
+                            flagEx = true;
+                            Expresion opa = resolver_expresion(hijo.ChildNodes.ElementAt(0));
+                            Expresion ge = new Expresion(opa, resolver_expresion(hijo.ChildNodes.ElementAt(2)), "DIVISION", liAs, coAs);
+                            flagEx = false;
+                            lAs.AddLast(new Asignacion(idAs, liAs, coAs, resolver_expresion(hijo.ChildNodes.ElementAt(0)), ge, "ASIGNACIONA"));
+                        }
+                        flagEx = false;
+
+                        return lAs;
+                    }
+                    
 
                     idAs = hijo.ChildNodes.ElementAt(0).Token.Text;
                     idAs = idAs.ToLower().TrimEnd().TrimStart();
@@ -244,30 +292,30 @@ namespace cql_teacher_server.CQL.Gramatica
                     operaAs = hijo.ChildNodes.ElementAt(1).Token.Text;
                     operaAs = operaAs.ToLower().TrimEnd().TrimStart();
 
-                    if (operaAs.Equals("=")) lAs.AddLast(new Asignacion(idAs, liAs, coAs, resolver_expresion(hijo.ChildNodes.ElementAt(2))));
+                    if (operaAs.Equals("=")) lAs.AddLast(new Asignacion(idAs, liAs, coAs, resolver_expresion(hijo.ChildNodes.ElementAt(2)),"ASIGNACION"));
                     else if (operaAs.Equals("+="))
                     {
                         Expresion opa = new Expresion(idAs, "ID", liAs, coAs);
                         Expresion ge = new Expresion(opa, resolver_expresion(hijo.ChildNodes.ElementAt(2)), "SUMA", liAs, coAs);
-                        lAs.AddLast(new Asignacion(idAs, liAs, coAs, ge));
+                        lAs.AddLast(new Asignacion(idAs, liAs, coAs, ge, "ASIGNACION"));
                     }
                     else if (operaAs.Equals("-="))
                     {
                         Expresion opa = new Expresion(idAs, "ID", liAs, coAs);
                         Expresion ge = new Expresion(opa, resolver_expresion(hijo.ChildNodes.ElementAt(2)), "RESTA", liAs, coAs);
-                        lAs.AddLast(new Asignacion(idAs, liAs, coAs, ge));
+                        lAs.AddLast(new Asignacion(idAs, liAs, coAs, ge, "ASIGNACION"));
                     }
                     else if (operaAs.Equals("*="))
                     {
                         Expresion opa = new Expresion(idAs, "ID", liAs, coAs);
                         Expresion ge = new Expresion(opa, resolver_expresion(hijo.ChildNodes.ElementAt(2)), "MULTIPLICACION", liAs, coAs);
-                        lAs.AddLast(new Asignacion(idAs, liAs, coAs, ge));
+                        lAs.AddLast(new Asignacion(idAs, liAs, coAs, ge, "ASIGNACION"));
                     }
                     else
                     {
                         Expresion opa = new Expresion(idAs, "ID", liAs, coAs);
                         Expresion ge = new Expresion(opa, resolver_expresion(hijo.ChildNodes.ElementAt(2)), "DIVISION", liAs, coAs);
-                        lAs.AddLast(new Asignacion(idAs, liAs, coAs, ge));
+                        lAs.AddLast(new Asignacion(idAs, liAs, coAs, ge, "ASIGNACION"));
                     }
 
 
@@ -329,11 +377,15 @@ namespace cql_teacher_server.CQL.Gramatica
                 string toketemp = raiz.ChildNodes.ElementAt(1).Token.Text;
                 if (toketemp.Equals("."))
                 {
+                    string sepa = raiz.ChildNodes.ElementAt(0).Term.Name;
+                    string opee = "";
+                    if (sepa.Equals("asignaciona") && !flagEx) opee = "GETATRIBUTO";
+                    else opee = "ACCESOUSER";
                     int le = raiz.ChildNodes.ElementAt(2).Token.Location.Line;
                     int ce = raiz.ChildNodes.ElementAt(2).Token.Location.Column;
                     string idA = raiz.ChildNodes.ElementAt(2).Token.Text;
                     idA = idA.ToLower().TrimEnd().TrimStart();
-                    return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), "ACCESOUSER", le, ce, idA);
+                    return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), opee, le, ce, idA);
                 }
                 string toke = raiz.ChildNodes.ElementAt(1).Token.Text;
                 int l1 = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
