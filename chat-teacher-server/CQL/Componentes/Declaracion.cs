@@ -86,7 +86,11 @@ namespace cql_teacher_server.CQL.Componentes
                                 ts.AddLast(new Simbolo(tipo, id));
                                 ts.setValor(id, null);
                             }
-                            else mensajes.AddLast(mensa.error("El tipo " + tipo + " no es un userType en esta base de datos: " + baseD, l, c, "Semantico"));
+                            else
+                            {
+                                mensajes.AddLast(mensa.error("El tipo " + tipo + " no es un userType en esta base de datos: " + baseD, l, c, "Semantico"));
+                                return null;
+                            }
 
                         }
                         return "";
@@ -160,7 +164,9 @@ namespace cql_teacher_server.CQL.Componentes
                         {
                             Mensaje me = new Mensaje();
                             mensajes.AddLast(me.error("La variable " + id + " no se le puede asignar este valor " + a.ToString(), l, c, "Semantico"));
+                            return null;
                         }
+                        return "";
                     }
                    
                 }

@@ -17,7 +17,7 @@ namespace cql_teacher_server.CQL.Gramatica
             var HORA = new RegexBasedTerminal("hora", "\\'(([0-1][0-9])|2[0-3]):([0-2][0-9]):([0-5][0-9])\\'");
             var DECIMALN = new RegexBasedTerminal("decimal", "[0-9]+\\.[0-9]+");
             var ENTERO = new NumberLiteral("entero");
-            
+
 
             IdentifierTerminal ID = new IdentifierTerminal("ID");
 
@@ -26,7 +26,7 @@ namespace cql_teacher_server.CQL.Gramatica
             #endregion
 
             #region Terminales
-            
+
 
 
             var NULO = ToTerm("null");
@@ -66,7 +66,7 @@ namespace cql_teacher_server.CQL.Gramatica
             var INCREMENTO = ToTerm("++");
             var DECREMENTO = ToTerm("--");
 
-            
+
 
 
             var USE = ToTerm("USE");
@@ -77,6 +77,7 @@ namespace cql_teacher_server.CQL.Gramatica
             var AS = ToTerm("AS");
 
             var IF = ToTerm("IF");
+            var ELSE = ToTerm("ELSE");
             var NOT = ToTerm("NOT");
             var EXISTS = ToTerm("EXISTS");
 
@@ -85,7 +86,7 @@ namespace cql_teacher_server.CQL.Gramatica
 
 
 
-            
+
 
 
 
@@ -121,6 +122,14 @@ namespace cql_teacher_server.CQL.Gramatica
 
             NonTerminal asignacionA = new NonTerminal("asignaciona");
 
+            NonTerminal ifsuperior = new NonTerminal("ifsuperior");
+
+            NonTerminal insif = new NonTerminal("if");
+
+            NonTerminal inselseif = new NonTerminal("elseif");
+
+            NonTerminal inselse = new NonTerminal("else");
+
             #endregion
 
             #region Gramatica
@@ -136,7 +145,7 @@ namespace cql_teacher_server.CQL.Gramatica
                              | declaracionA + ";"
                              | user_type + ";"
                              | asignacion + ";"
-                             ;
+                             | ifsuperior;
 
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
 
@@ -156,22 +165,22 @@ namespace cql_teacher_server.CQL.Gramatica
                            | NEGACION + expresion
                            | expresion + IGUAIG + expresion
                            | expresion + DIFERENTE + expresion
-                           | expresion + MAYOR + expresion 
+                           | expresion + MAYOR + expresion
                            | expresion + MENOR + expresion
                            | expresion + MAYORIG + expresion
                            | expresion + MENORIG + expresion
-                           | expresion + SUMA + expresion 
-                           | expresion +  RESTA + expresion
-                           | expresion + DIVISION + expresion 
-                           | expresion + POR + expresion 
-                           | expresion + MODULO + expresion 
+                           | expresion + SUMA + expresion
+                           | expresion + RESTA + expresion
+                           | expresion + DIVISION + expresion
+                           | expresion + POR + expresion
+                           | expresion + MODULO + expresion
                            | expresion + POTENCIA + expresion
                            | RESTA + expresion
                            | ToTerm("(") + expresion + ToTerm(")")
                            | ToTerm("(") + tipoVariable + ToTerm(")") + expresion
-                           | NEW + ID 
+                           | NEW + ID
                            | expresion + "." + ID
-                           | "{" + asigna_UserType + "}"  + AS + ID
+                           | "{" + asigna_UserType + "}" + AS + ID
                            | ENTERO
                            | ToTerm("@") + ID
                            | ToTerm("@") + ID + INCREMENTO
@@ -216,12 +225,12 @@ namespace cql_teacher_server.CQL.Gramatica
 
             //---------------------------------------------------------- CREACION DE USER TYPES ---------------------------------------------------------------------
             user_type.Rule = CREATE + TYPE + IF + NOT + EXISTS + ID + "(" + lista_user_type + ")"
-                           | CREATE + TYPE + ID + "(" + lista_user_type  +")"
+                           | CREATE + TYPE + ID + "(" + lista_user_type + ")"
                            ;
 
             //---------------------------------------------------------- Lista de atributos de un user_type ----------------------------------------------------------
-            lista_user_type.Rule = lista_user_type + "," + ID + tipoVariable 
-                                 | ID + tipoVariable 
+            lista_user_type.Rule = lista_user_type + "," + ID + tipoVariable
+                                 | ID + tipoVariable
                                  ;
 
 
@@ -243,6 +252,21 @@ namespace cql_teacher_server.CQL.Gramatica
                              | ToTerm("@") + ID
                              ;
 
+
+            //---------------------------------------------------------- IF SUPERIOR ------------------------------------------------------------------------
+            ifsuperior.Rule = insif
+                            | insif + inselseif
+                            | insif + inselseif + inselse
+                            | insif + inselse
+                            ;
+            //------------------------------------------------------------- IF -----------------------------------------------------------------------------
+            insif.Rule = IF + "(" + expresion + ")" + "{" + instrucciones + "}";
+            //------------------------------------------------------------- ELSE IF -----------------------------------------------------------------------------
+            inselseif.Rule =  inselseif + ELSE + IF + "(" + expresion + ")" + "{" + instrucciones + "}"
+                            | ELSE + IF + "(" + expresion + ")" + "{" + instrucciones + "}"
+                            ;
+            //------------------------------------------------------------- IF -----------------------------------------------------------------------------
+            inselse.Rule = ELSE + "{" + instrucciones + "}";
             #endregion
 
             #region Preferencias

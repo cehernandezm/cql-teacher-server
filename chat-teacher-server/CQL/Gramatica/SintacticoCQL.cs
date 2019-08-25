@@ -30,15 +30,15 @@ namespace cql_teacher_server.CQL.Gramatica
             ParseTree arbol = parser.Parse(cadena);
             ParseTreeNode raiz = arbol.Root;
 
-            if(arbol != null)
+            if (arbol != null)
             {
-                for(int i = 0; i < arbol.ParserMessages.Count(); i++)
+                for (int i = 0; i < arbol.ParserMessages.Count(); i++)
                 {
                     System.Diagnostics.Debug.WriteLine(arbol.ParserMessages.ElementAt(i).Message + " Linea: " + arbol.ParserMessages.ElementAt(i).Location.Line.ToString()
                              + " Columna: " + arbol.ParserMessages.ElementAt(i).Location.Column.ToString() + "\n");
                 }
 
-                if(arbol.ParserMessages.Count() < 1)
+                if (arbol.ParserMessages.Count() < 1)
                 {
                     graficar(raiz);
 
@@ -46,23 +46,23 @@ namespace cql_teacher_server.CQL.Gramatica
                     TablaDeSimbolos tablaGlobal = new TablaDeSimbolos();
                     LinkedList<string> mensajes = new LinkedList<string>();
                     String baseD = TablaBaseDeDatos.getMine(usuario);
-                    foreach(InstruccionCQL ins in listaInstrucciones)
+                    foreach (InstruccionCQL ins in listaInstrucciones)
                     {
                         Mensaje mensa = new Mensaje();
-                        object res = ins.ejecutar(tablaGlobal,usuario, ref baseD,mensajes);
-                        if(res != null && ins.GetType() == typeof(Expresion) ) System.Diagnostics.Debug.WriteLine(mensa.message("El resultado de la operacion es: " + res.ToString()));
+                        object res = ins.ejecutar(tablaGlobal, usuario, ref baseD, mensajes);
+                        if (res != null && ins.GetType() == typeof(Expresion)) System.Diagnostics.Debug.WriteLine(mensa.message("El resultado de la operacion es: " + res.ToString()));
                     }
-                    
-                    foreach(string m in mensajes)
+
+                    foreach (string m in mensajes)
                     {
                         System.Diagnostics.Debug.WriteLine(m);
                     }
 
-                    foreach(Simbolo s in tablaGlobal)
+                    foreach (Simbolo s in tablaGlobal)
                     {
                         System.Diagnostics.Debug.WriteLine("Tipo: " + s.Tipo + " Nombre: " + s.nombre + " Valor: " + s.valor);
                     }
-                    
+
                 }
             }
 
@@ -82,7 +82,7 @@ namespace cql_teacher_server.CQL.Gramatica
                 LinkedList<InstruccionCQL> lista = instrucciones(raiz.ChildNodes.ElementAt(0));
                 object res = instruccion(raiz.ChildNodes.ElementAt(1));
                 if (res.GetType() == typeof(InstruccionCQL)) lista.AddLast((InstruccionCQL)res);
-                else lista = new LinkedList<InstruccionCQL>(lista.Union((LinkedList<InstruccionCQL>)res));          
+                else lista = new LinkedList<InstruccionCQL>(lista.Union((LinkedList<InstruccionCQL>)res));
                 return lista;
             }
             //------------------  instruccion -------------
@@ -183,7 +183,8 @@ namespace cql_teacher_server.CQL.Gramatica
                     int lA = 0;
                     int cA = 0;
                     string iA = "";
-                    if (tokenA.Equals("declaracion")) {
+                    if (tokenA.Equals("declaracion"))
+                    {
                         LinkedList<InstruccionCQL> listaTemp = (LinkedList<InstruccionCQL>)instruccion(hijo);
                         liA = new LinkedList<InstruccionCQL>(liA.Union(listaTemp));
                         tA = declaracionTipo(hijo.ChildNodes.ElementAt(0));
@@ -244,7 +245,7 @@ namespace cql_teacher_server.CQL.Gramatica
                         idAs = hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).Token.Text;
                         idAs = idAs.ToLower().TrimEnd().TrimStart();
                         operaAs = hijo.ChildNodes.ElementAt(1).Token.Text;
-                        if (operaAs.Equals("="))  lAs.AddLast(new Asignacion(idAs, liAs, coAs, resolver_expresion(hijo.ChildNodes.ElementAt(0)), resolver_expresion(hijo.ChildNodes.ElementAt(2)), "ASIGNACIONA"));
+                        if (operaAs.Equals("=")) lAs.AddLast(new Asignacion(idAs, liAs, coAs, resolver_expresion(hijo.ChildNodes.ElementAt(0)), resolver_expresion(hijo.ChildNodes.ElementAt(2)), "ASIGNACIONA"));
                         else if (operaAs.Equals("+="))
                         {
                             flagEx = true;
@@ -269,7 +270,7 @@ namespace cql_teacher_server.CQL.Gramatica
                             flagEx = false;
                             lAs.AddLast(new Asignacion(idAs, liAs, coAs, resolver_expresion(hijo.ChildNodes.ElementAt(0)), ge, "ASIGNACIONA"));
                         }
-                        else 
+                        else
                         {
                             flagEx = true;
                             Expresion opa = resolver_expresion(hijo.ChildNodes.ElementAt(0));
@@ -281,7 +282,7 @@ namespace cql_teacher_server.CQL.Gramatica
 
                         return lAs;
                     }
-                    
+
 
                     idAs = hijo.ChildNodes.ElementAt(0).Token.Text;
                     idAs = idAs.ToLower().TrimEnd().TrimStart();
@@ -292,7 +293,7 @@ namespace cql_teacher_server.CQL.Gramatica
                     operaAs = hijo.ChildNodes.ElementAt(1).Token.Text;
                     operaAs = operaAs.ToLower().TrimEnd().TrimStart();
 
-                    if (operaAs.Equals("=")) lAs.AddLast(new Asignacion(idAs, liAs, coAs, resolver_expresion(hijo.ChildNodes.ElementAt(2)),"ASIGNACION"));
+                    if (operaAs.Equals("=")) lAs.AddLast(new Asignacion(idAs, liAs, coAs, resolver_expresion(hijo.ChildNodes.ElementAt(2)), "ASIGNACION"));
                     else if (operaAs.Equals("+="))
                     {
                         Expresion opa = new Expresion(idAs, "ID", liAs, coAs);
@@ -322,6 +323,50 @@ namespace cql_teacher_server.CQL.Gramatica
 
 
                     return lAs;
+                //------------------------------------------------------------- IF SUPERIOR --------------------------------------------------------------
+                case "ifsuperior":
+                    //------------------------------------------------------- IF ------------------------------------------------------------------------
+                    LinkedList<SubIf> listadoIf = new LinkedList<SubIf>();
+                    LinkedList<InstruccionCQL> listaR = new LinkedList<InstruccionCQL>();
+                    //------------------------------------------------ IF --------------------------------------------------------------------------------
+                    int lif = hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
+                    int cif = hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Column;
+                    LinkedList<InstruccionCQL> listadoInS = instrucciones(hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(3));
+
+                    listadoIf.AddLast(new SubIf(resolver_expresion(hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1)), listadoInS, lif, cif));
+
+                    //------------------------------------ IF ELSE / IF ELSE IF + ----------------------------------------------------------------------------
+                    if (hijo.ChildNodes.Count() == 2)
+                    {
+                        string idSeparator = hijo.ChildNodes.ElementAt(1).Term.Name;
+                        //----------------------------------------------- ELSE -------------------------------------------------------------------------------
+                        if (idSeparator.Equals("else"))
+                        {
+
+                            lif = hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).Token.Location.Line;
+                            cif = hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).Token.Location.Column;
+                            listadoInS = instrucciones(hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(2));
+                            listadoIf.AddLast(new SubIf(listadoInS, lif, cif));
+                        }
+                        else
+                        {
+                            LinkedList<SubIf> listatemp = resolver_if(hijo.ChildNodes.ElementAt(1));
+                            listadoIf = new LinkedList<SubIf>(listadoIf.Union(listatemp));
+                        }
+                    }
+                    //-----------------------------------------IF ELSE IF + ELSE ------------------------------------------------------------------------------
+                    else if(hijo.ChildNodes.Count() == 3)
+                    {
+                        LinkedList<SubIf> listatemp = resolver_if(hijo.ChildNodes.ElementAt(1));
+                        listadoIf = new LinkedList<SubIf>(listadoIf.Union(listatemp));
+
+                        lif = hijo.ChildNodes.ElementAt(2).ChildNodes.ElementAt(0).Token.Location.Line;
+                        cif = hijo.ChildNodes.ElementAt(2).ChildNodes.ElementAt(0).Token.Location.Column;
+                        listadoInS = instrucciones(hijo.ChildNodes.ElementAt(2).ChildNodes.ElementAt(2));
+                        listadoIf.AddLast(new SubIf(listadoInS, lif, cif));
+                    }
+                    listaR.AddLast(new IfSuperior(listadoIf));
+                    return listaR;
             }
             return null;
         }
@@ -370,7 +415,7 @@ namespace cql_teacher_server.CQL.Gramatica
          * @raiz nodo principal de la lista de expresiones
          */
 
-         public Expresion resolver_expresion(ParseTreeNode raiz)
+        public Expresion resolver_expresion(ParseTreeNode raiz)
         {
             if (raiz.ChildNodes.Count() == 3)
             {
@@ -395,7 +440,7 @@ namespace cql_teacher_server.CQL.Gramatica
             }
             else if (raiz.ChildNodes.Count() == 2)
             {
-                string iden = raiz.ChildNodes.ElementAt(0).Term.Name;           
+                string iden = raiz.ChildNodes.ElementAt(0).Term.Name;
                 if (iden.Equals("tipovariable"))
                 {
                     int l1 = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
@@ -433,9 +478,9 @@ namespace cql_teacher_server.CQL.Gramatica
                     else if (toke.Equals("!")) opera = "NEGACION";
                     return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(1)), opera, l1, c1);
                 }
-                
+
             }
-            else if(raiz.ChildNodes.Count() == 5)
+            else if (raiz.ChildNodes.Count() == 5)
             {
                 string idDiferenciador = raiz.ChildNodes.ElementAt(0).Term.Name;
                 //--------------------------------------------- OPERACION TERNARIA ---------------------------------------------------------
@@ -445,7 +490,7 @@ namespace cql_teacher_server.CQL.Gramatica
                     int columnaT = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
                     return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(2)),
                         resolver_expresion(raiz.ChildNodes.ElementAt(4)),
-                        resolver_expresion(raiz.ChildNodes.ElementAt(0)),"TERNARIO",lineaT,columnaT);
+                        resolver_expresion(raiz.ChildNodes.ElementAt(0)), "TERNARIO", lineaT, columnaT);
                 }
                 LinkedList<Expresion> lista = resolver_user_type(raiz.ChildNodes.ElementAt(1));
                 string idAs = raiz.ChildNodes.ElementAt(4).Token.Text;
@@ -502,8 +547,8 @@ namespace cql_teacher_server.CQL.Gramatica
             f.Write("\n}");
             f.Close();
         }
-        
-        
+
+
         /*
          *  Metodo que recorre el arbol y escribe en el txt la informacion en Graphviz
          *  @raiz el la raiz del arbol principal
@@ -583,7 +628,7 @@ namespace cql_teacher_server.CQL.Gramatica
                 return new Expresion(valor, "FECHA", l1, c1);
             }
             else if (valorT.Equals("true") || valorT.Equals("false")) return new Expresion(valor, "BOOLEAN", l1, c1);
-            else if (token.Equals("ID"))
+            else if (token.Equals("id"))
             {
                 System.Diagnostics.Debug.WriteLine("ID");
                 return new Expresion(valor, "ID", l1, c1);
@@ -595,7 +640,7 @@ namespace cql_teacher_server.CQL.Gramatica
          * Metodo que me devuelve el tipo de declaracion
          * @raiz el es nodo a recorrer del arbol
          */
-        
+
         public string declaracionTipo(ParseTreeNode raiz)
         {
             string token = raiz.Term.Name;
@@ -606,5 +651,36 @@ namespace cql_teacher_server.CQL.Gramatica
 
 
         }
+
+
+
+        public LinkedList<SubIf> resolver_if(ParseTreeNode raiz)
+        {
+            LinkedList<SubIf> lista = new LinkedList<SubIf>();
+            string token = raiz.ChildNodes.ElementAt(0).Term.Name;
+            LinkedList<InstruccionCQL> cuerpo = null;
+            Expresion condicion = null;
+            int l = 0;
+            int c = 0;
+            if (token.Equals("elseif"))
+            {
+                lista = resolver_if(raiz.ChildNodes.ElementAt(0));
+                l = raiz.ChildNodes.ElementAt(2).Token.Location.Line;
+                c = raiz.ChildNodes.ElementAt(2).Token.Location.Line;
+                condicion = resolver_expresion(raiz.ChildNodes.ElementAt(3));
+                cuerpo = instrucciones(raiz.ChildNodes.ElementAt(5));
+            }
+            else
+            {
+                l = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
+                c = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
+                condicion = resolver_expresion(raiz.ChildNodes.ElementAt(2));
+                cuerpo = instrucciones(raiz.ChildNodes.ElementAt(4));
+            }
+
+            lista.AddLast(new SubIf(condicion, cuerpo, l, c));
+            return lista;
+        }
+
     }
 }

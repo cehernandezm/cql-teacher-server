@@ -96,6 +96,7 @@ namespace cql_teacher_server.CQL.Componentes
                             return null;
 
                         }
+                        return "";
                     }
                     else
                     {
@@ -130,7 +131,9 @@ namespace cql_teacher_server.CQL.Componentes
                                 return null;
 
                             }
+                            return "";
                         }
+                        return null;
                     }
                 }
                 else mensajes.AddLast(mensa.error("La variable: " + id + " no existe en este ambito", l, c, "Semantico"));
@@ -160,6 +163,7 @@ namespace cql_teacher_server.CQL.Componentes
                                     return null;
 
                                 }
+                                return "";
                             }
                             else
                             {
@@ -177,17 +181,13 @@ namespace cql_teacher_server.CQL.Componentes
                                     else if (op1.GetType() == typeof(InstanciaUserType))
                                     {
                                         InstanciaUserType temp = (InstanciaUserType)op1;
-                                        if (tipo.Equals(temp.tipo.ToLower()))
-                                        {
-                                            at.valor = temp;
-                                            return null;
-                                        }
+                                        if (tipo.Equals(temp.tipo.ToLower())) at.valor = temp;
                                         else
                                         {
                                             mensajes.AddLast(mensa.error("No se le puede asignar al atributo " + at.nombre + " el valor: " + op1, l, c, "Semantico"));
                                             return null;
                                         }
-
+                                        
                                     }
                                     else
                                     {
@@ -195,6 +195,7 @@ namespace cql_teacher_server.CQL.Componentes
                                         return null;
 
                                     }
+                                    return "";
                                 }
                             }
                             return null;
