@@ -437,6 +437,16 @@ namespace cql_teacher_server.CQL.Gramatica
             }
             else if(raiz.ChildNodes.Count() == 5)
             {
+                string idDiferenciador = raiz.ChildNodes.ElementAt(0).Term.Name;
+                //--------------------------------------------- OPERACION TERNARIA ---------------------------------------------------------
+                if (idDiferenciador.Equals("expresion"))
+                {
+                    int lineaT = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
+                    int columnaT = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
+                    return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(2)),
+                        resolver_expresion(raiz.ChildNodes.ElementAt(4)),
+                        resolver_expresion(raiz.ChildNodes.ElementAt(0)),"TERNARIO",lineaT,columnaT);
+                }
                 LinkedList<Expresion> lista = resolver_user_type(raiz.ChildNodes.ElementAt(1));
                 string idAs = raiz.ChildNodes.ElementAt(4).Token.Text;
                 idAs = idAs.ToLower().TrimEnd().TrimStart();
@@ -550,6 +560,8 @@ namespace cql_teacher_server.CQL.Gramatica
         public Expresion getValor(string token, string valor, int l1, int c1)
         {
             System.Diagnostics.Debug.WriteLine(valor);
+            token = token.ToLower().TrimEnd().TrimStart();
+            string valorT = valor.ToLower().TrimEnd().TrimStart();
             if (token.Equals("entero")) return new Expresion(valor, "ENTERO", l1, c1);
             else if (token.Equals("decimal")) return new Expresion(valor, "DECIMAL", l1, c1);
             else if (token.Equals("cadena"))
@@ -570,7 +582,7 @@ namespace cql_teacher_server.CQL.Gramatica
                 valor = valor.TrimStart('\'');
                 return new Expresion(valor, "FECHA", l1, c1);
             }
-            else if (valor.Equals("true") || valor.Equals("false")) return new Expresion(valor, "BOOLEAN", l1, c1);
+            else if (valorT.Equals("true") || valorT.Equals("false")) return new Expresion(valor, "BOOLEAN", l1, c1);
             else if (token.Equals("ID"))
             {
                 System.Diagnostics.Debug.WriteLine("ID");

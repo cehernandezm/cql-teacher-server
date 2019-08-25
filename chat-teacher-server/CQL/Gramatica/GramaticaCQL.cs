@@ -38,8 +38,8 @@ namespace cql_teacher_server.CQL.Gramatica
             var TIME = ToTerm("time");
 
 
-            var TRUE = ToTerm("true");
-            var FALSE = ToTerm("false");
+            var TRUE = ToTerm("True");
+            var FALSE = ToTerm("False");
             var NULL = ToTerm("null");
 
             var MAYOR = ToTerm(">");
@@ -176,6 +176,7 @@ namespace cql_teacher_server.CQL.Gramatica
                            | ToTerm("@") + ID
                            | ToTerm("@") + ID + INCREMENTO
                            | ToTerm("@") + ID + DECREMENTO
+                           | expresion + ToTerm("?") + expresion + ToTerm(":") + expresion
                            | CADENA
                            | FECHA
                            | HORA

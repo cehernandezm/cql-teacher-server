@@ -13,7 +13,10 @@ namespace cql_teacher_server.CQL.Componentes
     public class Expresion : InstruccionCQL
     {
         Expresion a { set; get; }
+
         Expresion b { set; get; }
+
+        Expresion condicion { set; get; }
 
         Object valor { set; get; }
 
@@ -29,6 +32,7 @@ namespace cql_teacher_server.CQL.Componentes
         LinkedList<Expresion> listaUser { set; get; }
         string idAs { set; get; }
   
+
 
         /* 
          * Constructor de la clase para casteos explicitos tambien sirve para acceder a User Types,INCREMENTO Y DECREMENTO:
@@ -134,6 +138,27 @@ namespace cql_teacher_server.CQL.Componentes
             this.listaUser = lista;
             this.idAs = idAs;
         }
+
+        /*
+         * Constructor de la clase para resolver operacion ternaria
+         * @a Expresion si es verdadera
+         * @b Expresion si es falsa
+         * @condicion tiene que ser un boolean
+         * @operacion el tipo de operacion que se realizara
+         * @linea1 es la linea del id
+         * @columna es la columna del id
+         */
+
+        public Expresion(Expresion a, Expresion b, Expresion condicion, string operacion, int linea1, int columna1)
+        {
+            this.a = a;
+            this.b = b;
+            this.condicion = condicion;
+            this.operacion = operacion;
+            this.linea1 = linea1;
+            this.columna1 = columna1;
+        }
+
 
 
 
@@ -714,6 +739,31 @@ namespace cql_teacher_server.CQL.Componentes
                 {
                     Mensaje men = new Mensaje();
                     mensajes.AddLast(men.error("No se puede hacer un decremento en la variable: " + casteo + " porque no es de tipo entero", linea1, columna1, "Semantico"));
+                    return null;
+                }
+            }
+            //--------------------------------------------------------- TERNARIO -----------------------------------------------------------------
+            else if (operacion.Equals("TERNARIO"))
+            {
+                object con = (condicion == null) ? null : condicion.ejecutar(ts, user, ref baseD, mensajes);
+                if(con != null)
+                {
+                    if(con.GetType() == typeof(Boolean))
+                    {
+                        if ((Boolean)con) return op1;
+                        return op2;
+                    }
+                    else
+                    {
+                        Mensaje men = new Mensaje();
+                        mensajes.AddLast(men.error("No se reconoce la condicion: " + con.ToString(), linea1, columna1, "Semantico"));
+                        return null;
+                    }
+                }
+                else
+                {
+                    Mensaje men = new Mensaje();
+                    mensajes.AddLast(men.error("No se puede tener una condicion null", linea1, columna1, "Semantico"));
                     return null;
                 }
             }
