@@ -231,6 +231,7 @@ namespace cql_teacher_server.CQL.Gramatica
                 case "asignacion":
                     LinkedList<InstruccionCQL> lAs = new LinkedList<InstruccionCQL>();
                     string idAs = "";
+                    string operaAs = "";
                     int liAs = 0;
                     int coAs = 0;
 
@@ -240,7 +241,37 @@ namespace cql_teacher_server.CQL.Gramatica
                     liAs = hijo.ChildNodes.ElementAt(0).Token.Location.Line;
                     coAs = hijo.ChildNodes.ElementAt(0).Token.Location.Column;
 
-                    lAs.AddLast(new Asignacion(idAs,liAs,coAs,resolver_expresion(hijo.ChildNodes.ElementAt(2))));
+                    operaAs = hijo.ChildNodes.ElementAt(1).Token.Text;
+                    operaAs = operaAs.ToLower().TrimEnd().TrimStart();
+
+                    if (operaAs.Equals("=")) lAs.AddLast(new Asignacion(idAs, liAs, coAs, resolver_expresion(hijo.ChildNodes.ElementAt(2))));
+                    else if (operaAs.Equals("+="))
+                    {
+                        Expresion opa = new Expresion(idAs, "ID", liAs, coAs);
+                        Expresion ge = new Expresion(opa, resolver_expresion(hijo.ChildNodes.ElementAt(2)), "SUMA", liAs, coAs);
+                        lAs.AddLast(new Asignacion(idAs, liAs, coAs, ge));
+                    }
+                    else if (operaAs.Equals("-="))
+                    {
+                        Expresion opa = new Expresion(idAs, "ID", liAs, coAs);
+                        Expresion ge = new Expresion(opa, resolver_expresion(hijo.ChildNodes.ElementAt(2)), "RESTA", liAs, coAs);
+                        lAs.AddLast(new Asignacion(idAs, liAs, coAs, ge));
+                    }
+                    else if (operaAs.Equals("*="))
+                    {
+                        Expresion opa = new Expresion(idAs, "ID", liAs, coAs);
+                        Expresion ge = new Expresion(opa, resolver_expresion(hijo.ChildNodes.ElementAt(2)), "MULTIPLICACION", liAs, coAs);
+                        lAs.AddLast(new Asignacion(idAs, liAs, coAs, ge));
+                    }
+                    else
+                    {
+                        Expresion opa = new Expresion(idAs, "ID", liAs, coAs);
+                        Expresion ge = new Expresion(opa, resolver_expresion(hijo.ChildNodes.ElementAt(2)), "DIVISION", liAs, coAs);
+                        lAs.AddLast(new Asignacion(idAs, liAs, coAs, ge));
+                    }
+
+
+
 
                     return lAs;
             }
@@ -312,13 +343,24 @@ namespace cql_teacher_server.CQL.Gramatica
             }
             else if (raiz.ChildNodes.Count() == 2)
             {
-                string iden = raiz.ChildNodes.ElementAt(0).Term.Name;
+                string iden = raiz.ChildNodes.ElementAt(0).Term.Name;           
                 if (iden.Equals("tipovariable"))
                 {
                     int l1 = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
                     int c1 = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Column;
                     string tipov = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Text.TrimEnd().TrimStart().ToLower();
                     return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(1)), "CONVERSION", l1, c1, tipov);
+                }
+                else if (iden.Equals("ID"))
+                {
+                    string idin = raiz.ChildNodes.ElementAt(0).Token.Text;
+                    idin = idin.ToLower().TrimEnd().TrimStart();
+                    string accio = raiz.ChildNodes.ElementAt(1).Token.Text;
+                    int ln = raiz.ChildNodes.ElementAt(0).Token.Location.Line;
+                    int cn = raiz.ChildNodes.ElementAt(0).Token.Location.Column;
+                    if (accio.Equals("++")) return new Expresion(new Expresion(idin, "ID", ln, cn), "INCREMENTO", ln, cn, idin);
+                    else return new Expresion(new Expresion(idin, "ID", ln, cn), "DECREMENTO", ln, cn, idin);
+                    return null;
                 }
                 else
                 {
@@ -476,7 +518,7 @@ namespace cql_teacher_server.CQL.Gramatica
                 valor = valor.TrimStart('\'');
                 return new Expresion(valor, "FECHA", l1, c1);
             }
-            else if (valor.Equals("True") || valor.Equals("False")) return new Expresion(valor, "BOOLEAN", l1, c1);
+            else if (valor.Equals("true") || valor.Equals("false")) return new Expresion(valor, "BOOLEAN", l1, c1);
             else if (token.Equals("ID"))
             {
                 System.Diagnostics.Debug.WriteLine("ID");

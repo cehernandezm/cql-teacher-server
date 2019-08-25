@@ -51,16 +51,17 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 if( a == null)
                 {
-                    if(op1 != null)
+                    if (tipo.Equals("string") || tipo.Equals("date") || tipo.Equals("time")) ts.setValor(id, null);
+                    else if(!tipo.Equals("int") || !tipo.Equals("boolean") || !tipo.Equals("double"))
                     {
-                        if(op1.GetType() == typeof(InstanciaUserType))
-                        {
-                            InstanciaUserType temp = (InstanciaUserType)op1;
-                            temp.lista = null;
-                            ts.setValor(id, temp);
-                            return null;
-                        }
-                        else mensajes.AddLast(mensa.error("A la variable: " + id + " no se le puede asignar un valor null", l, c, "Semantico"));
+                        InstanciaUserType temp = new InstanciaUserType(tipo,null);
+                        ts.setValor(id, temp);
+                    }
+                    else
+                    {
+                        mensajes.AddLast(mensa.error("No se le puede asignar a la variable: " + id + " el valor: null" , l, c, "Semantico"));
+                        return null;
+
                     }
                 }
                 else

@@ -31,7 +31,7 @@ namespace cql_teacher_server.CQL.Componentes
   
 
         /* 
-         * Constructor de la clase para casteos explicitos tambien sirve para acceder a User Types:
+         * Constructor de la clase para casteos explicitos tambien sirve para acceder a User Types,INCREMENTO Y DECREMENTO:
          * CADENA,ENTERO,DECIMAL,FECHA,HORA,BOOLEAN
          * @a expresion a evalular
          * @casteo a que se quiere convertir
@@ -357,7 +357,9 @@ namespace cql_teacher_server.CQL.Componentes
                 else if (op1 != null && op2 == null)
                 {
                     if (op1.GetType() == typeof(InstanciaUserType) && op2 == null) return ((InstanciaUserType)op1).lista == null;
-                    else
+                    else if (op1.GetType() == typeof(string) && op2 == null) return (string)op1 == null;
+                    else if (op1.GetType() == typeof(DateTime) && op2 == null) return (DateTime)op1 == null;
+                    else if (op1.GetType() == typeof(TimeSpan) && op2 == null) return (TimeSpan)op1 == null; 
                     {
                         Mensaje mes = new Mensaje();
                         mensajes.AddLast(mes.error("No se puede conocer si es igual   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
@@ -367,32 +369,63 @@ namespace cql_teacher_server.CQL.Componentes
                 else if (op2 != null && op1 == null)
                 {
                     if (op2.GetType() == typeof(InstanciaUserType) && op1 == null) return ((InstanciaUserType)op2).lista == null;
-                    else
+                    else if (op2.GetType() == typeof(string) && op1 == null) return (string)op2 == null;
+                    else if (op2.GetType() == typeof(DateTime) && op1 == null) return (DateTime)op2 == null;
+                    else if (op2.GetType() == typeof(TimeSpan) && op1 == null) return (TimeSpan)op2 == null;
                     {
                         Mensaje mes = new Mensaje();
-                        mensajes.AddLast(mes.error("No se puede conocer si es igual   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
+                        mensajes.AddLast(mes.error("No se puede conocer si es igual   " + op2.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                         return null;
                     }
                 }
                 else return true;
             }
             //-----------------------------------------------------DIFERENTE------------------------------------------------------------------------
-            else if (operacion.Equals("DIFERENTE") && op1 != null && op2 != null)
+            else if (operacion.Equals("DIFERENTE"))
             {
-                if (op1.GetType() == typeof(int) && op2.GetType() == typeof(int)) return (int)op1 != (int)op2;
-                else if (op1.GetType() == typeof(int) && op2.GetType() == typeof(Double)) return (int)op1 != (Double)op2;
-                else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(int)) return (Double)op1 != (int)op2;
-                else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(Double)) return (Double)op1 != (Double)op2;
-                else if (op1.GetType() == typeof(TimeSpan) && op2.GetType() == typeof(TimeSpan)) return (TimeSpan)op1 != (TimeSpan)op2;
-                else if (op1.GetType() == typeof(DateTime) && op2.GetType() == typeof(DateTime)) return (DateTime)op1 != (DateTime)op2;
-                else if (op1.GetType() == typeof(string) && op2.GetType() == typeof(string)) return !op1.ToString().Equals(op2.ToString());
-                else if (op1.GetType() == typeof(Boolean) && op2.GetType() == typeof(Boolean)) return (Boolean)op1 != (Boolean)op2;
-                else
+                if (op1 != null && op2 != null)
                 {
-                    Mensaje mes = new Mensaje();
-                    mensajes.AddLast(mes.error("No se puede conocer si es diferente   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
-                    return null;
+                    if (op1.GetType() == typeof(int) && op2.GetType() == typeof(int)) return (int)op1 != (int)op2;
+                    else if (op1.GetType() == typeof(int) && op2.GetType() == typeof(Double)) return (int)op1 != (Double)op2;
+                    else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(int)) return (Double)op1 != (int)op2;
+                    else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(Double)) return (Double)op1 != (Double)op2;
+                    else if (op1.GetType() == typeof(TimeSpan) && op2.GetType() == typeof(TimeSpan)) return (TimeSpan)op1 != (TimeSpan)op2;
+                    else if (op1.GetType() == typeof(DateTime) && op2.GetType() == typeof(DateTime)) return (DateTime)op1 != (DateTime)op2;
+                    else if (op1.GetType() == typeof(string) && op2.GetType() == typeof(string)) return op1.ToString().Equals(op2.ToString());
+                    else if (op1.GetType() == typeof(Boolean) && op2.GetType() == typeof(Boolean)) return (Boolean)op1 != (Boolean)op2;
+                    else if (op1.GetType() == typeof(InstanciaUserType) && op2.GetType() == typeof(InstanciaUserType)) return !((InstanciaUserType)op1).tipo.Equals(((InstanciaUserType)op2).tipo);
+                    else
+                    {
+                        Mensaje mes = new Mensaje();
+                        mensajes.AddLast(mes.error("No se puede conocer si es diferente   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
+                        return null;
+                    }
                 }
+                else if (op1 != null && op2 == null)
+                {
+                    if (op1.GetType() == typeof(InstanciaUserType) && op2 == null) return ((InstanciaUserType)op1).lista != null;
+                    else if (op1.GetType() == typeof(string) && op2 == null) return (string)op1 != null;
+                    else if (op1.GetType() == typeof(DateTime) && op2 == null) return (DateTime)op1 != null;
+                    else if (op1.GetType() == typeof(TimeSpan) && op2 == null) return (TimeSpan)op1 != null;
+                    {
+                        Mensaje mes = new Mensaje();
+                        mensajes.AddLast(mes.error("No se puede conocer si es diferente   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
+                        return null;
+                    }
+                }
+                else if (op2 != null && op1 == null)
+                {
+                    if (op2.GetType() == typeof(InstanciaUserType) && op1 == null) return ((InstanciaUserType)op2).lista != null;
+                    else if (op2.GetType() == typeof(string) && op1 == null) return (string)op2 != null;
+                    else if (op2.GetType() == typeof(DateTime) && op1 == null) return (DateTime)op2 != null;
+                    else if (op2.GetType() == typeof(TimeSpan) && op1 == null) return (TimeSpan)op2 != null;
+                    {
+                        Mensaje mes = new Mensaje();
+                        mensajes.AddLast(mes.error("No se puede conocer si es diferente   " + op2.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
+                        return null;
+                    }
+                }
+                else return false;
             }
             //----------------------------------------------------- OR -----------------------------------------------------------------------------
             else if (operacion.Equals("OR") && op1 != null && op2 != null)
@@ -616,6 +649,46 @@ namespace cql_teacher_server.CQL.Componentes
                     return null;
                 }
             }
+            //-------------------------------------------------------- INCREMENTO ---------------------------------------------------------------
+            else if(operacion.Equals("INCREMENTO") && op1 != null)
+            {
+                if(op1.GetType() == typeof(int))
+                {
+                    ts.setValor(casteo, (int)op1 + 1);
+                    return (int)op1;
+                }
+                else if (op1.GetType() == typeof(Double))
+                {
+                    ts.setValor(casteo, (Double)op1 + 1);
+                    return (Double)op1;
+                }
+                else
+                {
+                    Mensaje men = new Mensaje();
+                    mensajes.AddLast(men.error("No se puede hacer un incremento en la variable: " + casteo + " porque no es de tipo entero", linea1, columna1, "Semantico"));
+                    return null;
+                }
+            }
+            //-------------------------------------------------------- DECREMENTO ---------------------------------------------------------------
+            else if (operacion.Equals("DECREMENTO") && op1 != null)
+            {
+                if (op1.GetType() == typeof(int))
+                {
+                    ts.setValor(casteo, (int)op1 - 1);
+                    return (int)op1;
+                }
+                else if (op1.GetType() == typeof(Double))
+                {
+                    ts.setValor(casteo, (Double)op1 - 1);
+                    return (Double)op1;
+                }
+                else
+                {
+                    Mensaje men = new Mensaje();
+                    mensajes.AddLast(men.error("No se puede hacer un decremento en la variable: " + casteo + " porque no es de tipo entero", linea1, columna1, "Semantico"));
+                    return null;
+                }
+            }
             //------------------------------------------------- ENTERO -------------------------------------------------------------------------
             else if (operacion.Equals("ENTERO")) return Int32.Parse(valor.ToString());
             //------------------------------------------------- DOUBLE -------------------------------------------------------------------------
@@ -632,12 +705,7 @@ namespace cql_teacher_server.CQL.Componentes
             else if (operacion.Equals("ID"))
             {
                 object a = ts.getValor(valor.ToString().TrimStart().TrimEnd());
-                if (a == null)
-                {
-                    Mensaje me = new Mensaje();
-                    mensajes.AddLast(me.error("La variable " + valor + " no ha sido instanciada", linea1, columna1, "Semantico"));
-                    return null;
-                }
+                if (a == null) return null;
                 else if (a.ToString().Equals("none"))
                 {
                     Mensaje me = new Mensaje();

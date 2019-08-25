@@ -63,6 +63,9 @@ namespace cql_teacher_server.CQL.Gramatica
             var RESTA = ToTerm("-");
             var SUMA = ToTerm("+");
 
+            var INCREMENTO = ToTerm("++");
+            var DECREMENTO = ToTerm("--");
+
             
 
 
@@ -169,6 +172,8 @@ namespace cql_teacher_server.CQL.Gramatica
                            | "{" + asigna_UserType + "}"  + AS + ID
                            | ENTERO
                            | ToTerm("@") + ID
+                           | ToTerm("@") + ID + INCREMENTO
+                           | ToTerm("@") + ID + DECREMENTO
                            | CADENA
                            | FECHA
                            | HORA
@@ -218,7 +223,12 @@ namespace cql_teacher_server.CQL.Gramatica
 
 
             //--------------------------------------------------------- ASIGNACION DE VARIABLES ----------------------------------------------------------------------
-            asignacion.Rule = "@" + ID + "=" + expresion;
+            asignacion.Rule = "@" + ID + ToTerm("=") + expresion
+                            | "@" + ID + ToTerm("+=") + expresion
+                            | "@" + ID + ToTerm("*=") + expresion
+                            | "@" + ID + ToTerm("-=") + expresion
+                            | "@" + ID + ToTerm("/=") + expresion
+                            ;
 
 
             #endregion

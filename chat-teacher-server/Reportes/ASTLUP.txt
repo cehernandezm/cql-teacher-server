@@ -1,112 +1,112 @@
 digraph Arbol{ rankdir=TB; 
- node[shape = box, style = filled, color = white];nodo702547[label="inicio ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo23184054[label="instruccion ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo26876281[label="query ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo14502061[label="[ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo26876281"-> "nodo14502061" 
-nodo8805986[label="+ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo26876281"-> "nodo8805986" 
-nodo22162087[label="query (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo26876281"-> "nodo22162087" 
-nodo60260236[label="] (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo26876281"-> "nodo60260236" 
-nodo42430754[label="[ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo26876281"-> "nodo42430754" 
-nodo58037625[label="+ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo26876281"-> "nodo58037625" 
-nodo36193440[label="user (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo26876281"-> "nodo36193440" 
-nodo53532839[label="] (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo26876281"-> "nodo53532839" 
-nodo21753247[label="Luis (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo26876281"-> "nodo21753247" 
-nodo46768536[label="[ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo26876281"-> "nodo46768536" 
-nodo66966689[label="- (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo26876281"-> "nodo66966689" 
-nodo62417098[label="user (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo26876281"-> "nodo62417098" 
-nodo46498340[label="] (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo26876281"-> "nodo46498340" 
-nodo58050239[label="data ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo36609706[label="[ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo58050239"-> "nodo36609706" 
-nodo160757[label="+ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo58050239"-> "nodo160757" 
-nodo5305009[label="data (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo58050239"-> "nodo5305009" 
-nodo40847598[label="] (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo58050239"-> "nodo40847598" 
-nodo5793467[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo56966696[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo852806[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo28142629[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo56291540[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo45681508[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo31094756[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo19493988[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo39321845[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo22552487[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo6034569[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo64923051[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo62085918[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo35569394[label="USE Database1; (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo62085918"-> "nodo35569394" 
-"nodo64923051"-> "nodo62085918" 
-nodo32939318[label="CREATE TYPE IF NOT EXISTS Tipo1( (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo64923051"-> "nodo32939318" 
-"nodo6034569"-> "nodo64923051" 
-nodo13255674[label="Hola String, (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo6034569"-> "nodo13255674" 
-"nodo22552487"-> "nodo6034569" 
-nodo34784079[label="hol2 int (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo22552487"-> "nodo34784079" 
-"nodo39321845"-> "nodo22552487" 
-nodo7023941[label="); (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo39321845"-> "nodo7023941" 
-"nodo19493988"-> "nodo39321845" 
-nodo30463467[label="CREATE TYPE IF NOT EXISTS Tipo2( (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo19493988"-> "nodo30463467" 
-"nodo31094756"-> "nodo19493988" 
-nodo65770321[label="Hola String, (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo31094756"-> "nodo65770321" 
-"nodo45681508"-> "nodo31094756" 
-nodo22936968[label="hol2 Tipo1 (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo45681508"-> "nodo22936968" 
-"nodo56291540"-> "nodo45681508" 
-nodo18722464[label="); (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo56291540"-> "nodo18722464" 
-"nodo28142629"-> "nodo56291540" 
-nodo13861544[label="Tipo2 @prueba; (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo28142629"-> "nodo13861544" 
-"nodo852806"-> "nodo28142629" 
-nodo54777776[label="@prueba = {\"Hola\",null} AS Tipo2; (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo852806"-> "nodo54777776" 
-"nodo56966696"-> "nodo852806" 
-nodo62836169[label="Boolean @a ; (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo56966696"-> "nodo62836169" 
-"nodo5793467"-> "nodo56966696" 
-nodo60327683[label="@a = 6; (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo5793467"-> "nodo60327683" 
-"nodo58050239"-> "nodo5793467" 
-nodo44656493[label="[ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo58050239"-> "nodo44656493" 
-nodo64378135[label="- (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo58050239"-> "nodo64378135" 
-nodo44103698[label="data (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo58050239"-> "nodo44103698" 
-nodo46135918[label="] (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo58050239"-> "nodo46135918" 
-"nodo26876281"-> "nodo58050239" 
-nodo46090298[label="[ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo26876281"-> "nodo46090298" 
-nodo44584838[label="- (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo26876281"-> "nodo44584838" 
-nodo62013539[label="query (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo26876281"-> "nodo62013539" 
-nodo33180897[label="] (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo26876281"-> "nodo33180897" 
-"nodo23184054"-> "nodo26876281" 
-"nodo702547"-> "nodo23184054" 
+ node[shape = box, style = filled, color = white];nodo25506860[label="inicio ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo12414618[label="instruccion ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo19094225[label="query ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo23897065[label="[ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19094225"-> "nodo23897065" 
+nodo48434858[label="+ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19094225"-> "nodo48434858" 
+nodo1736333[label="query (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19094225"-> "nodo1736333" 
+nodo38807476[label="] (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19094225"-> "nodo38807476" 
+nodo18445836[label="[ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19094225"-> "nodo18445836" 
+nodo51454174[label="+ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19094225"-> "nodo51454174" 
+nodo51696923[label="user (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19094225"-> "nodo51696923" 
+nodo66504582[label="] (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19094225"-> "nodo66504582" 
+nodo30247713[label="Luis (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19094225"-> "nodo30247713" 
+nodo33171194[label="[ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19094225"-> "nodo33171194" 
+nodo10176948[label="- (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19094225"-> "nodo10176948" 
+nodo16814072[label="user (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19094225"-> "nodo16814072" 
+nodo19025433[label="] (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19094225"-> "nodo19025433" 
+nodo19700781[label="data ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo60896968[label="[ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19700781"-> "nodo60896968" 
+nodo23727544[label="+ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19700781"-> "nodo23727544" 
+nodo38094053[label="data (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19700781"-> "nodo38094053" 
+nodo42035878[label="] (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19700781"-> "nodo42035878" 
+nodo14051783[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo51852407[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo8880243[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo4823959[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo25826081[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo31887077[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo66063541[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo3344175[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo2668102[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo28536498[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo63004825[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo18089118[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo29694374[label="expresion_cuerpo ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo66526350[label="/* (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo29694374"-> "nodo66526350" 
+"nodo18089118"-> "nodo29694374" 
+nodo31575569[label="USE Database1; (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo18089118"-> "nodo31575569" 
+"nodo63004825"-> "nodo18089118" 
+nodo47061523[label="CREATE TYPE IF NOT EXISTS Tipo1( (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo63004825"-> "nodo47061523" 
+"nodo28536498"-> "nodo63004825" 
+nodo52180656[label="Hola String, (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo28536498"-> "nodo52180656" 
+"nodo2668102"-> "nodo28536498" 
+nodo28903466[label="hol2 int (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo2668102"-> "nodo28903466" 
+"nodo3344175"-> "nodo2668102" 
+nodo18280971[label="); (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo3344175"-> "nodo18280971" 
+"nodo66063541"-> "nodo3344175" 
+nodo41397440[label="CREATE TYPE IF NOT EXISTS Tipo2( (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo66063541"-> "nodo41397440" 
+"nodo31887077"-> "nodo66063541" 
+nodo42215894[label="Hola String, (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo31887077"-> "nodo42215894" 
+"nodo25826081"-> "nodo31887077" 
+nodo25032756[label="hol2 Tipo1 (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo25826081"-> "nodo25032756" 
+"nodo4823959"-> "nodo25826081" 
+nodo50603128[label="); (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo4823959"-> "nodo50603128" 
+"nodo8880243"-> "nodo4823959" 
+nodo66891988[label="*/ (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo8880243"-> "nodo66891988" 
+"nodo51852407"-> "nodo8880243" 
+nodo53879431[label="Boolean @hol3 = true; (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo51852407"-> "nodo53879431" 
+"nodo14051783"-> "nodo51852407" 
+nodo65419869[label="int @hola4 = @hol3--; (Cuerpo) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo14051783"-> "nodo65419869" 
+"nodo19700781"-> "nodo14051783" 
+nodo31189065[label="[ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19700781"-> "nodo31189065" 
+nodo23484798[label="- (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19700781"-> "nodo23484798" 
+nodo23286579[label="data (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19700781"-> "nodo23286579" 
+nodo11195221[label="] (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19700781"-> "nodo11195221" 
+"nodo19094225"-> "nodo19700781" 
+nodo11819884[label="[ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19094225"-> "nodo11819884" 
+nodo49924336[label="- (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19094225"-> "nodo49924336" 
+nodo25485642[label="query (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19094225"-> "nodo25485642" 
+nodo11120332[label="] (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo19094225"-> "nodo11120332" 
+"nodo12414618"-> "nodo19094225" 
+"nodo25506860"-> "nodo12414618" 
 
 }

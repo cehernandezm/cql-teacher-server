@@ -162,6 +162,7 @@ namespace cql_teacher_server.CQL.Componentes
                             mensajes.AddLast(me.error("La variable " + id + " no se le puede asignar este valor " + a.ToString(), l, c, "Semantico"));
                         }
                     }
+                   
                 }
             }
             else
