@@ -81,7 +81,10 @@ namespace cql_teacher_server.CQL.Gramatica
             var NOT = ToTerm("NOT");
             var EXISTS = ToTerm("EXISTS");
 
-
+            var SWITCH = ToTerm("SWITCH");
+            var CASE = ToTerm("CASE");
+            var BREAK = ToTerm("Break");
+            var DEFAULT = ToTerm("Default");
 
 
 
@@ -109,26 +112,24 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal tipoVariable = new NonTerminal("tipovariable");
 
             NonTerminal declaracion = new NonTerminal("declaracion");
-
             NonTerminal declaracionA = new NonTerminal("declaracionA");
 
             NonTerminal user_type = new NonTerminal("usertype");
-
             NonTerminal lista_user_type = new NonTerminal("listausertype");
-
             NonTerminal asigna_UserType = new NonTerminal("asignausertype");
 
             NonTerminal asignacion = new NonTerminal("asignacion");
-
             NonTerminal asignacionA = new NonTerminal("asignaciona");
 
             NonTerminal ifsuperior = new NonTerminal("ifsuperior");
-
             NonTerminal insif = new NonTerminal("if");
-
             NonTerminal inselseif = new NonTerminal("elseif");
-
             NonTerminal inselse = new NonTerminal("else");
+
+            NonTerminal inSwitch = new NonTerminal("inswitch");
+            NonTerminal lisCase = new NonTerminal("liscase");
+            NonTerminal inCase = new NonTerminal("incase");
+            NonTerminal inDefault = new NonTerminal("indefault");
 
             #endregion
 
@@ -145,7 +146,9 @@ namespace cql_teacher_server.CQL.Gramatica
                              | declaracionA + ";"
                              | user_type + ";"
                              | asignacion + ";"
-                             | ifsuperior;
+                             | ifsuperior
+                             | inSwitch
+                             ;
 
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
 
@@ -253,6 +256,10 @@ namespace cql_teacher_server.CQL.Gramatica
                              ;
 
 
+
+
+
+
             //---------------------------------------------------------- IF SUPERIOR ------------------------------------------------------------------------
             ifsuperior.Rule = insif
                             | insif + inselseif
@@ -267,6 +274,23 @@ namespace cql_teacher_server.CQL.Gramatica
                             ;
             //------------------------------------------------------------- IF -----------------------------------------------------------------------------
             inselse.Rule = ELSE + "{" + instrucciones + "}";
+
+            //------------------------------------------------------------ SWITCH -------------------------------------------------------------------------
+            inSwitch.Rule = SWITCH + "(" + expresion + ")" + "{" + lisCase + "}"
+                          | SWITCH + "(" + expresion + ")" + "{" + lisCase + inDefault + "}"
+                          ;
+            //------------------------------------------------------------- LISTADO DE CASES ---------------------------------------------------------------
+            lisCase.Rule = lisCase + inCase
+                         | inCase
+                         ;
+            //------------------------------------------------------------- CASE ---------------------------------------------------------------------------
+            inCase.Rule = CASE + expresion + ":" + instrucciones
+                        | CASE + expresion + ":" + instrucciones + BREAK + ";"
+                        ;
+            //-------------------------------------------------------------- DEFAULT -----------------------------------------------------------------------
+            inDefault.Rule = DEFAULT  + ":" + instrucciones
+                           | DEFAULT + ":" + instrucciones + BREAK + ";"
+                           ;
             #endregion
 
             #region Preferencias
