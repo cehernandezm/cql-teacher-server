@@ -75,6 +75,7 @@ namespace cql_teacher_server.CQL.Gramatica
             var DATABASE = ToTerm("DATABASE");
             var NEW = ToTerm("new");
             var AS = ToTerm("AS");
+            var DROP = ToTerm("DROP");
 
             var IF = ToTerm("IF");
             var ELSE = ToTerm("ELSE");
@@ -86,6 +87,7 @@ namespace cql_teacher_server.CQL.Gramatica
             var BREAK = ToTerm("Break");
             var DEFAULT = ToTerm("Default");
 
+            
 
 
 
@@ -131,6 +133,8 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal inCase = new NonTerminal("incase");
             NonTerminal inDefault = new NonTerminal("indefault");
 
+            NonTerminal inDrop = new NonTerminal("indrop");
+
             #endregion
 
             #region Gramatica
@@ -148,6 +152,7 @@ namespace cql_teacher_server.CQL.Gramatica
                              | asignacion + ";"
                              | ifsuperior
                              | inSwitch
+                             | inDrop + ";"
                              ;
 
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
@@ -291,6 +296,9 @@ namespace cql_teacher_server.CQL.Gramatica
             inDefault.Rule = DEFAULT  + ":" + instrucciones
                            | DEFAULT + ":" + instrucciones + BREAK + ";"
                            ;
+            //------------------------------------------------------------- DROP DATABASE ------------------------------------------------------------------
+            inDrop.Rule = DROP + DATABASE + ID ;
+            
             #endregion
 
             #region Preferencias

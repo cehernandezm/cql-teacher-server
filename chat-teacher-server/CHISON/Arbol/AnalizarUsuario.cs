@@ -178,6 +178,7 @@ namespace cql_teacher_server.CHISON.Arbol
                         if (buscarAtributo(listaAtri, "NAME") != null && buscarAtributo(listaAtri, "PASSWORD") != null)
                         {
                             string nombre = (string)buscarAtributo(listaAtri, "NAME");
+                            nombre = nombre.ToLower().TrimEnd().TrimStart();
                             string password = (string)buscarAtributo(listaAtri, "PASSWORD");
 
                             object res = buscarAtributo(listaAtri, "PERMISSIONS");

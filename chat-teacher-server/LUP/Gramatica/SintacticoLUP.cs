@@ -107,7 +107,7 @@ namespace cql_teacher_server.LUP.Gramatica
                 case "query":
                     string userq = actual.ChildNodes.ElementAt(8).Token.Text;
                     userq = userq.TrimStart();
-                    userq = userq.TrimEnd();
+                    userq = userq.TrimEnd().ToLower();
                     string sql =(string) instruccion(actual.ChildNodes.ElementAt(13));
                     return new Consulta(userq, sql);
                     break;

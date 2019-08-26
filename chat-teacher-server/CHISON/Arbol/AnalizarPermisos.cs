@@ -144,7 +144,7 @@ namespace cql_teacher_server.CHISON.Arbol
                         if (buscarAtributo(listaAtri, "NAME") != null)
                         {
                             string nombre = (string)buscarAtributo(listaAtri, "NAME");
-
+                            nombre = nombre.ToLower().TrimEnd().TrimStart();
                             BaseDeDatos bases = TablaBaseDeDatos.getBase(nombre);
                             if(bases != null)
                             {

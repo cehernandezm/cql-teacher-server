@@ -57,12 +57,12 @@ namespace cql_teacher_server.CQL.Gramatica
                     {
                         System.Diagnostics.Debug.WriteLine(m);
                     }
-
+                    /*
                     foreach (Simbolo s in tablaGlobal)
                     {
                         System.Diagnostics.Debug.WriteLine("Tipo: " + s.Tipo + " Nombre: " + s.nombre + " Valor: " + s.valor);
                     }
-
+                    */
                 }
             }
 
@@ -385,6 +385,16 @@ namespace cql_teacher_server.CQL.Gramatica
 
                     listadoR.AddLast(new Switch(listadoCase));
                     return listadoR;
+
+                //---------------------------------------------------------- DROP ------------------------------
+                case "indrop":
+                    int lineaDrop = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
+                    int columnaDrop = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
+                    string idDrop = hijo.ChildNodes.ElementAt(2).Token.Text;
+                    idDrop = idDrop.ToLower().TrimEnd().TrimStart();
+                    LinkedList<InstruccionCQL> listaDR = new LinkedList<InstruccionCQL>();
+                    listaDR.AddLast(new Drop(idDrop, lineaDrop, columnaDrop));
+                    return listaDR;
             }
             return null;
 

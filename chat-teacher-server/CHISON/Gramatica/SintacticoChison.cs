@@ -112,6 +112,7 @@ namespace cql_teacher_server.CHISON.Gramatica
                             if (buscarAtributo(lista, "NAME"))
                             {
                                 string nombre = (string)valorAtributo(lista, "NAME");
+                                nombre = nombre.ToLower().TrimStart().TrimEnd();
                                 object res = valorAtributo(lista, "Data");
 
                                 Objeto objeto = new Objeto();
