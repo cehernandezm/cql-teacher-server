@@ -355,7 +355,7 @@ namespace cql_teacher_server.CQL.Gramatica
                         }
                     }
                     //-----------------------------------------IF ELSE IF + ELSE ------------------------------------------------------------------------------
-                    else if(hijo.ChildNodes.Count() == 3)
+                    else if (hijo.ChildNodes.Count() == 3)
                     {
                         LinkedList<SubIf> listatemp = resolver_if(hijo.ChildNodes.ElementAt(1));
                         listadoIf = new LinkedList<SubIf>(listadoIf.Union(listatemp));
@@ -367,8 +367,28 @@ namespace cql_teacher_server.CQL.Gramatica
                     }
                     listaR.AddLast(new IfSuperior(listadoIf));
                     return listaR;
+
+                //------------------------------------------------------- SWITCH --------------------------------------------------------------------------------
+                case "inswitch":
+                    Expresion condicionS = resolver_expresion(hijo.ChildNodes.ElementAt(1));
+                    LinkedList<Case> listadoCase = resolver_case(hijo.ChildNodes.ElementAt(3),condicionS);
+                    LinkedList<InstruccionCQL> listadoR = new LinkedList<InstruccionCQL>();
+
+                    if(hijo.ChildNodes.Count() == 6)
+                    {
+                        ParseTreeNode nodeDefault = hijo.ChildNodes.ElementAt(4);
+                        int lineaD = nodeDefault.ChildNodes.ElementAt(0).Token.Location.Line;
+                        int columnaD = nodeDefault.ChildNodes.ElementAt(0).Token.Location.Column;
+                        LinkedList<InstruccionCQL> listadoD = instrucciones(nodeDefault.ChildNodes.ElementAt(2));
+                        listadoCase.AddLast(new Case(listadoD, lineaD, columnaD));
+                    }
+
+                    listadoR.AddLast(new Switch(listadoCase));
+                    return listadoR;
             }
             return null;
+
+
         }
 
 
@@ -653,7 +673,10 @@ namespace cql_teacher_server.CQL.Gramatica
         }
 
 
-
+        /*
+         * Metodo que recorre el arbol y devuelve un LinkedList de IF/ELSEIF/ELSE
+         * @raiz sub arbol a analizar
+         */
         public LinkedList<SubIf> resolver_if(ParseTreeNode raiz)
         {
             LinkedList<SubIf> lista = new LinkedList<SubIf>();
@@ -682,5 +705,40 @@ namespace cql_teacher_server.CQL.Gramatica
             return lista;
         }
 
+        /*
+         * Metodo que recorre un sub arbol y devulve un LinkedList de CASE/DEFAULT
+         * @raiz subarbol a analizar
+         * @condicion condicion del swithc
+         */
+
+        public LinkedList<Case> resolver_case(ParseTreeNode raiz,Expresion condicion)
+        {
+            LinkedList<Case> lista = new LinkedList<Case>();
+            LinkedList<InstruccionCQL> cuerpo = new LinkedList<InstruccionCQL>();
+            Expresion condicionG;
+            int linea = 0;
+            int columna = 0;
+            ParseTreeNode hijo;
+            if(raiz.ChildNodes.Count() == 2)
+            {
+                lista = resolver_case(raiz.ChildNodes.ElementAt(0),condicion);
+
+                linea = raiz.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).Token.Location.Line;
+                columna = raiz.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).Token.Location.Line;
+                cuerpo = instrucciones(raiz.ChildNodes.ElementAt(1).ChildNodes.ElementAt(3));
+                hijo = raiz.ChildNodes.ElementAt(1);
+            }
+            else
+            {
+                linea = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
+                columna = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
+                cuerpo = instrucciones(raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(3));
+                hijo = raiz.ChildNodes.ElementAt(0);    
+            }
+            condicionG = new Expresion(condicion, resolver_expresion(hijo.ChildNodes.ElementAt(1)), "IGUALIGUAL", linea, columna);
+            if (hijo.ChildNodes.Count() == 5) cuerpo.AddLast(new Break());
+            lista.AddLast(new Case(condicionG, cuerpo, linea, columna));
+            return lista;
+        }
     }
 }

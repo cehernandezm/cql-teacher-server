@@ -34,11 +34,17 @@ namespace cql_teacher_server.CQL.Componentes
         */
         public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes)
         {
-
+            Boolean ejecutar = false ;
             foreach(Case c in listado)
             {
-                object res = c.ejecutar(ts, user, ref baseD, mensajes);
-                if (res == null) return null;
+                if((c.isDefault && !ejecutar) || (!c.isDefault))
+                {
+                    object res = c.ejecutar(ts, user, ref baseD, mensajes);
+                    if (res == null) return null;
+                }
+
+                if (c.flag && !ejecutar) ejecutar = c.flag;
+                
             }
             return "";
         }

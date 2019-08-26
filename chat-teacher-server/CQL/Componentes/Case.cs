@@ -16,6 +16,10 @@ namespace cql_teacher_server.CQL.Componentes
         int l { set; get; }
         int c { set; get; }
 
+        public Boolean flag { set; get; }
+
+        public Boolean isDefault { set; get; }
+
 
         /*
          * Constructor de la clase si es un CASE
@@ -30,6 +34,7 @@ namespace cql_teacher_server.CQL.Componentes
             this.cuerpo = cuerpo;
             this.l = l;
             this.c = c;
+            this.isDefault = false;
         }
 
         /*
@@ -44,6 +49,7 @@ namespace cql_teacher_server.CQL.Componentes
             this.l = l;
             this.c = c;
             this.condicion = null;
+            this.isDefault = true;
         }
 
         /*
@@ -77,6 +83,7 @@ namespace cql_teacher_server.CQL.Componentes
                 {
                     if(a.GetType() == typeof(Boolean))
                     {
+                        flag = (Boolean)a;
                         if ((Boolean)a)
                         {
                             TablaDeSimbolos ambitoLocal = new TablaDeSimbolos();
@@ -93,7 +100,7 @@ namespace cql_teacher_server.CQL.Componentes
                     }
                     else
                     {
-                        mensajes.AddLast(mensa.error("La condicion tiene que ser de tipo Bool: " + a.ToString, l, c, "Semantico"));
+                        mensajes.AddLast(mensa.error("La condicion tiene que ser de tipo Bool: " + a.ToString(), l, c, "Semantico"));
                         return null;
                     }
                 }
