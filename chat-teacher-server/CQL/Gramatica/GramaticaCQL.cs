@@ -36,6 +36,7 @@ namespace cql_teacher_server.CQL.Gramatica
             var BOOL = ToTerm("boolean");
             var DATE = ToTerm("date");
             var TIME = ToTerm("time");
+            var COUNTER = ToTerm("counter");
 
 
             var TRUE = ToTerm("True");
@@ -76,6 +77,9 @@ namespace cql_teacher_server.CQL.Gramatica
             var NEW = ToTerm("new");
             var AS = ToTerm("AS");
             var DROP = ToTerm("DROP");
+            var TABLE = ToTerm("TABLE");
+            var PRIMARY = ToTerm("PRIMARY");
+            var KEY = ToTerm("KEY");
 
             var IF = ToTerm("IF");
             var ELSE = ToTerm("ELSE");
@@ -135,6 +139,11 @@ namespace cql_teacher_server.CQL.Gramatica
 
             NonTerminal inDrop = new NonTerminal("indrop");
 
+            NonTerminal inTable = new NonTerminal("intable");
+            NonTerminal compPrimarias = new NonTerminal("compprimarias");
+            NonTerminal defColumn = new NonTerminal("defcolumn");
+            NonTerminal listaPrimary = new NonTerminal("listprimary");
+
             #endregion
 
             #region Gramatica
@@ -153,6 +162,7 @@ namespace cql_teacher_server.CQL.Gramatica
                              | ifsuperior
                              | inSwitch
                              | inDrop + ";"
+                             | inTable + ";"
                              ;
 
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
@@ -218,6 +228,7 @@ namespace cql_teacher_server.CQL.Gramatica
                               | DATE
                               | TIME
                               | ID
+                              | COUNTER
                               ;
 
             //------------------------------------------------------- DECLARACION DE VARIABLE --------------------------------------------------------------------
@@ -298,7 +309,29 @@ namespace cql_teacher_server.CQL.Gramatica
                            ;
             //------------------------------------------------------------- DROP DATABASE ------------------------------------------------------------------
             inDrop.Rule = DROP + DATABASE + ID ;
-            
+
+            //-------------------------------------------------------------- CREATE TABLE ------------------------------------------------------------------
+            inTable.Rule = CREATE + TABLE + ID + "(" + defColumn + ")"
+                         | CREATE + TABLE + IF + NOT + EXISTS + ID + "(" + defColumn + ")"
+                         | CREATE + TABLE + ID + "(" + defColumn + "," + compPrimarias +  ")"
+                         | CREATE + TABLE + IF + NOT + EXISTS + ID + "(" + defColumn + "," + compPrimarias + ")"
+                         ;
+            //--------------------------------------------------------------- COLUMNAS ---------------------------------------------------------------------
+            defColumn.Rule = defColumn + "," + ID + tipoVariable
+                           | defColumn + "," + ID + tipoVariable + PRIMARY + KEY
+                           | ID + tipoVariable
+                           | ID + tipoVariable + PRIMARY + KEY
+                           ;
+
+            //---------------------------------------------------- llaves compuestas ------------------------------------------------------------------------
+
+            compPrimarias.Rule = PRIMARY + KEY + "(" + listaPrimary + ")";
+
+            //---------------------------------------------------------------- LISTA DE COLUMNAS QUE PUEDEN SER PRIMARIAS -----------------------------------
+            listaPrimary.Rule = listaPrimary + "," + ID
+                              | ID
+                              ;
+
             #endregion
 
             #region Preferencias

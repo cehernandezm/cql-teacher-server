@@ -15,10 +15,7 @@ namespace cql_teacher_server.CHISON
 
         public static LinkedList<USO> listaEnUso = new LinkedList<USO>();
 
-        public static LinkedList<BaseDeDatos> getTabla()
-        {
-            return global;
-        }
+        
 
         public static BaseDeDatos getBase(string nombre)
         {
@@ -106,6 +103,16 @@ namespace cql_teacher_server.CHISON
                 if (a.name.Equals(nombre)) return true;
             }
             return false;
+        }
+
+
+        public static Tabla getTabla(BaseDeDatos db, string nombre)
+        {
+            foreach(Tabla t in db.objetos.tablas)
+            {
+                if (t.nombre.Equals(nombre)) return t;
+            }
+            return null;
         }
 
         public static User_Types getUserTypeV(string nombre, BaseDeDatos db)

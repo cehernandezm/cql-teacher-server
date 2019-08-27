@@ -395,11 +395,145 @@ namespace cql_teacher_server.CQL.Gramatica
                     LinkedList<InstruccionCQL> listaDR = new LinkedList<InstruccionCQL>();
                     listaDR.AddLast(new Drop(idDrop, lineaDrop, columnaDrop));
                     return listaDR;
+
+
+
+                //--------------------------------------------------------- CREATE TABLE ------------------------------------------------
+                case "intable":
+
+                    LinkedList<InstruccionCQL> listaRT = new LinkedList<InstruccionCQL>();
+                    string nombreT;
+                    int lineaTa;
+                    int columnaTa;
+                    Boolean flagTa;
+                    LinkedList<Columna> listaTa;
+
+                    if (hijo.ChildNodes.Count() == 7)
+                    {
+                        nombreT = hijo.ChildNodes.ElementAt(5).Token.Text;
+                        nombreT = nombreT.ToLower().TrimEnd().TrimStart();
+
+                        listaTa = getListaColumna(hijo.ChildNodes.ElementAt(6));
+
+                        lineaTa = hijo.ChildNodes.ElementAt(5).Token.Location.Line;
+                        columnaTa = hijo.ChildNodes.ElementAt(5).Token.Location.Column;
+                        flagTa = true;
+                    }
+                    else if(hijo.ChildNodes.Count() == 8)
+                    {
+                        nombreT = hijo.ChildNodes.ElementAt(5).Token.Text;
+                        nombreT = nombreT.ToLower().TrimEnd().TrimStart();
+
+                        listaTa = getListaColumna(hijo.ChildNodes.ElementAt(6));
+
+                        lineaTa = hijo.ChildNodes.ElementAt(5).Token.Location.Line;
+                        columnaTa = hijo.ChildNodes.ElementAt(5).Token.Location.Column;
+                        flagTa = true;
+                        LinkedList<string> primariasCompuestas = getCompuestas(hijo.ChildNodes.ElementAt(7).ChildNodes.ElementAt(2));
+                        listaRT.AddLast(new CreateTable(nombreT,listaTa,primariasCompuestas,lineaTa,columnaTa,flagTa));
+                        return listaRT;
+                    }
+                    else if (hijo.ChildNodes.Count() == 5)
+                    {
+                        nombreT = hijo.ChildNodes.ElementAt(2).Token.Text;
+                        nombreT = nombreT.ToLower().TrimEnd().TrimStart();
+
+                        listaTa = getListaColumna(hijo.ChildNodes.ElementAt(3));
+
+                        lineaTa = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
+                        columnaTa = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
+                        flagTa = false;
+
+                        LinkedList<string> primariasCompuestas = getCompuestas(hijo.ChildNodes.ElementAt(4).ChildNodes.ElementAt(2));
+                        listaRT.AddLast(new CreateTable(nombreT, listaTa, primariasCompuestas, lineaTa, columnaTa, flagTa));
+                        return listaRT;
+
+                    }
+                    else
+                    {
+                        nombreT = hijo.ChildNodes.ElementAt(2).Token.Text;
+                        nombreT = nombreT.ToLower().TrimEnd().TrimStart();
+
+                        listaTa = getListaColumna(hijo.ChildNodes.ElementAt(3));
+
+                        lineaTa = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
+                        columnaTa = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
+                        flagTa = false;
+                    }
+
+                    listaRT.AddLast(new CreateTable(nombreT, listaTa, lineaTa, columnaTa, flagTa));
+                    return listaRT;
+
             }
             return null;
 
 
         }
+
+
+
+        /*
+         * Metodo que obtiene una lista de las primarias compuestas
+         * @raiz nodo del sub arbol a analizar
+         */
+
+
+        public LinkedList<string> getCompuestas(ParseTreeNode raiz)
+        {
+            LinkedList<string> lista = new LinkedList<string>();
+            string nombre;
+            if (raiz.ChildNodes.Count() == 2)
+            {
+                lista = getCompuestas(raiz.ChildNodes.ElementAt(0));
+                nombre = raiz.ChildNodes.ElementAt(1).Token.Text;
+                nombre = nombre.ToLower().TrimEnd().TrimStart();
+            }
+            else
+            {
+                nombre = raiz.ChildNodes.ElementAt(0).Token.Text;
+                nombre = nombre.ToLower().TrimEnd().TrimStart();
+            }
+            lista.AddLast(nombre);
+            return lista;
+        }
+
+        /*
+         * Metodo que obtiene una lista de columnas
+         * @raiz nodo del sub arbol a analizar
+         */
+
+        public LinkedList<Columna> getListaColumna(ParseTreeNode raiz)
+        {
+            LinkedList<Columna> lista = new LinkedList<Columna>();
+            string token = raiz.ChildNodes.ElementAt(0).Term.Name;
+            string nombre;
+            string tipo;
+            Boolean pk = false;
+            if (token.Equals("defcolumn"))
+            {
+                lista = getListaColumna(raiz.ChildNodes.ElementAt(0));
+                if (raiz.ChildNodes.Count() == 5) pk = true;
+
+                nombre = raiz.ChildNodes.ElementAt(1).Token.Text;
+                nombre = nombre.ToLower().TrimEnd().TrimStart();
+
+                tipo = raiz.ChildNodes.ElementAt(2).ChildNodes.ElementAt(0).Token.Text;
+                tipo = tipo.ToLower().TrimEnd().TrimStart();
+
+            }
+            else
+            {
+                if (raiz.ChildNodes.Count() == 4) pk = true;
+                nombre = raiz.ChildNodes.ElementAt(0).Token.Text;
+                nombre = nombre.ToLower().TrimEnd().TrimStart();
+
+                tipo = raiz.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).Token.Text;
+                tipo = tipo.ToLower().TrimEnd().TrimStart();
+            }
+            lista.AddLast(new Columna(nombre, tipo, pk));
+            return lista;
+        }
+
 
 
         /*
