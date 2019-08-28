@@ -82,6 +82,7 @@ namespace cql_teacher_server.CQL.Gramatica
             var KEY = ToTerm("KEY");
             var ALTER = ToTerm("ALTER");
             var ADD = ToTerm("ADD");
+            var TRUNCATE = ToTerm("TRUNCATE");
 
             var IF = ToTerm("IF");
             var ELSE = ToTerm("ELSE");
@@ -151,6 +152,8 @@ namespace cql_teacher_server.CQL.Gramatica
 
             NonTerminal inDropTable = new NonTerminal("indroptable");
 
+            NonTerminal inTruncaTable = new NonTerminal("intruncatetable");
+
             #endregion
 
             #region Gramatica
@@ -172,6 +175,7 @@ namespace cql_teacher_server.CQL.Gramatica
                              | inTable + ";"
                              | inAlterTable + ";"
                              | inDropTable + ";"
+                             | inTruncaTable + ";"
                              ;
 
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
@@ -355,8 +359,9 @@ namespace cql_teacher_server.CQL.Gramatica
             //------------------------------------------------------------ DROP TABLE ----------------------------------------------------------------------
             inDropTable.Rule = DROP + TABLE + ID
                              | DROP + TABLE + IF + EXISTS + ID
-                             ; 
-
+                             ;
+            //------------------------------------------------------------ TRUNCATE TABLE ------------------------------------------------------------------
+            inTruncaTable.Rule = TRUNCATE + TABLE + ID;
             #endregion
 
             #region Preferencias

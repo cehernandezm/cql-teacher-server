@@ -542,6 +542,22 @@ namespace cql_teacher_server.CQL.Gramatica
                     listaRDT.AddLast(new DropTable(idDT,flagDT, lDT, cDT));
                     return listaRDT;
 
+
+                //----------------------------------------------------- TRUNCATE TABLE ------------------------------------------------------------
+                case "intruncatetable":
+                    LinkedList<InstruccionCQL> listaRTT = new LinkedList<InstruccionCQL>();
+                    string idTT;
+                    int lTT;
+                    int cTT;
+
+                    idTT = hijo.ChildNodes.ElementAt(2).Token.Text;
+                    idTT = idTT.ToLower().TrimEnd().TrimStart();
+
+                    lTT = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
+                    cTT = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
+
+                    listaRTT.AddLast(new TruncateTable(idTT, lTT, cTT));
+                    return listaRTT;
             }
             return null;
 
