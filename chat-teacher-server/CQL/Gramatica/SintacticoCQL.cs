@@ -507,6 +507,41 @@ namespace cql_teacher_server.CQL.Gramatica
                         listaAT.AddLast(new AlterTable(idAT, listaDropATT, lAT, cAT, "DROP"));
                     }
                     return listaAT;
+
+
+
+                //-------------------------------------------------------- DROP TABLE --------------------------------------------------------
+                case "indroptable":
+                    LinkedList<InstruccionCQL> listaRDT = new LinkedList<InstruccionCQL>();
+                    string idDT;
+                    int lDT;
+                    int cDT;
+                    Boolean flagDT;
+
+                    if(hijo.ChildNodes.Count() == 5)
+                    {
+                        idDT = hijo.ChildNodes.ElementAt(4).Token.Text;
+                        idDT = idDT.ToLower().TrimEnd().TrimStart();
+
+                        lDT = hijo.ChildNodes.ElementAt(4).Token.Location.Line;
+                        cDT = hijo.ChildNodes.ElementAt(4).Token.Location.Column;
+
+                        flagDT = true;
+
+                    }
+                    else
+                    {
+                        idDT = hijo.ChildNodes.ElementAt(2).Token.Text;
+                        idDT = idDT.ToLower().TrimEnd().TrimStart();
+
+                        lDT = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
+                        cDT = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
+
+                        flagDT = false;
+                    }
+                    listaRDT.AddLast(new DropTable(idDT,flagDT, lDT, cDT));
+                    return listaRDT;
+
             }
             return null;
 

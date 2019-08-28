@@ -149,6 +149,8 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal inAlterTable = new NonTerminal("inaltertable");
             NonTerminal colTable = new NonTerminal("coltable");
 
+            NonTerminal inDropTable = new NonTerminal("indroptable");
+
             #endregion
 
             #region Gramatica
@@ -169,6 +171,7 @@ namespace cql_teacher_server.CQL.Gramatica
                              | inDrop + ";"
                              | inTable + ";"
                              | inAlterTable + ";"
+                             | inDropTable + ";"
                              ;
 
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
@@ -349,6 +352,10 @@ namespace cql_teacher_server.CQL.Gramatica
                           |  ID + tipoVariable 
                           ;
 
+            //------------------------------------------------------------ DROP TABLE ----------------------------------------------------------------------
+            inDropTable.Rule = DROP + TABLE + ID
+                             | DROP + TABLE + IF + EXISTS + ID
+                             ; 
 
             #endregion
 
