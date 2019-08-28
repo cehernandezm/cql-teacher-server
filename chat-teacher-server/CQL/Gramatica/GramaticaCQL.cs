@@ -80,6 +80,8 @@ namespace cql_teacher_server.CQL.Gramatica
             var TABLE = ToTerm("TABLE");
             var PRIMARY = ToTerm("PRIMARY");
             var KEY = ToTerm("KEY");
+            var ALTER = ToTerm("ALTER");
+            var ADD = ToTerm("ADD");
 
             var IF = ToTerm("IF");
             var ELSE = ToTerm("ELSE");
@@ -144,6 +146,9 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal defColumn = new NonTerminal("defcolumn");
             NonTerminal listaPrimary = new NonTerminal("listprimary");
 
+            NonTerminal inAlterTable = new NonTerminal("inaltertable");
+            NonTerminal colTable = new NonTerminal("coltable");
+
             #endregion
 
             #region Gramatica
@@ -163,6 +168,7 @@ namespace cql_teacher_server.CQL.Gramatica
                              | inSwitch
                              | inDrop + ";"
                              | inTable + ";"
+                             | inAlterTable + ";"
                              ;
 
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
@@ -308,7 +314,8 @@ namespace cql_teacher_server.CQL.Gramatica
                            | DEFAULT + ":" + instrucciones + BREAK + ";"
                            ;
             //------------------------------------------------------------- DROP DATABASE ------------------------------------------------------------------
-            inDrop.Rule = DROP + DATABASE + ID ;
+            inDrop.Rule = DROP + DATABASE + ID 
+                        | DROP + DATABASE + IF + EXISTS + ID;
 
             //-------------------------------------------------------------- CREATE TABLE ------------------------------------------------------------------
             inTable.Rule = CREATE + TABLE + ID + "(" + defColumn + ")"
@@ -331,6 +338,17 @@ namespace cql_teacher_server.CQL.Gramatica
             listaPrimary.Rule = listaPrimary + "," + ID
                               | ID
                               ;
+
+            //----------------------------------------------------------- ALTER TABLE ------------------------------------------------------------------------
+            inAlterTable.Rule = ALTER + TABLE + ID + ADD + colTable
+                              | ALTER + TABLE + ID + DROP + listaPrimary
+                              ;
+
+            //------------------------------------------------------------ LISTA DE COLUMNAS A AGREGAR ------------------------------------------------------
+            colTable.Rule = colTable + ","  + ID + tipoVariable
+                          |  ID + tipoVariable 
+                          ;
+
 
             #endregion
 

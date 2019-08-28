@@ -68,28 +68,56 @@ namespace cql_teacher_server.CQL.Componentes
             Usuario usuario = TablaBaseDeDatos.getUsuario(user);
             if (db != null)
             {
-                if(usuario != null)
+                if (user.Equals("admin"))
                 {
-                    Boolean permiso = TablaBaseDeDatos.getPermiso(usuario, baseD);
-                    if (permiso)
+                    //------------------------------------  SOLO HAY UNA PRIMARIA ------------------------------------------------------------
+                    if (primarias == null)
                     {
-                        Boolean enUso = TablaBaseDeDatos.getEnUso(baseD, user);
-                        if (!enUso)
+                        if (!(cantidadDePrimarias(lista) > 1))
                         {
-                            //------------------------------------  SOLO HAY UNA PRIMARIA ------------------------------------------------------------
-                            if(primarias == null)
+                            if (!columnasRepetidas(lista, lista, mensajes))
                             {
-                                if(! (cantidadDePrimarias(lista) > 1))
+                                Tabla old = TablaBaseDeDatos.getTabla(db, nombre);
+                                if (old == null)
                                 {
-                                    if (!columnasRepetidas(lista, lista, mensajes))
+                                    if (searchTipo(lista, mensajes, db))
                                     {
-                                        Tabla old = TablaBaseDeDatos.getTabla(db, nombre);
-                                        if (old == null)
+                                        Tabla nueva = new Tabla(nombre, lista, new LinkedList<Data>());
+                                        db.objetos.tablas.AddLast(nueva);
+                                        mensajes.AddLast(mensa.message("Se creo exitosamente la tabla: " + nombre));
+                                        return "";
+                                    }
+                                }
+                                else
+                                {
+                                    if (flag) return "";
+                                    mensajes.AddLast(mensa.error("La tabla: " + nombre + " ya existe en la DB: " + baseD, l, c, "Semantico"));
+                                }
+                            }
+                        }
+                        else mensajes.AddLast(mensa.error("La tabla: " + nombre + " solo puede tener una clave primaria o use llaves compuestas", l, c, "Semantico"));
+                    }
+                    //-------------------------------------- LLAVE PRIMARIA COMPUESTA -------------------------------------------------------
+                    else
+                    {
+                        if (!(cantidadDePrimarias(lista) > 0))
+                        {
+                            if (!(columnasRepetidas(lista, lista, mensajes)))
+                            {
+                                if (!hayCounter(primarias, lista, mensajes))
+                                {
+                                    if (existenColumnas(primarias, lista, mensajes))
+                                    {
+                                        Tabla temp = TablaBaseDeDatos.getTabla(db, nombre);
+                                        if (temp == null)
                                         {
-                                            Tabla nueva = new Tabla(nombre, lista, new LinkedList<Data>());
-                                            db.objetos.tablas.AddLast(nueva);
-                                            mensajes.AddLast(mensa.message("Se creo exitosamente la tabla: " + nombre));
-                                            return "";
+                                            if (searchTipo(lista, mensajes, db))
+                                            {
+                                                temp = new Tabla(nombre, lista, new LinkedList<Data>());
+                                                db.objetos.tablas.AddLast(temp);
+                                                mensajes.AddLast(mensa.message("Se creo exitosamente la tabla: " + nombre));
+                                                return "";
+                                            }
                                         }
                                         else
                                         {
@@ -98,44 +126,92 @@ namespace cql_teacher_server.CQL.Componentes
                                         }
                                     }
                                 }
-                                else mensajes.AddLast(mensa.error("La tabla: " + nombre + " solo puede tener una clave primaria o use llaves compuestas" , l, c, "Semantico"));
                             }
-                            //-------------------------------------- LLAVE PRIMARIA COMPUESTA -------------------------------------------------------
-                            else
+                        }
+                        else mensajes.AddLast(mensa.error("La tabla: " + nombre + " solo puede tener primarias compuestas", l, c, "Semantico"));
+                    }
+                }
+                else
+                {
+                    if (usuario != null)
+                    {
+                        Boolean permiso = TablaBaseDeDatos.getPermiso(usuario, baseD);
+                        if (permiso)
+                        {
+                            Boolean enUso = TablaBaseDeDatos.getEnUso(baseD, user);
+                            if (!enUso)
                             {
-                                if(!(cantidadDePrimarias(lista) > 0))
+                                //------------------------------------  SOLO HAY UNA PRIMARIA ------------------------------------------------------------
+                                if (primarias == null)
                                 {
-                                    if (!(columnasRepetidas(lista, lista, mensajes)))
+                                    if (!(cantidadDePrimarias(lista) > 1))
                                     {
-                                        if (!hayCounter(primarias, lista, mensajes))
+                                        if (!columnasRepetidas(lista, lista, mensajes))
                                         {
-                                            if (existenColumnas(primarias, lista, mensajes))
+                                            Tabla old = TablaBaseDeDatos.getTabla(db, nombre);
+                                            if (old == null)
                                             {
-                                                Tabla temp = TablaBaseDeDatos.getTabla(db, nombre);
-                                                if(temp == null)
+                                                if (searchTipo(lista, mensajes, db))
                                                 {
-                                                    temp = new Tabla(nombre, lista, new LinkedList<Data>());
-                                                    db.objetos.tablas.AddLast(temp);
+                                                    Tabla nueva = new Tabla(nombre, lista, new LinkedList<Data>());
+                                                    db.objetos.tablas.AddLast(nueva);
                                                     mensajes.AddLast(mensa.message("Se creo exitosamente la tabla: " + nombre));
                                                     return "";
                                                 }
-                                                else
+                                                
+                                            }
+                                            else
+                                            {
+                                                if (flag) return "";
+                                                mensajes.AddLast(mensa.error("La tabla: " + nombre + " ya existe en la DB: " + baseD, l, c, "Semantico"));
+                                            }
+                                        }
+                                    }
+                                    else mensajes.AddLast(mensa.error("La tabla: " + nombre + " solo puede tener una clave primaria o use llaves compuestas", l, c, "Semantico"));
+                                }
+                                //-------------------------------------- LLAVE PRIMARIA COMPUESTA -------------------------------------------------------
+                                else
+                                {
+                                    if (!(cantidadDePrimarias(lista) > 0))
+                                    {
+                                        if (!(columnasRepetidas(lista, lista, mensajes)))
+                                        {
+                                            if (!hayCounter(primarias, lista, mensajes))
+                                            {
+                                                if (existenColumnas(primarias, lista, mensajes))
                                                 {
-                                                    if (flag) return "";
-                                                    mensajes.AddLast(mensa.error("La tabla: " + nombre + " ya existe en la DB: " + baseD, l, c, "Semantico"));
+                                                    Tabla temp = TablaBaseDeDatos.getTabla(db, nombre);
+                                                    if (temp == null)
+                                                    {
+                                                        if (searchTipo(lista, mensajes, db))
+                                                        {
+                                                            temp = new Tabla(nombre, lista, new LinkedList<Data>());
+                                                            db.objetos.tablas.AddLast(temp);
+                                                            mensajes.AddLast(mensa.message("Se creo exitosamente la tabla: " + nombre));
+                                                            return "";
+                                                        }
+                                                        
+                                                    }
+                                                    else
+                                                    {
+                                                        if (flag) return "";
+                                                        mensajes.AddLast(mensa.error("La tabla: " + nombre + " ya existe en la DB: " + baseD, l, c, "Semantico"));
+                                                    }
                                                 }
                                             }
                                         }
                                     }
+                                    else mensajes.AddLast(mensa.error("La tabla: " + nombre + " solo puede tener primarias compuestas", l, c, "Semantico"));
                                 }
-                                else mensajes.AddLast(mensa.error("La tabla: " + nombre + " solo puede tener primarias compuestas", l, c, "Semantico"));
                             }
+                            else mensajes.AddLast(mensa.error("La base de datos: " + baseD + "esta siendo usada por otro usuario", l, c, "Semantico"));
                         }
-                        else mensajes.AddLast(mensa.error("La base de datos: " + baseD + "esta siendo usada por otro usuario", l, c, "Semantico"));
+                        else mensajes.AddLast(mensa.error("El usuario:  " + user + " no tiene permisos en la base de datos: " + baseD, l, c, "Semantico"));
                     }
-                    else mensajes.AddLast(mensa.error("El usuario:  " + user + " no tiene permisos en la base de datos: " + baseD, l, c, "Semantico"));
+                    else mensajes.AddLast(mensa.error("No existe el usuario: " + user, l, c, "Semantico"));
                 }
-                else mensajes.AddLast(mensa.error("No existe el usuario: " + user, l, c, "Semantico"));
+
+                
             }
             else mensajes.AddLast(mensa.error("No se encuentra la base de datos: " + baseD + " o no se ha usado el comando USE", l, c, "Semantico"));
             return null;
@@ -246,6 +322,30 @@ namespace cql_teacher_server.CQL.Componentes
             return false;
         }
 
-
+        /*
+         * Metodo que se encargara de ver si existen los tipos de columnas
+         * @lista1 nuevas columnas
+         * @lista2 columnas ya existentes
+         * @mensajes output de mensajes
+         */
+        public Boolean searchTipo(LinkedList<Columna> lista, LinkedList<string> mensajes, BaseDeDatos db)
+        {
+            Mensaje mensa = new Mensaje();
+            foreach (Columna cc in lista)
+            {
+                if (cc.tipo.Equals("string") || cc.tipo.Equals("double") || cc.tipo.Equals("int") || cc.tipo.Equals("boolean") || cc.tipo.Equals("date") || cc.tipo.Equals("time")) { }
+                else if (cc.tipo.Equals("map")) { }
+                else
+                {
+                    Boolean existe = TablaBaseDeDatos.getUserType(cc.tipo, db);
+                    if (!existe)
+                    {
+                        mensajes.AddLast(mensa.error("No existe este USER TYPE: " + cc.tipo, l, c, "Sematico"));
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
     }
 }

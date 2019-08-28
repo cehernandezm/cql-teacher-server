@@ -388,12 +388,29 @@ namespace cql_teacher_server.CQL.Gramatica
 
                 //---------------------------------------------------------- DROP ------------------------------
                 case "indrop":
-                    int lineaDrop = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
-                    int columnaDrop = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
-                    string idDrop = hijo.ChildNodes.ElementAt(2).Token.Text;
-                    idDrop = idDrop.ToLower().TrimEnd().TrimStart();
+                    int lineaDrop ;
+                    int columnaDrop;
+                    string idDrop;
+                    Boolean flagD;
+                    if (raiz.ChildNodes.Count() == 5)
+                    {
+                        lineaDrop = hijo.ChildNodes.ElementAt(4).Token.Location.Line;
+                        columnaDrop = hijo.ChildNodes.ElementAt(4).Token.Location.Column;
+                        idDrop = hijo.ChildNodes.ElementAt(4).Token.Text;
+                        idDrop = idDrop.ToLower().TrimEnd().TrimStart();
+                        flagD = true;
+                    }
+                    else
+                    {
+                        lineaDrop = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
+                        columnaDrop = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
+                        idDrop = hijo.ChildNodes.ElementAt(2).Token.Text;
+                        idDrop = idDrop.ToLower().TrimEnd().TrimStart();
+                        flagD = false;
+                    }
+
                     LinkedList<InstruccionCQL> listaDR = new LinkedList<InstruccionCQL>();
-                    listaDR.AddLast(new Drop(idDrop, lineaDrop, columnaDrop));
+                    listaDR.AddLast(new Drop(idDrop, lineaDrop, columnaDrop,flagD));
                     return listaDR;
 
 
@@ -464,6 +481,32 @@ namespace cql_teacher_server.CQL.Gramatica
                     listaRT.AddLast(new CreateTable(nombreT, listaTa, lineaTa, columnaTa, flagTa));
                     return listaRT;
 
+
+                //------------------------------------------------------ ALTER TABLE -----------------------------------------------------
+                case "inaltertable":
+
+                    LinkedList<InstruccionCQL> listaAT = new LinkedList<InstruccionCQL>();
+
+                    string idAT = hijo.ChildNodes.ElementAt(2).Token.Text;
+                    idAT = idAT.ToLower().TrimEnd().TrimStart();
+
+                    int lAT = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
+                    int cAT = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
+
+                    string oAT = hijo.ChildNodes.ElementAt(3).Token.Text;
+                    oAT = oAT.ToLower().TrimEnd().TrimStart();
+
+                    if (oAT.Equals("add"))
+                    {
+                        LinkedList<Columna> listaAddAT = getListaColumnaAdd(hijo.ChildNodes.ElementAt(4));
+                        listaAT.AddLast(new AlterTable(idAT, listaAddAT, lAT, cAT, "ADD"));
+                    }
+                    else
+                    {
+                        LinkedList<string> listaDropATT = getCompuestas(hijo.ChildNodes.ElementAt(4));
+                        listaAT.AddLast(new AlterTable(idAT, listaDropATT, lAT, cAT, "DROP"));
+                    }
+                    return listaAT;
             }
             return null;
 
@@ -534,6 +577,39 @@ namespace cql_teacher_server.CQL.Gramatica
             return lista;
         }
 
+        /*
+         * Metodo que obtiene una lista de columnas
+         * @raiz nodo del sub arbol a analizar
+         */
+
+        public LinkedList<Columna> getListaColumnaAdd(ParseTreeNode raiz)
+        {
+            LinkedList<Columna> lista = new LinkedList<Columna>();
+            string nombre;
+            string tipo;
+            Boolean pk = false;
+            if (raiz.ChildNodes.Count() == 3)
+            {
+                lista = getListaColumnaAdd(raiz.ChildNodes.ElementAt(0));
+
+                nombre = raiz.ChildNodes.ElementAt(1).Token.Text;
+                nombre = nombre.ToLower().TrimEnd().TrimStart();
+
+                tipo = raiz.ChildNodes.ElementAt(2).ChildNodes.ElementAt(0).Token.Text;
+                tipo = tipo.ToLower().TrimEnd().TrimStart();
+
+            }
+            else
+            {
+                nombre = raiz.ChildNodes.ElementAt(0).Token.Text;
+                nombre = nombre.ToLower().TrimEnd().TrimStart();
+
+                tipo = raiz.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).Token.Text;
+                tipo = tipo.ToLower().TrimEnd().TrimStart();
+            }
+            lista.AddLast(new Columna(nombre, tipo, pk));
+            return lista;
+        }
 
 
         /*
