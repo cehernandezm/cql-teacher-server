@@ -13,11 +13,13 @@ namespace cql_teacher_server.CQL.Componentes
     {
         string id { set; get; }
         LinkedList<Expresion> values { set; get; }
-
+        LinkedList<string> campos { set; get; }
         string operacion { set; get; }
 
         int l { set; get; }
         int c { set; get; }
+
+
 
 
         /*
@@ -41,8 +43,32 @@ namespace cql_teacher_server.CQL.Componentes
         /*
         * Constructor de la clase
         * @id nombre de la tabla
+        * @values lista de valores a guardar
+        * @campos lista de campos donde se asignara el valor
         * @l linea del id
         * @c columna del id
+        */
+
+        public Insert(string id, LinkedList<Expresion> values, LinkedList<string> campos, string operacion, int l, int c)
+        {
+            this.id = id;
+            this.values = values;
+            this.campos = campos;
+            this.operacion = operacion;
+            this.l = l;
+            this.c = c;
+        }
+
+
+
+
+
+        /*
+          * Constructor de la clase padre
+          * @ts tabla de simbolos padre
+          * @user usuario que esta ejecutando las acciones
+          * @baseD string por referencia de que base de datos estamos trabajando
+          * @mensajes el output de la ejecucion
         */
         public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes)
         {
@@ -69,7 +95,9 @@ namespace cql_teacher_server.CQL.Componentes
                                 Tabla tabla = TablaBaseDeDatos.getTabla(db, id);
                                 if (tabla != null)
                                 {
-                                    object res = guardarNormal(tabla, mensajes, ts, user, db, ref baseD);
+                                    object res;
+                                    if (operacion.Equals("NORMAL")) res = guardarNormal(tabla, mensajes, ts, user, db, ref baseD);
+                                    else res = guardadoEspecial(tabla, mensajes, ts, user, db, ref baseD);
                                     if (res != null) return res;
                                 }
                                 else mensajes.AddLast(mensa.error("La tabla: " + id + " no existe en la DB: " + baseD, l, c, "Semantico"));
@@ -91,8 +119,14 @@ namespace cql_teacher_server.CQL.Componentes
 
         /*
          * Metodo que inserta Normalmente en la tabla
+         * @t Tabla donde guardaremos los datos
+         * @mensajes output
+         * @TablaDeSimbolos Tabla de simoblos padre
+         * @user usuario que esta ejecutando las acciones
+         * @db base de datos actual
+         * @baseD nombre de la base de datos por referencia
          */
-        public object guardarNormal(Tabla t, LinkedList<string> mensajes, TablaDeSimbolos ts, string user, BaseDeDatos db, ref string baseD)
+        private object guardarNormal(Tabla t, LinkedList<string> mensajes, TablaDeSimbolos ts, string user, BaseDeDatos db, ref string baseD)
         {
             Mensaje mensa = new Mensaje();
             int i = 0;
@@ -133,11 +167,94 @@ namespace cql_teacher_server.CQL.Componentes
             return null;
         }
 
-        /*
-         * Metodo que contara cuantos atributos tipo counter hay
-         * @t tabla donde se encuentran las columnas
-         */
 
+
+
+        /*
+        * Metodo que inserta Especialmente en la tabla
+        * @t Tabla donde guardaremos los datos
+        * @mensajes output
+        * @TablaDeSimbolos Tabla de simoblos padre
+        * @user usuario que esta ejecutando las acciones
+        * @db base de datos actual
+        * @baseD nombre de la base de datos por referencia
+        */
+        private object guardadoEspecial(Tabla t, LinkedList<string> mensajes, TablaDeSimbolos ts, string user, BaseDeDatos db, ref string baseD)
+        {
+            Mensaje mensa = new Mensaje();
+            if (values.Count() == campos.Count())
+            {
+                if (existColumn(t.columnas, campos, mensajes))
+                {
+                    LinkedList<Atributo> info = new LinkedList<Atributo>();
+                    LinkedList<int> pos = new LinkedList<int>();
+                    int posicion = 0;
+                    foreach (Columna columna in t.columnas)
+                    {
+                        Boolean flag = false;
+                        int i = 0;
+                        foreach (string campo in campos)
+                        {
+                            if (campo.Equals(columna.name))
+                            {
+                                flag = true;
+                                object op1 = (values.ElementAt(i) == null) ? null : values.ElementAt(i).ejecutar(ts, user, ref baseD, mensajes);
+                                Atributo a = checkinfo(columna, op1, values.ElementAt(i), mensajes, db);
+                                if (a != null) info.AddLast(a);
+                                else return null;
+                            }
+                            i++;
+                        }
+                        if (!flag)
+                        {
+                            if (columna.pk)
+                            {
+                                Atributo a = checkinfo(columna, null, null, mensajes, db);
+                                if (a != null) info.AddLast(a);
+                                else return null;
+                                pos.AddLast(posicion);
+                            }
+                            else
+                            {
+                                object val;
+                                if (columna.tipo.Equals("string") || columna.tipo.Equals("date") || columna.tipo.Equals("time")) val = null;
+                                else if (columna.tipo.Equals("double") || columna.tipo.Equals("int")) val = 0;
+                                else if (columna.tipo.Equals("boolean")) val = false;
+                                else if (columna.tipo.Equals("map")) val = null;
+                                else val = new InstanciaUserType(columna.tipo, null);
+
+                                Atributo a = checkinfo(columna, val, 0, mensajes, db);
+                                if (a != null) info.AddLast(a);
+                                else return null;
+                            }
+
+                        }
+                        else if (columna.pk) pos.AddLast(posicion);
+                        posicion++;
+
+                    }
+
+                    if (!checkPrimaryKey(pos, info, mensajes, t.datos, 0))
+                    {
+                        t.datos.AddLast(new Data(info));
+                        mensajes.AddLast(mensa.message("Se inserto exitosamente la informacion"));
+                        return "";
+                    }
+                    else mensajes.AddLast(mensa.error("Ya hay un dato que posee esa clave primaria", l, c, "Semantico"));
+                }
+                
+            }
+            else mensajes.AddLast(mensa.error("No coinciden la cantidad de campos con la cantidad de valores", l, c, "Semantico"));
+
+
+            return null;
+        }
+
+
+        /*
+        * Metodo que contara cuantos atributos tipo counter hay
+        * @t tabla donde se encuentran las columnas
+        */
         private int cantidadCounters(Tabla t)
         {
             int contador = 0;
@@ -196,6 +313,12 @@ namespace cql_teacher_server.CQL.Componentes
                     }
                     else mensajes.AddLast(mensa.error("No se puede asignar a la columna: " + columna.name + " el valor: " + valor, l, c, "Semantico"));
                 }
+                else
+                {
+                    if (columna.tipo.Equals("string") || columna.tipo.Equals("date") || columna.tipo.Equals("time")) return new Atributo(columna.name, null, columna.tipo);
+                    else if (columna.tipo.Equals("boolean") || columna.tipo.Equals("int") || columna.tipo.Equals("double")) mensajes.AddLast(mensa.error("No se puede asignar a la columna: " + columna.name + " el valor: " + valor, l, c, "Semantico"));
+                    else return new Atributo(columna.name, new InstanciaUserType(columna.tipo, null), columna.tipo);
+                }
             }
             return null;
         }
@@ -247,6 +370,31 @@ namespace cql_teacher_server.CQL.Componentes
                 }
             }
             return false;
+        }
+
+        /*
+         * Metodo que busca todas los campos en la tabla para verificar que si existan
+         * @columnas es la lista de columnas de la tabla
+         * @campos es el nombre de los campos que ingreso el usuario
+         * @mensajes output
+         */
+        private Boolean existColumn(LinkedList<Columna> columnas,LinkedList<string> campos,LinkedList<string> mensajes)
+        {
+            Mensaje mensa = new Mensaje();
+            foreach(string s in campos)
+            {
+                Boolean flag = false;
+                foreach(Columna columna in columnas)
+                {
+                    if (columna.name.Equals(s)) flag = true;
+                }
+                if (!flag)
+                {
+                    mensajes.AddLast(mensa.error("La columna: " + s + " no existe en esta tabla " + id, l, c, "Semantico"));
+                    return false;
+                }
+            }
+            return true;
         }
     }
 

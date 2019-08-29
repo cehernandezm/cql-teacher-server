@@ -606,13 +606,17 @@ namespace cql_teacher_server.CQL.Gramatica
                 //-------------------------------------------------- INSERT VALUES --------------------------------------------------------------------------
                 case "ininsert":
                     LinkedList<InstruccionCQL> listaII = new LinkedList<InstruccionCQL>();
-                    string idII = hijo.ChildNodes.ElementAt(2).Token.Text;
+                    string idII ;
+                    int lII ;
+                    int cII;
+                    idII = hijo.ChildNodes.ElementAt(2).Token.Text;
                     idII = idII.ToLower().TrimEnd().TrimStart();
 
-                    int lII = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
-                    int cII = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
-
-                    listaII.AddLast(new Insert(idII, listaExpresiones(hijo.ChildNodes.ElementAt(4)), "NORMAL", lII, cII));
+                    lII = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
+                    cII = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
+                    if (hijo.ChildNodes.Count() == 5) listaII.AddLast(new Insert(idII, listaExpresiones(hijo.ChildNodes.ElementAt(4)), "NORMAL", lII, cII));
+                    else listaII.AddLast(new Insert(idII, listaExpresiones(hijo.ChildNodes.ElementAt(5)), getCompuestas(hijo.ChildNodes.ElementAt(3)),"ESPECIAL", lII, cII));
+                   
 
                     return listaII;
             }

@@ -388,7 +388,9 @@ namespace cql_teacher_server.CQL.Gramatica
                           ;
 
             //------------------------------------------------------------ INSERT INTO --------------------------------------------------------------------
-            inInsert.Rule = INSERT + INTO + ID + VALUES + "(" + listValues + ")";
+            inInsert.Rule = INSERT + INTO + ID + VALUES + "(" + listValues + ")"
+                          | INSERT + INTO + ID + "(" + listaPrimary + ")" + VALUES + "(" + listValues + ")";
+                          ;
 
             listValues.Rule = listValues + "," + expresion
                             | expresion
