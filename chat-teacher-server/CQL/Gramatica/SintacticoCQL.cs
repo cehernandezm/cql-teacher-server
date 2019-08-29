@@ -599,9 +599,45 @@ namespace cql_teacher_server.CQL.Gramatica
                     listaEU.AddLast(new EditUser(uEU, dEU, lEU, cEU, operacionEU));
 
                     return listaEU;
+
+
+
+
+                //-------------------------------------------------- INSERT VALUES --------------------------------------------------------------------------
+                case "ininsert":
+                    LinkedList<InstruccionCQL> listaII = new LinkedList<InstruccionCQL>();
+                    string idII = hijo.ChildNodes.ElementAt(2).Token.Text;
+                    idII = idII.ToLower().TrimEnd().TrimStart();
+
+                    int lII = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
+                    int cII = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
+
+                    listaII.AddLast(new Insert(idII, listaExpresiones(hijo.ChildNodes.ElementAt(4)), "NORMAL", lII, cII));
+
+                    return listaII;
             }
             return null;
 
+
+        }
+
+
+
+        /*
+         *Metodo que recorre todos los valores a guardar
+         * 
+         */
+
+         private LinkedList<Expresion> listaExpresiones(ParseTreeNode raiz)
+        {
+            LinkedList<Expresion> lista = new LinkedList<Expresion>();
+            if (raiz.ChildNodes.Count() == 2)
+            {
+                lista = listaExpresiones(raiz.ChildNodes.ElementAt(0));
+                lista.AddLast(resolver_expresion(raiz.ChildNodes.ElementAt(1)));
+            }
+            else lista.AddLast(resolver_expresion(raiz.ChildNodes.ElementAt(0)));
+            return lista;
 
         }
 

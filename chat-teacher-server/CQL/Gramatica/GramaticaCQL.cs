@@ -86,6 +86,9 @@ namespace cql_teacher_server.CQL.Gramatica
             var GRANT = ToTerm("GRANT");
             var ON = ToTerm("ON");
             var REVOKE = ToTerm("REVOKE");
+            var INSERT = ToTerm("INSERT");
+            var INTO = ToTerm("INTO");
+            var VALUES = ToTerm("VALUES");
 
             var IF = ToTerm("IF");
             var ELSE = ToTerm("ELSE");
@@ -97,7 +100,7 @@ namespace cql_teacher_server.CQL.Gramatica
             var BREAK = ToTerm("Break");
             var DEFAULT = ToTerm("Default");
 
-            
+
 
 
 
@@ -160,6 +163,9 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal inUser = new NonTerminal("inuser");
 
             NonTerminal editUser = new NonTerminal("edituser");
+
+            NonTerminal inInsert = new NonTerminal("ininsert");
+            NonTerminal listValues = new NonTerminal("listvalues");
             #endregion
 
             #region Gramatica
@@ -184,6 +190,7 @@ namespace cql_teacher_server.CQL.Gramatica
                              | inTruncaTable + ";"
                              | inUser + ";"
                              | editUser + ";"
+                             | inInsert + ";"
                              ;
 
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
@@ -306,7 +313,7 @@ namespace cql_teacher_server.CQL.Gramatica
             //------------------------------------------------------------- IF -----------------------------------------------------------------------------
             insif.Rule = IF + "(" + expresion + ")" + "{" + instrucciones + "}";
             //------------------------------------------------------------- ELSE IF -----------------------------------------------------------------------------
-            inselseif.Rule =  inselseif + ELSE + IF + "(" + expresion + ")" + "{" + instrucciones + "}"
+            inselseif.Rule = inselseif + ELSE + IF + "(" + expresion + ")" + "{" + instrucciones + "}"
                             | ELSE + IF + "(" + expresion + ")" + "{" + instrucciones + "}"
                             ;
             //------------------------------------------------------------- IF -----------------------------------------------------------------------------
@@ -325,17 +332,17 @@ namespace cql_teacher_server.CQL.Gramatica
                         | CASE + expresion + ":" + instrucciones + BREAK + ";"
                         ;
             //-------------------------------------------------------------- DEFAULT -----------------------------------------------------------------------
-            inDefault.Rule = DEFAULT  + ":" + instrucciones
+            inDefault.Rule = DEFAULT + ":" + instrucciones
                            | DEFAULT + ":" + instrucciones + BREAK + ";"
                            ;
             //------------------------------------------------------------- DROP DATABASE ------------------------------------------------------------------
-            inDrop.Rule = DROP + DATABASE + ID 
+            inDrop.Rule = DROP + DATABASE + ID
                         | DROP + DATABASE + IF + EXISTS + ID;
 
             //-------------------------------------------------------------- CREATE TABLE ------------------------------------------------------------------
             inTable.Rule = CREATE + TABLE + ID + "(" + defColumn + ")"
                          | CREATE + TABLE + IF + NOT + EXISTS + ID + "(" + defColumn + ")"
-                         | CREATE + TABLE + ID + "(" + defColumn + "," + compPrimarias +  ")"
+                         | CREATE + TABLE + ID + "(" + defColumn + "," + compPrimarias + ")"
                          | CREATE + TABLE + IF + NOT + EXISTS + ID + "(" + defColumn + "," + compPrimarias + ")"
                          ;
             //--------------------------------------------------------------- COLUMNAS ---------------------------------------------------------------------
@@ -360,8 +367,8 @@ namespace cql_teacher_server.CQL.Gramatica
                               ;
 
             //------------------------------------------------------------ LISTA DE COLUMNAS A AGREGAR ------------------------------------------------------
-            colTable.Rule = colTable + ","  + ID + tipoVariable
-                          |  ID + tipoVariable 
+            colTable.Rule = colTable + "," + ID + tipoVariable
+                          | ID + tipoVariable
                           ;
 
             //------------------------------------------------------------ DROP TABLE ----------------------------------------------------------------------
@@ -374,11 +381,18 @@ namespace cql_teacher_server.CQL.Gramatica
             //------------------------------------------------------------- CREATE USER ---------------------------------------------------------------------
             inUser.Rule = CREATE + USER + ID + WITH + PASSWORD + CADENA;
 
-            
+
             //------------------------------------------------------------ GRANT/REVOKE USER----------------------------------------------------------------
-            editUser.Rule = GRANT + ID + ON + ID 
+            editUser.Rule = GRANT + ID + ON + ID
                           | REVOKE + ID + ON + ID
                           ;
+
+            //------------------------------------------------------------ INSERT INTO --------------------------------------------------------------------
+            inInsert.Rule = INSERT + INTO + ID + VALUES + "(" + listValues + ")";
+
+            listValues.Rule = listValues + "," + expresion
+                            | expresion
+                            ;
 
             #endregion
 
