@@ -558,6 +558,47 @@ namespace cql_teacher_server.CQL.Gramatica
 
                     listaRTT.AddLast(new TruncateTable(idTT, lTT, cTT));
                     return listaRTT;
+
+                //-------------------------------------------------CREATE USER--------------------------------------------------------------------------
+                case "inuser":
+                    LinkedList<InstruccionCQL> listaRCU = new LinkedList<InstruccionCQL>();
+
+                    string idCU = hijo.ChildNodes.ElementAt(2).Token.Text;
+                    idCU = idCU.ToLower().TrimEnd().TrimStart();
+
+                    string paCU = hijo.ChildNodes.ElementAt(5).Token.Text;
+                    paCU = paCU.TrimStart('\"').TrimEnd('\"');
+
+                    int lCU = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
+                    int cCU = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
+
+                    listaRCU.AddLast(new CreateUser(idCU, paCU, lCU, cCU));
+
+                    return listaRCU;
+
+
+                //------------------------------------------------ EDIT USER ----------------------------------------------------------------------------
+                case "edituser":
+                    LinkedList<InstruccionCQL> listaEU = new LinkedList<InstruccionCQL>();
+
+                    string operacionEU = hijo.ChildNodes.ElementAt(0).Token.Text;
+                    operacionEU = operacionEU.ToLower().TrimEnd().TrimStart();
+
+                    string uEU = hijo.ChildNodes.ElementAt(1).Token.Text;
+                    uEU = uEU.ToLower().TrimEnd().TrimStart();
+
+                    string dEU = hijo.ChildNodes.ElementAt(3).Token.Text;
+                    dEU = dEU.ToLower().TrimEnd().TrimStart();
+
+                    int lEU = hijo.ChildNodes.ElementAt(1).Token.Location.Line;
+                    int cEU = hijo.ChildNodes.ElementAt(1).Token.Location.Line;
+
+                    if (operacionEU.Equals("grant")) operacionEU = "GRANT";
+                    else operacionEU = "REVOKE";
+
+                    listaEU.AddLast(new EditUser(uEU, dEU, lEU, cEU, operacionEU));
+
+                    return listaEU;
             }
             return null;
 

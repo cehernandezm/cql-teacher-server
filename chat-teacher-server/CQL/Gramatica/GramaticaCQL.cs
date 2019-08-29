@@ -29,7 +29,6 @@ namespace cql_teacher_server.CQL.Gramatica
 
 
 
-            var NULO = ToTerm("null");
             var INT = ToTerm("int");
             var DECIMAL = ToTerm("double");
             var STRING = ToTerm("string");
@@ -53,9 +52,7 @@ namespace cql_teacher_server.CQL.Gramatica
             var OR = ToTerm("||");
             var AND = ToTerm("&&");
             var XOR = ToTerm("^");
-            var TERNARIO = ToTerm("?");
 
-            var DOSPTS = ToTerm(":");
 
             var DIVISION = ToTerm("/");
             var MODULO = ToTerm("%");
@@ -83,6 +80,12 @@ namespace cql_teacher_server.CQL.Gramatica
             var ALTER = ToTerm("ALTER");
             var ADD = ToTerm("ADD");
             var TRUNCATE = ToTerm("TRUNCATE");
+            var USER = ToTerm("USER");
+            var WITH = ToTerm("WITH");
+            var PASSWORD = ToTerm("PASSWORD");
+            var GRANT = ToTerm("GRANT");
+            var ON = ToTerm("ON");
+            var REVOKE = ToTerm("REVOKE");
 
             var IF = ToTerm("IF");
             var ELSE = ToTerm("ELSE");
@@ -154,6 +157,9 @@ namespace cql_teacher_server.CQL.Gramatica
 
             NonTerminal inTruncaTable = new NonTerminal("intruncatetable");
 
+            NonTerminal inUser = new NonTerminal("inuser");
+
+            NonTerminal editUser = new NonTerminal("edituser");
             #endregion
 
             #region Gramatica
@@ -176,6 +182,8 @@ namespace cql_teacher_server.CQL.Gramatica
                              | inAlterTable + ";"
                              | inDropTable + ";"
                              | inTruncaTable + ";"
+                             | inUser + ";"
+                             | editUser + ";"
                              ;
 
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
@@ -362,6 +370,16 @@ namespace cql_teacher_server.CQL.Gramatica
                              ;
             //------------------------------------------------------------ TRUNCATE TABLE ------------------------------------------------------------------
             inTruncaTable.Rule = TRUNCATE + TABLE + ID;
+
+            //------------------------------------------------------------- CREATE USER ---------------------------------------------------------------------
+            inUser.Rule = CREATE + USER + ID + WITH + PASSWORD + CADENA;
+
+            
+            //------------------------------------------------------------ GRANT/REVOKE USER----------------------------------------------------------------
+            editUser.Rule = GRANT + ID + ON + ID 
+                          | REVOKE + ID + ON + ID
+                          ;
+
             #endregion
 
             #region Preferencias
