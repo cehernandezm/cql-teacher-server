@@ -214,7 +214,8 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 if (cc.tipo.Equals("int") || cc.tipo.Equals("double")) d.valores.AddLast(new Atributo(cc.name, 0, cc.tipo));
                 else if (cc.tipo.Equals("map")) { }
-                else d.valores.AddLast(new Atributo(cc.name, null, cc.tipo));
+                else if (cc.tipo.Equals("string") || cc.tipo.Equals("date") || cc.tipo.Equals("time")) d.valores.AddLast(new Atributo(cc.name, null, cc.tipo));
+                else d.valores.AddLast(new Atributo(cc.name, new InstanciaUserType(cc.tipo,null), cc.tipo));
             }
         }
 

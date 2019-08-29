@@ -68,12 +68,15 @@ namespace cql_teacher_server.Controllers
                         foreach (Atributo a in da.valores)
                         {
                             salida += "\n\t\t\t\t\t\t \"COLUMNA\" : \"" + a.nombre + "\",";
-                            
-                            if (a.valor.GetType() == typeof(LinkedList<object>))
+                            if (a.valor != null)
                             {
-                                salida += "\n\t\t\t\t\t\t \"VALOR\" : [ " + getElementos((LinkedList<object>)a.valor) + "],";
+                                if (a.valor.GetType() == typeof(LinkedList<object>))
+                                {
+                                    salida += "\n\t\t\t\t\t\t \"VALOR\" : [ " + getElementos((LinkedList<object>)a.valor) + "],";
+                                }
+                                else salida += "\n\t\t\t\t\t\t \"VALOR\" : \"" + a.valor + "\",";
                             }
-                            else salida += "\n\t\t\t\t\t\t \"VALOR\" : \"" + a.valor + "\",";
+                            
 
 
 
