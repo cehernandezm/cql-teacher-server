@@ -28,12 +28,12 @@ namespace cql_teacher_server.CQL.Componentes
         * @baseD string por referencia de que base de datos estamos trabajando
         * @mensajes el output de la ejecucion
         */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes)
+        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
         {
             object r;
             foreach(InstruccionCQL i in lista)
             {
-                r = i.ejecutar(ts, user, ref baseD, mensajes);
+                r = i.ejecutar(ts, user, ref baseD, mensajes,tsT);
                 if (r == null) return null;
                 SubIf a = (SubIf)i;
                 if (a.flagCondicion || a.flagElse) return r;

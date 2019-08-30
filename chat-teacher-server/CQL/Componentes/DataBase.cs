@@ -37,7 +37,7 @@ namespace cql_teacher_server.CQL.Componentes
          * @user usuario que esta ejecutando la accion
          * @baseD es la base actual en este caso sera none
          */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes)
+        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
         {
             BaseDeDatos db = TablaBaseDeDatos.getBase(id);
             //--------------------------- si existe una base de datos pero  no tiene un if not exist --------------------------------------------

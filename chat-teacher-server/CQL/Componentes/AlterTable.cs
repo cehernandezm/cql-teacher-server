@@ -63,7 +63,7 @@ namespace cql_teacher_server.CQL.Componentes
        * @mensajes el output de la ejecucion
        */
 
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes)
+        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
         {
             Mensaje mensa = new Mensaje();
             BaseDeDatos db = TablaBaseDeDatos.getBase(baseD);

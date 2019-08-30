@@ -59,10 +59,10 @@ namespace cql_teacher_server.CQL.Componentes
          * @baseD string por referencia de que base de datos estamos trabajando
          * @mensajes el output de la ejecucion
          */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes)
+        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes,TablaDeSimbolos tsT)
         {
             flagCondicion = false;
-            object a = (condicion == null) ? null : condicion.ejecutar(ts, user, ref  baseD, mensajes);
+            object a = (condicion == null) ? null : condicion.ejecutar(ts, user, ref  baseD, mensajes,tsT);
 
             Mensaje men = new Mensaje();
             if(condicion == null)
@@ -72,9 +72,14 @@ namespace cql_teacher_server.CQL.Componentes
                 {
                     ambitoLocal.AddLast(s);
                 }
+                TablaDeSimbolos tablaTemp = new TablaDeSimbolos();
+                foreach (Simbolo s in tsT)
+                {
+                    tablaTemp.AddLast(s);
+                }
                 foreach (InstruccionCQL i in cuerpo)
                 {
-                    object r = i.ejecutar(ambitoLocal, user, ref baseD, mensajes);
+                    object r = i.ejecutar(ambitoLocal, user, ref baseD, mensajes, tablaTemp);
                     if (r != null) return r;
                 }
             }
@@ -92,9 +97,14 @@ namespace cql_teacher_server.CQL.Componentes
                             {
                                 ambitoLocal.AddLast(s);
                             }
+                            TablaDeSimbolos tablaTemp = new TablaDeSimbolos();
+                            foreach (Simbolo s in tsT)
+                            {
+                                tablaTemp.AddLast(s);
+                            }
                             foreach (InstruccionCQL i in cuerpo)
                             {
-                                object r = i.ejecutar(ambitoLocal, user, ref baseD, mensajes);
+                                object r = i.ejecutar(ambitoLocal, user, ref baseD, mensajes,tablaTemp);
                                 if (r == null) return r;
                             }
                         }

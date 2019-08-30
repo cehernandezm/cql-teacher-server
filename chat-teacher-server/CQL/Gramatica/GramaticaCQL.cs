@@ -410,7 +410,7 @@ namespace cql_teacher_server.CQL.Gramatica
             RegisterOperators(8, Associativity.Right, NEGACION);
             RegisterOperators(9, Associativity.Neutral, ToTerm("("), ToTerm(")"));
 
-            this.MarkPunctuation("(", ")",";", "@",",");
+            this.MarkPunctuation("(", ")",";",",");
 
 
 

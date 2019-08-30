@@ -70,7 +70,7 @@ namespace cql_teacher_server.CQL.Componentes
           * @baseD string por referencia de que base de datos estamos trabajando
           * @mensajes el output de la ejecucion
         */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes)
+        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
         {
             Mensaje mensa = new Mensaje();
             BaseDeDatos db = TablaBaseDeDatos.getBase(baseD);
@@ -79,8 +79,15 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 if (user.Equals("admin"))
                 {
-
-
+                    Tabla tabla = TablaBaseDeDatos.getTabla(db, id);
+                    if (tabla != null)
+                    {
+                        object res;
+                        if (operacion.Equals("NORMAL")) res = guardarNormal(tabla, mensajes, ts, user, db, ref baseD, tsT);
+                        else res = guardadoEspecial(tabla, mensajes, ts, user, db, ref baseD, tsT);
+                        if (res != null) return res;
+                    }
+                    else mensajes.AddLast(mensa.error("La tabla: " + id + " no existe en la DB: " + baseD, l, c, "Semantico"));
                 }
                 else
                 {
@@ -96,8 +103,8 @@ namespace cql_teacher_server.CQL.Componentes
                                 if (tabla != null)
                                 {
                                     object res;
-                                    if (operacion.Equals("NORMAL")) res = guardarNormal(tabla, mensajes, ts, user, db, ref baseD);
-                                    else res = guardadoEspecial(tabla, mensajes, ts, user, db, ref baseD);
+                                    if (operacion.Equals("NORMAL")) res = guardarNormal(tabla, mensajes, ts, user, db, ref baseD,tsT);
+                                    else res = guardadoEspecial(tabla, mensajes, ts, user, db, ref baseD,tsT);
                                     if (res != null) return res;
                                 }
                                 else mensajes.AddLast(mensa.error("La tabla: " + id + " no existe en la DB: " + baseD, l, c, "Semantico"));
@@ -126,7 +133,7 @@ namespace cql_teacher_server.CQL.Componentes
          * @db base de datos actual
          * @baseD nombre de la base de datos por referencia
          */
-        private object guardarNormal(Tabla t, LinkedList<string> mensajes, TablaDeSimbolos ts, string user, BaseDeDatos db, ref string baseD)
+        private object guardarNormal(Tabla t, LinkedList<string> mensajes, TablaDeSimbolos ts, string user, BaseDeDatos db, ref string baseD, TablaDeSimbolos tsT)
         {
             Mensaje mensa = new Mensaje();
             int i = 0;
@@ -145,7 +152,7 @@ namespace cql_teacher_server.CQL.Componentes
                     }
                     else
                     {
-                        object op1 = (values.ElementAt(i) == null) ? null : values.ElementAt(i).ejecutar(ts, user, ref baseD, mensajes);
+                        object op1 = (values.ElementAt(i) == null) ? null : values.ElementAt(i).ejecutar(ts, user, ref baseD, mensajes,tsT);
                         Atributo atributo = checkinfo(co, op1, values.ElementAt(i), mensajes, db);
                         if (atributo == null) return null;
                         else insercion.AddLast(atributo);
@@ -179,7 +186,7 @@ namespace cql_teacher_server.CQL.Componentes
         * @db base de datos actual
         * @baseD nombre de la base de datos por referencia
         */
-        private object guardadoEspecial(Tabla t, LinkedList<string> mensajes, TablaDeSimbolos ts, string user, BaseDeDatos db, ref string baseD)
+        private object guardadoEspecial(Tabla t, LinkedList<string> mensajes, TablaDeSimbolos ts, string user, BaseDeDatos db, ref string baseD, TablaDeSimbolos tsT)
         {
             Mensaje mensa = new Mensaje();
             if (values.Count() == campos.Count())
@@ -198,7 +205,7 @@ namespace cql_teacher_server.CQL.Componentes
                             if (campo.Equals(columna.name))
                             {
                                 flag = true;
-                                object op1 = (values.ElementAt(i) == null) ? null : values.ElementAt(i).ejecutar(ts, user, ref baseD, mensajes);
+                                object op1 = (values.ElementAt(i) == null) ? null : values.ElementAt(i).ejecutar(ts, user, ref baseD, mensajes,tsT);
                                 Atributo a = checkinfo(columna, op1, values.ElementAt(i), mensajes, db);
                                 if (a != null) info.AddLast(a);
                                 else return null;

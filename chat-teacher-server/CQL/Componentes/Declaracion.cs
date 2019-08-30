@@ -43,10 +43,10 @@ namespace cql_teacher_server.CQL.Componentes
          * @baseD base de datos donde estamos ejecutando todo
          * @mensajes linkedlist con la salida deseada
          */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes)
+        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes,TablaDeSimbolos tsT)
         {
             Mensaje mensa = new Mensaje();
-            object a = (valor == null) ? null : valor.ejecutar(ts, user, ref baseD, mensajes);
+            object a = (valor == null) ? null : valor.ejecutar(ts, user, ref baseD, mensajes,tsT);
 
             object res = ts.getValor(id);
             string existe = (res == null) ? "si" : res.ToString();

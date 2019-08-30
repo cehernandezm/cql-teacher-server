@@ -69,12 +69,12 @@ namespace cql_teacher_server.CQL.Componentes
          * @mensajes respuesta de errores o mensajes de salida
          */
 
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes)
+        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
         {
 
             Mensaje mensa = new Mensaje();
-            object op1 = (a == null) ? null : a.ejecutar(ts, user, ref baseD, mensajes);
-            object atri = (atributo == null) ? null : atributo.ejecutar(ts, user, ref baseD, mensajes);
+            object op1 = (a == null) ? null : a.ejecutar(ts, user, ref baseD, mensajes,tsT);
+            object atri = (atributo == null) ? null : atributo.ejecutar(ts, user, ref baseD, mensajes,tsT);
             //--------------------------------------------- REALIZA UNA ASIGNACION NORMAL---------------------------------------------------------------
             if (operacion.Equals("ASIGNACION"))
             {

@@ -43,7 +43,7 @@ namespace cql_teacher_server.CQL.Componentes
          * @baseD base de datos donde se esta ejecutando la accion
          * @mensajes respuesta por parte de la accion
          */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes)
+        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
         {
             Mensaje mensa = new Mensaje();
             BaseDeDatos db = TablaBaseDeDatos.getBase(baseD);

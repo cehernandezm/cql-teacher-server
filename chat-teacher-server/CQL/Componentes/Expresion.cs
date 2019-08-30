@@ -176,10 +176,10 @@ namespace cql_teacher_server.CQL.Componentes
          * @baseD base de datos en la que se realizara la accion, es pasada por referencia
          */
 
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes)
+        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
         {
-            object op1 = (a == null) ? null : a.ejecutar(ts, user, ref baseD, mensajes);
-            object op2 = (b == null) ? null : b.ejecutar(ts, user, ref baseD, mensajes);
+            object op1 = (a == null) ? null : a.ejecutar(ts, user, ref baseD, mensajes,tsT);
+            object op2 = (b == null) ? null : b.ejecutar(ts, user, ref baseD, mensajes,tsT);
 
             //-------------------------------------------------- TIPO DE OPERACION ------------------------------------------------------------
             //---------------------------------------------------------------------------------------------------------------------------------
@@ -675,7 +675,7 @@ namespace cql_teacher_server.CQL.Componentes
                         LinkedList<Atributo> listaA = getAtributos(a, db);
                         if (listaA.Count() == listaUser.Count())
                         {
-                            LinkedList<Atributo> newLista = compareListas(listaA, listaUser, ts, user, ref baseD, mensajes);
+                            LinkedList<Atributo> newLista = compareListas(listaA, listaUser, ts, user, ref baseD, mensajes,tsT);
                             if (newLista == null) return null;
 
                             InstanciaUserType ius = new InstanciaUserType(idAs.ToLower(), newLista);
@@ -745,7 +745,7 @@ namespace cql_teacher_server.CQL.Componentes
             //--------------------------------------------------------- TERNARIO -----------------------------------------------------------------
             else if (operacion.Equals("TERNARIO"))
             {
-                object con = (condicion == null) ? null : condicion.ejecutar(ts, user, ref baseD, mensajes);
+                object con = (condicion == null) ? null : condicion.ejecutar(ts, user, ref baseD, mensajes,tsT);
                 if(con != null)
                 {
                     if(con.GetType() == typeof(Boolean))
@@ -843,13 +843,13 @@ namespace cql_teacher_server.CQL.Componentes
          * 
          */
 
-        public LinkedList<Atributo> compareListas(LinkedList<Atributo> a , LinkedList<Expresion> e, TablaDeSimbolos ts, string user,ref string baseD, LinkedList<string> mensaje)
+        public LinkedList<Atributo> compareListas(LinkedList<Atributo> a , LinkedList<Expresion> e, TablaDeSimbolos ts, string user,ref string baseD, LinkedList<string> mensaje,TablaDeSimbolos tsT)
         {
             LinkedList<Atributo> listaAtributo = new LinkedList<Atributo>();
             for (int i = 0; i < a.Count(); i++)
             {
                 Atributo at = a.ElementAt(i);
-                object operador1 = e.ElementAt(i).ejecutar(ts, user, ref baseD, mensaje);
+                object operador1 = e.ElementAt(i).ejecutar(ts, user, ref baseD, mensaje,tsT);
                 if (operador1 != null)
                 {
                     if (at.tipo.Equals("string") && (operador1.GetType() == typeof(string))) listaAtributo.AddLast(new Atributo(at.nombre, (string)operador1, "string"));
