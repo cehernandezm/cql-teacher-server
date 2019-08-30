@@ -89,6 +89,9 @@ namespace cql_teacher_server.CQL.Gramatica
             var INSERT = ToTerm("INSERT");
             var INTO = ToTerm("INTO");
             var VALUES = ToTerm("VALUES");
+            var UPDATE = ToTerm("UPDATE");
+            var SET = ToTerm("SET");
+            var WHERE = ToTerm("WHERE");
 
             var IF = ToTerm("IF");
             var ELSE = ToTerm("ELSE");
@@ -166,6 +169,9 @@ namespace cql_teacher_server.CQL.Gramatica
 
             NonTerminal inInsert = new NonTerminal("ininsert");
             NonTerminal listValues = new NonTerminal("listvalues");
+
+            NonTerminal inUpdate = new NonTerminal("inupdate");
+            NonTerminal listaSet = new NonTerminal("listaset");
             #endregion
 
             #region Gramatica
@@ -191,6 +197,7 @@ namespace cql_teacher_server.CQL.Gramatica
                              | inUser + ";"
                              | editUser + ";"
                              | inInsert + ";"
+                             | inUpdate + ";"
                              ;
 
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
@@ -238,6 +245,7 @@ namespace cql_teacher_server.CQL.Gramatica
                            | TRUE
                            | FALSE
                            | DECIMALN
+                           | ID
                            | NULL
                            ;
 
@@ -396,6 +404,14 @@ namespace cql_teacher_server.CQL.Gramatica
                             | expresion
                             ;
 
+
+
+            //---------------------------------------------------------------UPDATE--------------------------------------------------------------------------
+            inUpdate.Rule = UPDATE + ID + SET + listaSet;
+
+            listaSet.Rule = listaSet + "," + ID + "=" + expresion
+                          | ID + "=" + expresion
+                          ;
             #endregion
 
             #region Preferencias

@@ -620,17 +620,72 @@ namespace cql_teacher_server.CQL.Gramatica
                    
 
                     return listaII;
+
+
+                //-------------------------------------------------- UPDATE --------------------------------------------------------------------------------------
+                case "inupdate":
+                    LinkedList<InstruccionCQL> listaUP = new LinkedList<InstruccionCQL>();
+                    string idUP;
+                    int lUP;
+                    int cUP;
+
+                    idUP = hijo.ChildNodes.ElementAt(1).Token.Text;
+                    idUP = idUP.ToLower().TrimEnd().TrimStart();
+
+                    lUP = hijo.ChildNodes.ElementAt(1).Token.Location.Line;
+                    cUP = hijo.ChildNodes.ElementAt(1).Token.Location.Column;
+
+                    LinkedList<SetCQL> listaSet = resolver_setcql(hijo.ChildNodes.ElementAt(3));
+
+                    listaUP.AddLast(new Update(idUP, listaSet, lUP, cUP, "NORMAL"));
+                    return listaUP;
             }
             return null;
 
 
         }
 
+        /*
+         * Metodo que analiza los set
+         * @raiz subarbol a analizar
+         * retorna una lista de la clase SETCQL
+         */
+
+
+        private LinkedList<SetCQL> resolver_setcql(ParseTreeNode raiz)
+        {
+            LinkedList<SetCQL> lista = new LinkedList<SetCQL>();
+            string id;
+            Expresion expresion;
+            int l;
+            int c;
+            if(raiz.ChildNodes.Count() == 4)
+            {
+                lista = resolver_setcql(raiz.ChildNodes.ElementAt(0));
+                id = raiz.ChildNodes.ElementAt(1).Token.Text;
+                id = id.ToLower().TrimStart().TrimEnd();
+                expresion = resolver_expresion(raiz.ChildNodes.ElementAt(3));
+                l = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
+                c = raiz.ChildNodes.ElementAt(1).Token.Location.Column;
+            }
+            else
+            {
+                id = raiz.ChildNodes.ElementAt(0).Token.Text;
+                id = id.ToLower().TrimStart().TrimEnd();
+                expresion = resolver_expresion(raiz.ChildNodes.ElementAt(2));
+                l = raiz.ChildNodes.ElementAt(0).Token.Location.Line;
+                c = raiz.ChildNodes.ElementAt(0).Token.Location.Column;
+            }
+            lista.AddLast(new SetCQL(id, expresion, l, c));
+            return lista;
+        }
+
 
 
         /*
-         *Metodo que recorre todos los valores a guardar
-         * 
+         *Metodo que recorre todos los valores a guardar en un insert
+         * @raiz nodo del subarbol a recorrer
+         * retonar un lista de expresiones
          */
 
          private LinkedList<Expresion> listaExpresiones(ParseTreeNode raiz)

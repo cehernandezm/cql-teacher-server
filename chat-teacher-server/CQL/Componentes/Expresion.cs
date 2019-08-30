@@ -795,6 +795,22 @@ namespace cql_teacher_server.CQL.Componentes
                     return a;
                 }
             }
+            //----------------------------------------------------- ID --------------------------------------------------------------------------
+            else if (operacion.Equals("IDTABLA"))
+            {
+                object a = tsT.getValor(valor.ToString().TrimStart().TrimEnd());
+                if (a == null) return null;
+                else if (a.ToString().Equals("none"))
+                {
+                    Mensaje me = new Mensaje();
+                    mensajes.AddLast(me.error("el campo " + valor + " no existe en este ambito", linea1, columna1, "Semantico"));
+                    return null;
+                }
+                else
+                {
+                    return a;
+                }
+            }
             //----------------------------------------------------- NULL ------------------------------------------------------------------------
             return null;
         }
