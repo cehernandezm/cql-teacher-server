@@ -74,7 +74,15 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 if (user.Equals("admin"))
                 {
-                   
+                    Tabla tabla = TablaBaseDeDatos.getTabla(db, id);
+                    if (tabla != null)
+                    {
+                        object res;
+                        if (operacion.Equals("NORMAL")) res = changeAll(ts, user, ref baseD, mensajes, tabla);
+                        else res = changeSpecific(ts, user, ref baseD, mensajes, tabla);
+                        if (res != null) return "";
+                    }
+                    else mensajes.AddLast(mensa.error("La tabla: " + id + " no existe en la DB: " + baseD, l, c, "Semantico"));
                 }
                 else
                 {
@@ -157,6 +165,7 @@ namespace cql_teacher_server.CQL.Componentes
                                             return null;
                                         }
                                     }
+                                    else return null;
                                 }
                                 else
                                 {

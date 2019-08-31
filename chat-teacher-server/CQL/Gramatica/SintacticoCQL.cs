@@ -639,6 +639,22 @@ namespace cql_teacher_server.CQL.Gramatica
                     if(hijo.ChildNodes.Count() == 6) listaUP.AddLast(new Update(idUP, listaSet,resolver_expresion(hijo.ChildNodes.ElementAt(5)), lUP, cUP, "WHERE"));
                     else listaUP.AddLast(new Update(idUP, listaSet, lUP, cUP, "NORMAL"));
                     return listaUP;
+
+
+
+
+                //----------------------------------------------------- DELETE -------------------------------------------------------------------------------------
+                case "indelete":
+                    LinkedList<InstruccionCQL> listaDE = new LinkedList<InstruccionCQL>();
+                    string idDE = hijo.ChildNodes.ElementAt(2).Token.Text;
+                    idDE = idDE.ToLower().TrimStart().TrimEnd();
+                    int lDE = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
+                    int cDE = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
+
+                    if (hijo.ChildNodes.Count() == 5) listaDE.AddLast(new Delete(idDE, lDE, cDE, "WHERE", resolver_expresion(hijo.ChildNodes.ElementAt(4))));
+                    else listaDE.AddLast(new Delete(idDE, lDE, cDE, "NORMAL"));
+
+                    return listaDE;
             }
             return null;
 
