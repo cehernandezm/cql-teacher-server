@@ -655,6 +655,23 @@ namespace cql_teacher_server.CQL.Gramatica
                     else listaDE.AddLast(new Delete(idDE, lDE, cDE, "NORMAL"));
 
                     return listaDE;
+
+
+
+                //------------------------------------------------------- SELECT -------------------------------------------------------------------------------------
+                case "inselect":
+                    LinkedList<InstruccionCQL> listaSE = new LinkedList<InstruccionCQL>();
+                    string idSE = hijo.ChildNodes.ElementAt(3).Token.Text;
+                    idSE = idSE.ToLower().TrimEnd().TrimStart();
+
+                    int lSE = hijo.ChildNodes.ElementAt(3).Token.Location.Line;
+                    int cSE = hijo.ChildNodes.ElementAt(3).Token.Location.Column;
+
+                    string tkSE = hijo.ChildNodes.ElementAt(1).Term.Name;
+                    if (tkSE.Equals("listvalues")) listaSE.AddLast(new Select(idSE, listaExpresiones(hijo.ChildNodes.ElementAt(1)), lSE, cSE));
+                    else listaSE.AddLast(new Select(idSE, "*", lSE, cSE));
+
+                    return listaSE;
             }
             return null;
 

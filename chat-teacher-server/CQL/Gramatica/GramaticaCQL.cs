@@ -94,6 +94,7 @@ namespace cql_teacher_server.CQL.Gramatica
             var WHERE = ToTerm("WHERE");
             var DELETE = ToTerm("DELETE");
             var FROM = ToTerm("FROM");
+            var SELECT = ToTerm("SELECT");
 
             var IF = ToTerm("IF");
             var ELSE = ToTerm("ELSE");
@@ -176,6 +177,8 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal listaSet = new NonTerminal("listaset");
 
             NonTerminal inDelete = new NonTerminal("indelete");
+
+            NonTerminal inSelect = new NonTerminal("inselect");
             #endregion
 
             #region Gramatica
@@ -203,6 +206,7 @@ namespace cql_teacher_server.CQL.Gramatica
                              | inInsert + ";"
                              | inUpdate + ";"
                              | inDelete + ";"
+                             | inSelect + ";"
                              ;
 
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
@@ -424,6 +428,13 @@ namespace cql_teacher_server.CQL.Gramatica
             inDelete.Rule = DELETE + FROM + ID
                           | DELETE + FROM + ID + WHERE + expresion
                           ;
+
+
+            //---------------------------------------------------------------- SELECT -------------------------------------------------------------------------
+            inSelect.Rule = SELECT + POR + FROM + ID
+                          | SELECT + listValues + FROM + ID
+                          ;
+            
             #endregion
 
             #region Preferencias
