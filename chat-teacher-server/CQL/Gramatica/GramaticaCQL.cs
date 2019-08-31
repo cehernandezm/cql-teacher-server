@@ -95,6 +95,7 @@ namespace cql_teacher_server.CQL.Gramatica
             var DELETE = ToTerm("DELETE");
             var FROM = ToTerm("FROM");
             var SELECT = ToTerm("SELECT");
+            var LIMIT = ToTerm("LIMIT");
 
             var IF = ToTerm("IF");
             var ELSE = ToTerm("ELSE");
@@ -178,7 +179,10 @@ namespace cql_teacher_server.CQL.Gramatica
 
             NonTerminal inDelete = new NonTerminal("indelete");
 
+            NonTerminal tiposCampos = new NonTerminal("tipocampos");
             NonTerminal inSelect = new NonTerminal("inselect");
+            NonTerminal inWhere = new NonTerminal("inwhere");
+            NonTerminal inLimit = new NonTerminal("inlimit");
             #endregion
 
             #region Gramatica
@@ -407,7 +411,7 @@ namespace cql_teacher_server.CQL.Gramatica
             //------------------------------------------------------------ INSERT INTO --------------------------------------------------------------------
             inInsert.Rule = INSERT + INTO + ID + VALUES + "(" + listValues + ")"
                           | INSERT + INTO + ID + "(" + listaPrimary + ")" + VALUES + "(" + listValues + ")";
-                          ;
+            ;
 
             listValues.Rule = listValues + "," + expresion
                             | expresion
@@ -431,10 +435,19 @@ namespace cql_teacher_server.CQL.Gramatica
 
 
             //---------------------------------------------------------------- SELECT -------------------------------------------------------------------------
-            inSelect.Rule = SELECT + POR + FROM + ID
-                          | SELECT + listValues + FROM + ID
+            tiposCampos.Rule = POR
+                             | listValues
+                             ;
+
+            inSelect.Rule = SELECT + tiposCampos + FROM + ID
+                          | SELECT + tiposCampos + FROM + ID + inWhere
+                          | SELECT + tiposCampos + FROM + ID + inLimit
                           ;
-            
+
+
+            inLimit.Rule = LIMIT + expresion;
+
+            inWhere.Rule = WHERE + expresion;
             #endregion
 
             #region Preferencias

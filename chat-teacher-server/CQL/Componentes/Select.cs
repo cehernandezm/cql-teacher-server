@@ -12,10 +12,18 @@ namespace cql_teacher_server.CQL.Componentes
     public class Select : InstruccionCQL
     {
         string id { set; get; }
-        string all { set; get; }
         LinkedList<Expresion> campos { set; get; }
         int l { set; get; }
         int c { set; get; }
+        string operacion { set; get; }
+        Expresion condicion { set; get; }
+
+        /*
+         * a = where
+         * b = order by
+         * c = limit
+         * Puede haber cualquier combinacion entre ellas
+         */
 
         /*
          * CONSTRUCTOR DE LA CLASE CON UNA LISTA DE CAMPOS
@@ -24,29 +32,30 @@ namespace cql_teacher_server.CQL.Componentes
          * @param l: linea del id
          * @param c: columna del id
          */
-        public Select(string id, LinkedList<Expresion> campos, int l, int c)
+        public Select(string id, LinkedList<Expresion> campos, int l, int c, string operacion)
         {
             this.id = id;
             this.campos = campos;
             this.l = l;
             this.c = c;
+            this.operacion = operacion;
         }
 
         /*
-         * CONSTRUCTOR DE LA CLASE CON UNA LISTA DE CAMPOS
-         * @param id: nombre de la tabla
-         * @param all: todos los campos de la tabla
-         * @param l: linea del id
-         * @param c: columna del id
-         */
-        public Select(string id, string all, int l, int c)
+        * CONSTRUCTOR DE LA CLASE CON UNA LISTA DE CAMPOS (con Where o limit)
+        * @param id: nombre de la tabla
+        * @param campos: lista de campos que buscaremos
+        * @param l: linea del id
+        * @param c: columna del id
+        * @param {condicion} condicion para ver si se agrega o no el valor
+        */
+        public Select(string id, LinkedList<Expresion> campos, int l, int c, string operacion, Expresion condicion) : this(id, campos, l, c, operacion)
         {
-            this.id = id;
-            this.all = all;
-            this.l = l;
-            this.c = c;
-            this.campos = null;
+            this.condicion = condicion;
         }
+        
+
+
 
         /*
              * Constructor de la clase padre
@@ -79,6 +88,8 @@ namespace cql_teacher_server.CQL.Componentes
                                 Tabla tabla = TablaBaseDeDatos.getTabla(db, id);
                                 if (tabla != null)
                                 {
+                                    
+
                                     LinkedList<Columna> cabecera = new LinkedList<Columna>();
                                     if (campos == null) cabecera = new LinkedList<Columna>(cabecera.Union(tabla.columnas));
                                     else cabecera = getColumnas(tabla, ts, user, ref baseD, mensajes);
@@ -90,6 +101,20 @@ namespace cql_teacher_server.CQL.Componentes
                                         if (datos != null)
                                         {
                                             TablaSelect  tablaSelect = new TablaSelect(cabecera, datos);
+
+                                            if (operacion.Equals("none")) { }
+                                            else
+                                            {
+                                                if (operacion.Contains("c"))
+                                                {
+                                                    tablaSelect.datos = limitar(tablaSelect.datos, ts,user,ref baseD,mensajes,tsT);
+                                                    if(datos == null) return null;
+                                                   
+                                                }
+                                            }
+                                            
+
+
                                             mensajes.AddLast(mensa.consulta(tablaSelect));
                                             return tablaSelect;
                                         }
@@ -112,6 +137,56 @@ namespace cql_teacher_server.CQL.Componentes
 
 
         /*
+        * METODO que aplica el limit
+        * @param lista: Todas las columnas de la tabla
+        * @param ts: lista de simbolos del padre
+        * @param user : usuario que ejecuta las acciones
+        * @param baseD : nombre de la base de datos se pasa por referencia
+        * @param mensajes: output de salida
+        */
+        private LinkedList<Data> limitar(LinkedList<Data> datos, TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        {
+            LinkedList<Data> limiData = new LinkedList<Data>();
+            Mensaje mensa = new Mensaje();
+            object res = (condicion == null) ? null : condicion.ejecutar(ts, user, ref baseD, mensajes, tsT);
+            if(res != null)
+            {
+                if (res.GetType() == typeof(int))
+                {
+                    int limit = (int)res;
+                    if (limit > 0)
+                    {
+                        int i = 0;
+                        
+                        foreach (Data data in datos)
+                        {
+                            if (i < limit) limiData.AddLast(data);
+                            i++;
+                        }
+                    }
+                    else
+                    {
+                        mensajes.AddLast(mensa.error("Limit tiene que ser entero mayor a cero no se reconoce: " + res, l, c, "Semantico"));
+                        return null;
+                    }
+                }
+                else
+                {
+                    mensajes.AddLast(mensa.error("Limit tiene que ser entero no se reconoce: "  + res, l, c, "Semantico"));
+                    return null;
+                }
+            }
+            else
+            {
+                mensajes.AddLast(mensa.error("No se acepta un limit null", l, c, "Semantico"));
+                return null;
+            }
+            
+            
+            return limiData;
+        }
+
+        /*
          * METODO DEVOLVERA  LAS ESPECIFICAS COLUMNAS
          * @param lista: Todas las columnas de la tabla
          * @param ts: lista de simbolos del padre
@@ -132,13 +207,72 @@ namespace cql_teacher_server.CQL.Componentes
                 guardarTemp(data.valores, tsT);
                 LinkedList<Atributo> valores = new LinkedList<Atributo>();
                 int i = 0;
-                foreach(Expresion e in campos)
+                foreach (Expresion e in campos)
                 {
                     object res = (e == null) ? null : e.ejecutar(ts, user, ref baseD, mensajes, tsT);
-                    if (res != null) valores.AddLast(new Atributo(cabeceras.ElementAt(i).name, res, cabeceras.ElementAt(i).tipo));
-                    else return null;
+                    
+                    if (operacion.Equals("none"))
+                    {
+                        if (res != null) valores.AddLast(new Atributo(cabeceras.ElementAt(i).name, res, cabeceras.ElementAt(i).tipo));
+                        else
+                        {
+                            mensajes.AddLast(mensa.error("No se aceptan columnas null", l, c, "Semantico"));
+                            return null;
+                        }
+                    }
+                    else
+                    {
+                        if (operacion.Contains("a"))
+                        {
+                            object condi = (condicion == null) ? null : condicion.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                            if(condi != null)
+                            {
+                                if (condi != null)
+                                {
+                                    if (condi.GetType() == typeof(Boolean))
+                                    {
+                                        if ((Boolean)condi)
+                                        {
+                                            if (res != null) valores.AddLast(new Atributo(cabeceras.ElementAt(i).name, res, cabeceras.ElementAt(i).tipo));
+                                            else
+                                            {
+                                                mensajes.AddLast(mensa.error("No se aceptan columnas null", l, c, "Semantico"));
+                                                return null;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        mensajes.AddLast(mensa.error("La condicion tiene que ser un valor booleano no se reconoce: " + res, l, c, "Semantico"));
+                                        return null;
+                                    }
+                                    
+                                }
+                                else
+                                {
+                                    mensajes.AddLast(mensa.error("No se aceptan columnas null", l, c, "Semantico"));
+                                    return null;
+                                }
+                            }
+                            else
+                            {
+                                mensajes.AddLast(mensa.error("No se aceptan condiciones null", l, c, "Semantico"));
+                                return null;
+                            }
+                        }
+                        else
+                        {
+                            if (res != null) valores.AddLast(new Atributo(cabeceras.ElementAt(i).name, res, cabeceras.ElementAt(i).tipo));
+                            else
+                            {
+                                mensajes.AddLast(mensa.error("No se aceptan columnas null", l, c, "Semantico"));
+                                return null;
+                            }
+                        }
+                    }
+                    
                 }
-                listaR.AddLast(new Data(valores));
+                if(valores.Count() > 0) listaR.AddLast(new Data(valores));
             }
             return listaR;
         }

@@ -658,6 +658,11 @@ namespace cql_teacher_server.CQL.Gramatica
 
 
 
+
+
+
+
+                
                 //------------------------------------------------------- SELECT -------------------------------------------------------------------------------------
                 case "inselect":
                     LinkedList<InstruccionCQL> listaSE = new LinkedList<InstruccionCQL>();
@@ -667,9 +672,32 @@ namespace cql_teacher_server.CQL.Gramatica
                     int lSE = hijo.ChildNodes.ElementAt(3).Token.Location.Line;
                     int cSE = hijo.ChildNodes.ElementAt(3).Token.Location.Column;
 
-                    string tkSE = hijo.ChildNodes.ElementAt(1).Term.Name;
-                    if (tkSE.Equals("listvalues")) listaSE.AddLast(new Select(idSE, listaExpresiones(hijo.ChildNodes.ElementAt(1)), lSE, cSE));
-                    else listaSE.AddLast(new Select(idSE, "*", lSE, cSE));
+                    string tkSE = hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).Term.Name;
+                    if(hijo.ChildNodes.Count() == 5)
+                    {
+                        string operaSS = hijo.ChildNodes.ElementAt(4).Term.Name;
+                        if (operaSS.Equals("inwhere"))
+                        {
+                            ParseTreeNode accion = hijo.ChildNodes.ElementAt(4);
+                            if (tkSE.Equals("listvalues")) listaSE.AddLast(new Select(idSE, listaExpresiones(hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0)), lSE, cSE, "a",
+                                resolver_expresion(accion.ChildNodes.ElementAt(1))));
+                            else listaSE.AddLast(new Select(idSE, null, lSE, cSE,"a"));
+                        }
+                        else if (operaSS.Equals("inlimit"))
+                        {
+                            ParseTreeNode accion = hijo.ChildNodes.ElementAt(4);
+                            if (tkSE.Equals("listvalues")) listaSE.AddLast(new Select(idSE, listaExpresiones(hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0)), lSE, cSE, "c",
+                                resolver_expresion(accion.ChildNodes.ElementAt(1))));
+                            else listaSE.AddLast(new Select(idSE, null, lSE, cSE, "c"));
+                        }
+                        
+                    }
+                    else
+                    {
+                        if (tkSE.Equals("listvalues")) listaSE.AddLast(new Select(idSE, listaExpresiones(hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0)), lSE, cSE,"none"));
+                        else listaSE.AddLast(new Select(idSE, null, lSE, cSE,"none"));
+                    }
+                   
 
                     return listaSE;
             }
