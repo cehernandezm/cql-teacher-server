@@ -21,11 +21,14 @@ namespace cql_teacher_server.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
+      
             TablaBaseDeDatos.global = new LinkedList<BaseDeDatos>();
             TablaBaseDeDatos.listaUsuario = new LinkedList<Usuario>();
             TablaBaseDeDatos.listaEnUso = new LinkedList<USO>();
 
             LeerArchivo leer = new LeerArchivo();
+          
+
             
             return new string[] { "value1", "value2" };
         }
@@ -194,5 +197,7 @@ namespace cql_teacher_server.Controllers
             }
             return cadena;
         }
+
+       
     }
 }

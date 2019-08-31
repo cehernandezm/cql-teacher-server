@@ -681,16 +681,23 @@ namespace cql_teacher_server.CQL.Gramatica
                             ParseTreeNode accion = hijo.ChildNodes.ElementAt(4);
                             if (tkSE.Equals("listvalues")) listaSE.AddLast(new Select(idSE, listaExpresiones(hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0)), lSE, cSE, "a",
                                 resolver_expresion(accion.ChildNodes.ElementAt(1))));
-                            else listaSE.AddLast(new Select(idSE, null, lSE, cSE,"a"));
+                            else listaSE.AddLast(new Select(idSE, null, lSE, cSE,"a", resolver_expresion(accion.ChildNodes.ElementAt(1))));
                         }
                         else if (operaSS.Equals("inlimit"))
                         {
                             ParseTreeNode accion = hijo.ChildNodes.ElementAt(4);
                             if (tkSE.Equals("listvalues")) listaSE.AddLast(new Select(idSE, listaExpresiones(hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0)), lSE, cSE, "c",
                                 resolver_expresion(accion.ChildNodes.ElementAt(1))));
-                            else listaSE.AddLast(new Select(idSE, null, lSE, cSE, "c"));
+                            else listaSE.AddLast(new Select(idSE, null, lSE, cSE, "c", resolver_expresion(accion.ChildNodes.ElementAt(1))));
                         }
-                        
+                        else if (operaSS.Equals("inorder"))
+                        {
+                            ParseTreeNode accion = hijo.ChildNodes.ElementAt(4);
+                            if (tkSE.Equals("listvalues")) listaSE.AddLast(new Select(idSE, listaExpresiones(hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0)), lSE, cSE, "b",
+                                getOrdenamiento(accion)));
+                            else listaSE.AddLast(new Select(idSE, null, lSE, cSE, "b", getOrdenamiento(accion)));
+                        }
+
                     }
                     else
                     {
@@ -704,6 +711,36 @@ namespace cql_teacher_server.CQL.Gramatica
             return null;
 
 
+        }
+
+        /*
+         * Metodo que obtendra todas las columnas con las cuales se ordenara
+         * @param {raiz} es el sub arbol a analizar
+         * @return una lista de OrderBy
+         */
+        private LinkedList<OrderBy> getOrdenamiento(ParseTreeNode raiz)
+        {
+            LinkedList<OrderBy> lista = new LinkedList<OrderBy>();
+            ParseTreeNode hijo;
+            if (raiz.ChildNodes.Count() == 2)
+            {
+                lista = getOrdenamiento(raiz.ChildNodes.ElementAt(0));
+                hijo = raiz.ChildNodes.ElementAt(1);
+            }
+            else hijo = raiz.ChildNodes.ElementAt(2);
+
+            string id = hijo.ChildNodes.ElementAt(0).Token.Text;
+            id = id.ToLower().TrimEnd().TrimStart();
+            if (hijo.ChildNodes.Count() == 2)
+            {
+                Boolean asc = false;
+                string token = hijo.ChildNodes.ElementAt(1).Token.Text;
+                token = token.ToLower().TrimEnd().TrimStart();
+                if (token.Equals("asc")) asc = true;
+                lista.AddLast(new OrderBy(id,asc));
+            }
+            else lista.AddLast(new OrderBy(id, false));
+            return lista;
         }
 
         /*

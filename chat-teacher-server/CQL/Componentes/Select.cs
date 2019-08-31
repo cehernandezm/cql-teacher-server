@@ -16,7 +16,8 @@ namespace cql_teacher_server.CQL.Componentes
         int l { set; get; }
         int c { set; get; }
         string operacion { set; get; }
-        Expresion condicion { set; get; }
+        Expresion condicion { set; get;}
+        LinkedList<OrderBy> orderBy { set; get; }
 
         /*
          * a = where
@@ -53,7 +54,21 @@ namespace cql_teacher_server.CQL.Componentes
         {
             this.condicion = condicion;
         }
-        
+
+        /*
+        * CONSTRUCTOR DE LA CLASE CON UNA LISTA DE CAMPOS (ORDER BY)
+        * @param id: nombre de la tabla
+        * @param campos: lista de campos que buscaremos
+        * @param l: linea del id
+        * @param c: columna del id
+        * @param {orderBy} lista con las columnas con las cuales se aplicaran el sort
+        */
+
+        public Select(string id, LinkedList<Expresion> campos, int l, int c, string operacion, LinkedList<OrderBy> orderBy) : this(id, campos, l, c, operacion)
+        {
+            this.orderBy = orderBy;
+        }
+
 
 
 
@@ -105,6 +120,17 @@ namespace cql_teacher_server.CQL.Componentes
                                             if (operacion.Equals("none")) { }
                                             else
                                             {
+                                                if (operacion.Contains("b"))
+                                                {
+                                                    if (checkOrder(tablaSelect.columnas,mensajes))
+                                                    {
+
+                                                        LinkedList<int> pos = posicionesColumnas(tablaSelect.columnas);
+                                                        if(pos.Count() > 0) tablaSelect.datos = new LinkedList<Data>(sort(tablaSelect.datos, pos, 0));
+
+                                                    }
+                                                    else return null;
+                                                }
                                                 if (operacion.Contains("c"))
                                                 {
                                                     tablaSelect.datos = limitar(tablaSelect.datos, ts,user,ref baseD,mensajes,tsT);
@@ -361,7 +387,76 @@ namespace cql_teacher_server.CQL.Componentes
             return null;
         }
 
+        /*
+         * METODO QUE BUSCA LAS COLUMNAS A ORDER 
+         * @param {columnas} columnas de la tabla temporal de resultado
+         * @param {mensajes} output
+         */
+        private Boolean checkOrder(LinkedList<Columna> columnas, LinkedList<string> mensajes)
+        {
+            Mensaje mensa = new Mensaje();
+            foreach(OrderBy o in orderBy)
+            {
+                Columna co = searchColumna(columnas, o.nombre);
+                if (co == null)
+                {
+                    mensajes.AddLast(mensa.error("No se encontro la columna para ordenamiento: " + o.nombre, l, c, "Semantico"));
+                    return false;
+                }
+            }
+            return true;
+        }
 
+        /*
+        * Busca el nombre de la columna en las columnas de la tabla
+        * @param {columnas} columnas de la tabla
+        * @param {nombre} nombre a buscar
+        * @return {int}
+        */
+        private int posColumna(LinkedList<Columna> columnas, string nombre)
+        {
+            int i = 0;
+            foreach (Columna columna in columnas)
+            {
+                if (nombre.Equals(columna.name)) return i;
+                i++;
+            }
+            return -1;
+        }
+
+        /*
+         * Metodo que busca posiciones
+         * @param {columnas} columnas de la tabla temporal de resultado
+         * @return {Lista de int}
+         */
+        private LinkedList<int> posicionesColumnas(LinkedList<Columna> columnas)
+        {
+            LinkedList<int> lis = new LinkedList<int>();
+            foreach(OrderBy o in orderBy)
+            {
+                lis.AddLast(posColumna(columnas, o.nombre));
+            }
+            return lis;
+        }
+
+
+        /*
+         * METODO RECURSIVO QUE SE ENCARGA DE ORDENAR UNA LINKEDLIST DENTRO DE OTRA LINKEDLIST
+         * @param{lista} data a ordenar
+         * @param{numero} lista de  posiciones de data
+         * @params {i} posicion actual
+         */
+        private IOrderedEnumerable<Data> sort(LinkedList<Data> lista, LinkedList<int> numeros, int i)
+        {
+            if (i + 1 < numeros.Count())
+            {
+                if(orderBy.ElementAt(i+1).asc) return (sort(lista, numeros, i + 1)).ThenBy(a => a.valores.ElementAt(i + 1).valor);
+                else return (sort(lista, numeros, i + 1)).ThenByDescending(a => a.valores.ElementAt(i + 1).valor);
+
+            }
+            if (orderBy.ElementAt(0).asc)  return lista.OrderBy(a => a.valores.ElementAt(0).valor);
+            else return lista.OrderByDescending(a => a.valores.ElementAt(0).valor);
+        }
     }
 
 

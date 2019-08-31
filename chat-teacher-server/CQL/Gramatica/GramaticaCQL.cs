@@ -96,6 +96,10 @@ namespace cql_teacher_server.CQL.Gramatica
             var FROM = ToTerm("FROM");
             var SELECT = ToTerm("SELECT");
             var LIMIT = ToTerm("LIMIT");
+            var ORDER = ToTerm("ORDER");
+            var BY = ToTerm("BY");
+            var ASC = ToTerm("ASC");
+            var DESC = ToTerm("DESC");
 
             var IF = ToTerm("IF");
             var ELSE = ToTerm("ELSE");
@@ -106,6 +110,7 @@ namespace cql_teacher_server.CQL.Gramatica
             var CASE = ToTerm("CASE");
             var BREAK = ToTerm("Break");
             var DEFAULT = ToTerm("Default");
+            
 
 
 
@@ -183,6 +188,8 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal inSelect = new NonTerminal("inselect");
             NonTerminal inWhere = new NonTerminal("inwhere");
             NonTerminal inLimit = new NonTerminal("inlimit");
+            NonTerminal inOrder = new NonTerminal("inorder");
+            NonTerminal orderby = new NonTerminal("orderby");
             #endregion
 
             #region Gramatica
@@ -442,12 +449,23 @@ namespace cql_teacher_server.CQL.Gramatica
             inSelect.Rule = SELECT + tiposCampos + FROM + ID
                           | SELECT + tiposCampos + FROM + ID + inWhere
                           | SELECT + tiposCampos + FROM + ID + inLimit
+                          | SELECT + tiposCampos + FROM + ID + inOrder
                           ;
 
 
             inLimit.Rule = LIMIT + expresion;
 
             inWhere.Rule = WHERE + expresion;
+
+            inOrder.Rule = inOrder + "," + orderby
+                         | ORDER + BY + orderby
+                         ;
+
+            orderby.Rule = ID
+                         | ID + ASC
+                         | ID + DESC
+                         ; 
+
             #endregion
 
             #region Preferencias
