@@ -407,7 +407,9 @@ namespace cql_teacher_server.CQL.Gramatica
 
 
             //---------------------------------------------------------------UPDATE--------------------------------------------------------------------------
-            inUpdate.Rule = UPDATE + ID + SET + listaSet;
+            inUpdate.Rule = UPDATE + ID + SET + listaSet
+                          | UPDATE + ID + SET + listaSet + WHERE + expresion
+                          ;
 
             listaSet.Rule = listaSet + "," + ID + "=" + expresion
                           | ID + "=" + expresion

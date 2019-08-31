@@ -636,8 +636,8 @@ namespace cql_teacher_server.CQL.Gramatica
                     cUP = hijo.ChildNodes.ElementAt(1).Token.Location.Column;
 
                     LinkedList<SetCQL> listaSet = resolver_setcql(hijo.ChildNodes.ElementAt(3));
-
-                    listaUP.AddLast(new Update(idUP, listaSet, lUP, cUP, "NORMAL"));
+                    if(hijo.ChildNodes.Count() == 6) listaUP.AddLast(new Update(idUP, listaSet,resolver_expresion(hijo.ChildNodes.ElementAt(5)), lUP, cUP, "WHERE"));
+                    else listaUP.AddLast(new Update(idUP, listaSet, lUP, cUP, "NORMAL"));
                     return listaUP;
             }
             return null;

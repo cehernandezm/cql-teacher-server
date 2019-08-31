@@ -89,7 +89,9 @@ namespace cql_teacher_server.CQL.Componentes
                                 Tabla tabla = TablaBaseDeDatos.getTabla(db, id);
                                 if (tabla != null)
                                 {
-                                    object res = changeAll(ts, user, ref baseD, mensajes, tabla);
+                                    object res;
+                                    if(operacion.Equals("NORMAL"))  res = changeAll(ts, user, ref baseD, mensajes, tabla);
+                                    else res = changeSpecific(ts, user, ref baseD, mensajes, tabla);
                                     if (res != null) return "";
                                 }
                                 else mensajes.AddLast(mensa.error("La tabla: " + id + " no existe en la DB: " + baseD, l, c, "Semantico"));
@@ -107,7 +109,73 @@ namespace cql_teacher_server.CQL.Componentes
             return null;
         }
 
-       /*
+
+        /*
+       * Metodo que se encargara de editar todos los campos especificos
+       * @ts tabla de simbolos padre
+       * @user usuario que esta ejecutando las acciones
+       * @baseD string por referencia de que base de datos estamos trabajando
+       * @mensajes el output de la ejecucion
+       * @tsT se encargara de guardar todos los datos en una tabla temporal para la tabla
+       * @t tabla actual
+     */
+        private object changeSpecific(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, Tabla t)
+        {
+            Mensaje mensa = new Mensaje();
+            BaseDeDatos db = TablaBaseDeDatos.getBase(baseD);
+            foreach (Data data in t.datos)
+            {
+                TablaDeSimbolos tsT = new TablaDeSimbolos();
+                guardarTemp(data.valores, tsT);
+                if (checkColumns(t.columnas, mensajes))
+                {
+                    foreach (SetCQL set in asignacion)
+                    {
+                        foreach (Atributo atributo in data.valores)
+                        {
+                            if (set.campo.Equals(atributo.nombre))
+                            {
+                                object res = (condicion == null) ? null : condicion.ejecutar(ts, user, ref baseD, mensajes, tsT);
+
+                                if (condicion != null)
+                                {
+                                    if (res != null)
+                                    {
+                                        if (res.GetType() == typeof(Boolean))
+                                        {
+                                            if ((Boolean)res)
+                                            {
+                                                object op1 = (set.valor == null) ? null : set.valor.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                                                Atributo temp = checkinfo(getColumna(t.columnas, set.campo), op1, set.valor, mensajes, db);
+                                                if (temp != null) atributo.valor = temp.valor;
+                                                else return null;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            mensajes.AddLast(mensa.error("La condicion tiene que ser de tipo bool no ser reconoce: " + res, l, c, "Semantico"));
+                                            return null;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    mensajes.AddLast(mensa.error("La condicion en un where no puede ser null", l, c, "Semantico"));
+                                    return null;
+                                }
+
+                            }
+                        }
+                    }
+
+                }
+                else return null;
+            }
+            mensajes.AddLast(mensa.message("Datos actualizados con exito"));
+            return "";
+        }
+
+        /*
         * Metodo que se encargara de editar todos los campos
         * @ts tabla de simbolos padre
         * @user usuario que esta ejecutando las acciones
@@ -125,27 +193,28 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 TablaDeSimbolos tsT = new TablaDeSimbolos();
                 guardarTemp(data.valores, tsT);
-                if (checkColumns(t.columnas,mensajes))
+                if (checkColumns(t.columnas, mensajes))
                 {
                     foreach (SetCQL set in asignacion)
                     {
-                        foreach(Atributo atributo in data.valores)
+                        foreach (Atributo atributo in data.valores)
                         {
                             if (set.campo.Equals(atributo.nombre))
                             {
-                                
+
                                 object op1 = (set.valor == null) ? null : set.valor.ejecutar(ts, user, ref baseD, mensajes, tsT);
-                                Atributo temp = checkinfo(getColumna(t.columnas,set.campo), op1, set.valor, mensajes, db);
+                                Atributo temp = checkinfo(getColumna(t.columnas, set.campo), op1, set.valor, mensajes, db);
                                 if (temp != null) atributo.valor = temp.valor;
                                 else return null;
                             }
                         }
                     }
-                    mensajes.AddLast(mensa.message("Los campos se han actualizado exitosamente"));
-                    return "";
+
                 }
+                else return null;
             }
-            return null;
+            mensajes.AddLast(mensa.message("Datos actualizados con exito"));
+            return "";
         }
 
         /*
