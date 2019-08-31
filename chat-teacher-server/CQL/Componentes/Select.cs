@@ -79,17 +79,21 @@ namespace cql_teacher_server.CQL.Componentes
                                 Tabla tabla = TablaBaseDeDatos.getTabla(db, id);
                                 if (tabla != null)
                                 {
-                                    LinkedList<Columna> camposR;
-                                    if (campos == null) camposR = tabla.columnas;
-                                    else camposR = getSpecificCampos(tabla.columnas, ts, user, ref baseD, mensajes);
-                                    if(camposR != null)
+                                    LinkedList<Columna> cabecera = new LinkedList<Columna>();
+                                    if (campos == null) cabecera = new LinkedList<Columna>(cabecera.Union(tabla.columnas));
+                                    else cabecera = getColumnas(tabla, ts, user, ref baseD, mensajes);
+                                    if (cabecera != null)
                                     {
-                                        LinkedList<Data> newData = getData(camposR, tabla.datos);
-                                        TablaSelect tablaSelect = new TablaSelect(camposR, newData);
-                                        mensajes.AddLast(mensa.consulta(tablaSelect));
-                                        return tablaSelect;
+                                        LinkedList<Data> datos = new LinkedList<Data>();
+                                        if (campos == null) datos = new LinkedList<Data>(datos.Union(tabla.datos));
+                                        else datos = getData(tabla,ts,user,ref baseD,mensajes,cabecera);
+                                        if (datos != null)
+                                        {
+                                            TablaSelect  tablaSelect = new TablaSelect(cabecera, datos);
+                                            mensajes.AddLast(mensa.consulta(tablaSelect));
+                                            return tablaSelect;
+                                        }
                                     }
-
                                 }
                                 else mensajes.AddLast(mensa.error("La tabla: " + id + " no existe en la DB: " + baseD, l, c, "Semantico"));
                             }
@@ -116,48 +120,25 @@ namespace cql_teacher_server.CQL.Componentes
          * @param mensajes: output de salida
          */
 
-        private LinkedList<Columna> getSpecificCampos(LinkedList<Columna> lista, TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes)
+        private LinkedList<Data> getData(Tabla t, TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, LinkedList<Columna> cabeceras)
         {
             Mensaje mensa = new Mensaje();
-            LinkedList<Columna> listaR = new LinkedList<Columna>();
-            TablaDeSimbolos tsT = new TablaDeSimbolos();
-            guardarTemp(lista, tsT);
+            LinkedList<Data> listaR = new LinkedList<Data>();
+            
 
-            foreach(Expresion e in campos)
+            foreach(Data data in t.datos)
             {
-                object res = (e == null) ? null : e.ejecutar(ts, user, ref baseD, mensajes, tsT);
-                if (res != null)
+                TablaDeSimbolos tsT = new TablaDeSimbolos();
+                guardarTemp(data.valores, tsT);
+                LinkedList<Atributo> valores = new LinkedList<Atributo>();
+                int i = 0;
+                foreach(Expresion e in campos)
                 {
-                    if(res.GetType() == typeof(string))
-                    {
-                        Boolean flag = false;
-                        string nombre = ((string)res).ToLower().TrimEnd().TrimStart();
-                        foreach(Columna columna in lista)
-                        {
-                            if (nombre.Equals(columna.name))
-                            {
-                                listaR.AddLast(columna);
-                                flag = true;
-                            }
-                        }
-
-                        if (!flag)
-                        {
-                            mensajes.AddLast(mensa.error("No se encontro la  columnas: " + res, l, c, "Semantico"));
-                            return null;
-                        }
-                    }
-                    else
-                    {
-                        mensajes.AddLast(mensa.error("No se puede buscar una columna: " + res, l, c, "Semantico"));
-                        return null;
-                    }
+                    object res = (e == null) ? null : e.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                    if (res != null) valores.AddLast(new Atributo(cabeceras.ElementAt(i).name, res, cabeceras.ElementAt(i).tipo));
+                    else return null;
                 }
-                else
-                {
-                    mensajes.AddLast(mensa.error("No se puede usar una columna null", l, c, "Semantico"));
-                    return null;
-                }
+                listaR.AddLast(new Data(valores));
             }
             return listaR;
         }
@@ -168,7 +149,21 @@ namespace cql_teacher_server.CQL.Componentes
         * @atributos es la data a guardar
         * @tsT es la tabla temporal
         */
-        private void guardarTemp(LinkedList<Columna> atributos, TablaDeSimbolos tsT)
+        private void guardarTemp(LinkedList<Atributo> atributos, TablaDeSimbolos tsT)
+        {
+            foreach (Atributo atributo in atributos)
+            {
+                tsT.AddLast(new Simbolo(atributo.tipo, atributo.nombre));
+                tsT.setValor(atributo.nombre, atributo.valor);
+            }
+        }
+
+        /*
+        * Metodo que se encargara de guardar los valores como variables temporales
+        * @atributos es la data a guardar
+        * @tsT es la tabla temporal
+        */
+        private void setColumnas(LinkedList<Columna> atributos, TablaDeSimbolos tsT)
         {
             foreach (Columna atributo in atributos)
             {
@@ -183,22 +178,53 @@ namespace cql_teacher_server.CQL.Componentes
          * @param datas: toda la informacion en la base de datos
          */
 
-        private LinkedList<Data> getData(LinkedList<Columna> columnas, LinkedList<Data> datas)
+        private LinkedList<Columna> getColumnas(Tabla t, TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes)
         {
-            LinkedList<Data> newData = new LinkedList<Data>();
-            foreach(Data data in datas)
+            Mensaje mensa = new Mensaje();
+            LinkedList<Columna> cabeceras = new LinkedList<Columna>();
+            foreach (Expresion e in campos)
             {
-                LinkedList<Atributo> nuevosDatos = new LinkedList<Atributo>();
-                foreach(Atributo atributo in data.valores)
+                TablaDeSimbolos tsT = new TablaDeSimbolos();
+                setColumnas(t.columnas, tsT);
+                object res = (e == null) ? null : e.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                if (res != null)
                 {
-                    foreach(Columna columna in columnas)
-                    {
-                        if (columna.name.Equals(atributo.nombre)) nuevosDatos.AddLast(atributo);
-                    }
+                    Columna columna = searchColumna(t.columnas, res.ToString().ToLower().TrimEnd().TrimStart());
+                    string tipo = "";
+
+                    if (res.GetType() == typeof(string)) tipo = "string";
+                    else if (res.GetType() == typeof(int)) tipo = "int";
+                    else if (res.GetType() == typeof(Double)) tipo = "double";
+                    else if (res.GetType() == typeof(Boolean)) tipo = "boolean";
+                    else if (res.GetType() == typeof(DateTime)) tipo = "date";
+                    else if (res.GetType() == typeof(TimeSpan)) tipo = "time";
+                    else if (res.GetType() == typeof(InstanciaUserType)) tipo = ((InstanciaUserType)res).tipo;
+
+                    if (columna == null) columna = new Columna("descripcion", tipo, false);
+                    cabeceras.AddLast(columna);
                 }
-                newData.AddLast(new Data(nuevosDatos));
+                else
+                {
+                    mensajes.AddLast(mensa.error("No puede haber una columna null", l, c, "Semantico"));
+                    return null;
+                }
             }
-            return newData;
+            return cabeceras;
+        }
+
+        /*
+         * Busca el nombre de la columna en las columnas de la tabla
+         * @param {columnas} columnas de la tabla
+         * @param {nombre} nombre a buscar
+         * @return {Columna | null}
+         */
+        private Columna searchColumna (LinkedList<Columna> columnas, string nombre)
+        {
+            foreach(Columna columna in columnas)
+            {
+                if (nombre.Equals(columna.name)) return columna;
+            }
+            return null;
         }
 
 
