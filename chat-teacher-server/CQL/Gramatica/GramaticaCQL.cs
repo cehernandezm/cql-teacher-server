@@ -450,6 +450,10 @@ namespace cql_teacher_server.CQL.Gramatica
                           | SELECT + tiposCampos + FROM + ID + inWhere
                           | SELECT + tiposCampos + FROM + ID + inLimit
                           | SELECT + tiposCampos + FROM + ID + inOrder
+                          | SELECT + tiposCampos + FROM + ID + inWhere + inOrder
+                          | SELECT + tiposCampos + FROM + ID + inWhere + inLimit
+                          | SELECT + tiposCampos + FROM + ID + inOrder + inLimit
+                          | SELECT + tiposCampos + FROM + ID + inWhere + inOrder + inLimit
                           ;
 
 

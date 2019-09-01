@@ -680,15 +680,15 @@ namespace cql_teacher_server.CQL.Gramatica
                         {
                             ParseTreeNode accion = hijo.ChildNodes.ElementAt(4);
                             if (tkSE.Equals("listvalues")) listaSE.AddLast(new Select(idSE, listaExpresiones(hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0)), lSE, cSE, "a",
-                                resolver_expresion(accion.ChildNodes.ElementAt(1))));
-                            else listaSE.AddLast(new Select(idSE, null, lSE, cSE,"a", resolver_expresion(accion.ChildNodes.ElementAt(1))));
+                                resolver_expresion(accion.ChildNodes.ElementAt(1)),null));
+                            else listaSE.AddLast(new Select(idSE, null, lSE, cSE,"a", resolver_expresion(accion.ChildNodes.ElementAt(1)),null));
                         }
                         else if (operaSS.Equals("inlimit"))
                         {
                             ParseTreeNode accion = hijo.ChildNodes.ElementAt(4);
                             if (tkSE.Equals("listvalues")) listaSE.AddLast(new Select(idSE, listaExpresiones(hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0)), lSE, cSE, "c",
-                                resolver_expresion(accion.ChildNodes.ElementAt(1))));
-                            else listaSE.AddLast(new Select(idSE, null, lSE, cSE, "c", resolver_expresion(accion.ChildNodes.ElementAt(1))));
+                               null, resolver_expresion(accion.ChildNodes.ElementAt(1))));
+                            else listaSE.AddLast(new Select(idSE, null, lSE, cSE, "c",null, resolver_expresion(accion.ChildNodes.ElementAt(1))));
                         }
                         else if (operaSS.Equals("inorder"))
                         {
@@ -698,6 +698,44 @@ namespace cql_teacher_server.CQL.Gramatica
                             else listaSE.AddLast(new Select(idSE, null, lSE, cSE, "b", getOrdenamiento(accion)));
                         }
 
+                    }
+                    else if(hijo.ChildNodes.Count() == 6)
+                    {
+                        string op1 = hijo.ChildNodes.ElementAt(4).Term.Name;
+                        string op2 = hijo.ChildNodes.ElementAt(5).Term.Name;
+                        if(op1.Equals("inwhere") && op2.Equals("inorder"))
+                        {
+                            ParseTreeNode accion = hijo.ChildNodes.ElementAt(4);
+                            ParseTreeNode accion2 = hijo.ChildNodes.ElementAt(5);
+                            if (tkSE.Equals("listvalues")) listaSE.AddLast(new Select(idSE, listaExpresiones(hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0)), lSE, cSE, "ab",
+                                resolver_expresion(accion.ChildNodes.ElementAt(1)),null,getOrdenamiento(accion2)));
+                            else listaSE.AddLast(new Select(idSE, null, lSE, cSE, "ab", resolver_expresion(accion.ChildNodes.ElementAt(1)),null,getOrdenamiento(accion2)));
+                        }
+                        else if (op1.Equals("inwhere") && op2.Equals("inlimit"))
+                        {
+                            ParseTreeNode accion = hijo.ChildNodes.ElementAt(4);
+                            ParseTreeNode accion2 = hijo.ChildNodes.ElementAt(5);
+                            if (tkSE.Equals("listvalues")) listaSE.AddLast(new Select(idSE, listaExpresiones(hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0)), lSE, cSE, "ac",
+                                resolver_expresion(accion.ChildNodes.ElementAt(1)), resolver_expresion(accion2.ChildNodes.ElementAt(1))));
+                            else listaSE.AddLast(new Select(idSE, null, lSE, cSE, "ac", resolver_expresion(accion.ChildNodes.ElementAt(1)), resolver_expresion(accion2.ChildNodes.ElementAt(1))));
+                        }
+                        else
+                        {
+                            ParseTreeNode accion = hijo.ChildNodes.ElementAt(5);
+                            ParseTreeNode accion2 = hijo.ChildNodes.ElementAt(4);
+                            if (tkSE.Equals("listvalues")) listaSE.AddLast(new Select(idSE, listaExpresiones(hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0)), lSE, cSE, "bc",
+                                null,resolver_expresion(accion.ChildNodes.ElementAt(1)), getOrdenamiento(accion2)));
+                            else listaSE.AddLast(new Select(idSE, null, lSE, cSE, "bc", null, resolver_expresion(accion.ChildNodes.ElementAt(1)), getOrdenamiento(accion2)));
+                        }
+                    }
+                    else if (hijo.ChildNodes.Count() == 7)
+                    {
+                        ParseTreeNode accion = hijo.ChildNodes.ElementAt(4);
+                        ParseTreeNode accion2 = hijo.ChildNodes.ElementAt(6);
+                        ParseTreeNode accion3 = hijo.ChildNodes.ElementAt(5);
+                        if (tkSE.Equals("listvalues")) listaSE.AddLast(new Select(idSE, listaExpresiones(hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0)), lSE, cSE, "abc",
+                            resolver_expresion(accion.ChildNodes.ElementAt(1)), resolver_expresion(accion2.ChildNodes.ElementAt(1)),getOrdenamiento(accion3)));
+                        else listaSE.AddLast(new Select(idSE, null, lSE, cSE, "abc", resolver_expresion(accion.ChildNodes.ElementAt(1)), resolver_expresion(accion2.ChildNodes.ElementAt(1)), getOrdenamiento(accion3)));
                     }
                     else
                     {

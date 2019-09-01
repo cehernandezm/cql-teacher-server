@@ -17,7 +17,12 @@ namespace cql_teacher_server.CQL.Componentes
         int c { set; get; }
         string operacion { set; get; }
         Expresion condicion { set; get;}
+        Expresion condicion2 { set; get; }
         LinkedList<OrderBy> orderBy { set; get; }
+
+       
+
+
 
         /*
          * a = where
@@ -48,11 +53,13 @@ namespace cql_teacher_server.CQL.Componentes
         * @param campos: lista de campos que buscaremos
         * @param l: linea del id
         * @param c: columna del id
-        * @param {condicion} condicion para ver si se agrega o no el valor
+        * @param {condicion} condicion where
+        * @param {condicion2} condicion limit
         */
-        public Select(string id, LinkedList<Expresion> campos, int l, int c, string operacion, Expresion condicion) : this(id, campos, l, c, operacion)
+        public Select(string id, LinkedList<Expresion> campos, int l, int c, string operacion, Expresion condicion,Expresion condicion2) : this(id, campos, l, c, operacion)
         {
             this.condicion = condicion;
+            this.condicion2 = condicion2;
         }
 
         /*
@@ -64,7 +71,22 @@ namespace cql_teacher_server.CQL.Componentes
         * @param {orderBy} lista con las columnas con las cuales se aplicaran el sort
         */
 
+
         public Select(string id, LinkedList<Expresion> campos, int l, int c, string operacion, LinkedList<OrderBy> orderBy) : this(id, campos, l, c, operacion)
+        {
+            this.orderBy = orderBy;
+        }
+        /*
+        * CONSTRUCTOR DE LA CLASE CON UNA LISTA DE CAMPOS (WHERE ORDER BY | WHERE ORDER BY LIMIT)
+        * @param id: nombre de la tabla
+        * @param campos: lista de campos que buscaremos
+        * @param l: linea del id
+        * @param c: columna del id
+        * @param {condicion} condicion para el where
+        * @param {orderBy} lista con las columnas con las cuales se aplicaran el sort
+        */
+
+        public Select(string id, LinkedList<Expresion> campos, int l, int c, string operacion, Expresion condicion, Expresion condicion2, LinkedList<OrderBy> orderBy) : this(id, campos, l, c, operacion, condicion, condicion2)
         {
             this.orderBy = orderBy;
         }
@@ -103,20 +125,18 @@ namespace cql_teacher_server.CQL.Componentes
                                 Tabla tabla = TablaBaseDeDatos.getTabla(db, id);
                                 if (tabla != null)
                                 {
-                                    
-
                                     LinkedList<Columna> cabecera = new LinkedList<Columna>();
                                     if (campos == null) cabecera = new LinkedList<Columna>(cabecera.Union(tabla.columnas));
                                     else cabecera = getColumnas(tabla, ts, user, ref baseD, mensajes);
                                     if (cabecera != null)
                                     {
                                         LinkedList<Data> datos = new LinkedList<Data>();
-                                        if (campos == null) datos = new LinkedList<Data>(datos.Union(tabla.datos));
+                                        if (campos == null) datos = getAllData(tabla,ts,user,ref baseD,mensajes,cabecera);
                                         else datos = getData(tabla,ts,user,ref baseD,mensajes,cabecera);
                                         if (datos != null)
                                         {
                                             TablaSelect  tablaSelect = new TablaSelect(cabecera, datos);
-
+                                            System.Diagnostics.Debug.WriteLine(operacion);
                                             if (operacion.Equals("none")) { }
                                             else
                                             {
@@ -174,7 +194,7 @@ namespace cql_teacher_server.CQL.Componentes
         {
             LinkedList<Data> limiData = new LinkedList<Data>();
             Mensaje mensa = new Mensaje();
-            object res = (condicion == null) ? null : condicion.ejecutar(ts, user, ref baseD, mensajes, tsT);
+            object res = (condicion2 == null) ? null : condicion2.ejecutar(ts, user, ref baseD, mensajes, tsT);
             if(res != null)
             {
                 if (res.GetType() == typeof(int))
@@ -269,7 +289,7 @@ namespace cql_teacher_server.CQL.Componentes
                                     }
                                     else
                                     {
-                                        mensajes.AddLast(mensa.error("La condicion tiene que ser un valor booleano no se reconoce: " + res, l, c, "Semantico"));
+                                        mensajes.AddLast(mensa.error("La condicion tiene que ser un valor booleano no se reconoce: " + condi, l, c, "Semantico"));
                                         return null;
                                     }
                                     
@@ -302,6 +322,64 @@ namespace cql_teacher_server.CQL.Componentes
             }
             return listaR;
         }
+
+
+        /*
+         * METODO DEVOLVERA  Todas las columnas
+         * @param lista: Todas las columnas de la tabla
+         * @param ts: lista de simbolos del padre
+         * @param user : usuario que ejecuta las acciones
+         * @param baseD : nombre de la base de datos se pasa por referencia
+         * @param mensajes: output de salida
+         */
+
+        private LinkedList<Data> getAllData(Tabla t, TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, LinkedList<Columna> cabeceras)
+        {
+            Mensaje mensa = new Mensaje();
+            LinkedList<Data> listaR = new LinkedList<Data>();
+
+
+            foreach (Data data in t.datos)
+            {
+                TablaDeSimbolos tsT = new TablaDeSimbolos();
+                guardarTemp(data.valores, tsT);
+                int i = 0;
+                if (operacion.Equals("none")) listaR.AddLast(new Data(data.valores));
+                else
+                {
+                    if (operacion.Contains("a"))
+                    {
+                        object condi = (condicion == null) ? null : condicion.ejecutar(ts, user, ref baseD, mensajes, tsT);
+
+                        if (condi != null)
+                        {
+                            if (condi.GetType() == typeof(Boolean))
+                            {
+                                if ((Boolean)condi) listaR.AddLast(new Data(data.valores));
+                            }
+                            else
+                            {
+                                mensajes.AddLast(mensa.error("La condicion tiene que ser un valor booleano no se reconoce: " + condi, l, c, "Semantico"));
+                                return null;
+                            }
+
+                        }
+                        else
+                        {
+                            mensajes.AddLast(mensa.error("No se aceptan columnas null", l, c, "Semantico"));
+                            return null;
+                        }
+
+                    }
+                    else
+                    {
+                        listaR.AddLast(new Data(data.valores));
+                    }
+                }
+            }
+            return listaR;
+        }
+
 
 
         /*
@@ -450,12 +528,12 @@ namespace cql_teacher_server.CQL.Componentes
         {
             if (i + 1 < numeros.Count())
             {
-                if(orderBy.ElementAt(i+1).asc) return (sort(lista, numeros, i + 1)).ThenBy(a => a.valores.ElementAt(i + 1).valor);
-                else return (sort(lista, numeros, i + 1)).ThenByDescending(a => a.valores.ElementAt(i + 1).valor);
+                if(orderBy.ElementAt(i+1).asc) return (sort(lista, numeros, i + 1)).ThenBy(a => a.valores.ElementAt(numeros.ElementAt(i+1)).valor);
+                else return (sort(lista, numeros, i + 1)).ThenByDescending(a => a.valores.ElementAt(numeros.ElementAt(i + 1)).valor);
 
             }
-            if (orderBy.ElementAt(0).asc)  return lista.OrderBy(a => a.valores.ElementAt(0).valor);
-            else return lista.OrderByDescending(a => a.valores.ElementAt(0).valor);
+            if (orderBy.ElementAt(0).asc)  return lista.OrderBy(a => a.valores.ElementAt(numeros.ElementAt(0)).valor);
+            else return lista.OrderByDescending(a => a.valores.ElementAt(numeros.ElementAt(0)).valor);
         }
     }
 
