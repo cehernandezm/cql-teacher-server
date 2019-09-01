@@ -58,12 +58,12 @@ namespace cql_teacher_server.CQL.Gramatica
                     {
                         System.Diagnostics.Debug.WriteLine(m);
                     }
-                    /*
+                   
                     foreach (Simbolo s in tablaGlobal)
                     {
                         System.Diagnostics.Debug.WriteLine("Tipo: " + s.Tipo + " Nombre: " + s.nombre + " Valor: " + s.valor);
                     }
-                    */
+                    
                 }
             }
 
@@ -81,7 +81,7 @@ namespace cql_teacher_server.CQL.Gramatica
             if (raiz.ChildNodes.Count == 2)
             {
                 LinkedList<InstruccionCQL> lista = instrucciones(raiz.ChildNodes.ElementAt(0));
-                object res = instruccion(raiz.ChildNodes.ElementAt(1));
+                object res = instruccion(raiz.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0));
                 if (res.GetType() == typeof(InstruccionCQL)) lista.AddLast((InstruccionCQL)res);
                 else lista = new LinkedList<InstruccionCQL>(lista.Union((LinkedList<InstruccionCQL>)res));
                 return lista;
@@ -90,7 +90,7 @@ namespace cql_teacher_server.CQL.Gramatica
             else
             {
                 LinkedList<InstruccionCQL> lista = new LinkedList<InstruccionCQL>();
-                object res = instruccion(raiz.ChildNodes.ElementAt(0));
+                object res = instruccion(raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0));
                 if (res.GetType() == typeof(InstruccionCQL)) lista.AddLast((InstruccionCQL)res);
                 else lista = new LinkedList<InstruccionCQL>(lista.Union((LinkedList<InstruccionCQL>)res));
                 return lista;
@@ -105,8 +105,8 @@ namespace cql_teacher_server.CQL.Gramatica
 
         public object instruccion(ParseTreeNode raiz)
         {
-            string token = raiz.ChildNodes.ElementAt(0).Term.Name;
-            ParseTreeNode hijo = raiz.ChildNodes.ElementAt(0);
+            string token = raiz.Term.Name;
+            ParseTreeNode hijo = raiz;
             switch (token)
             {
                 //-------------------------------- USE DB ----------------------------------------------------------------
@@ -1073,6 +1073,22 @@ namespace cql_teacher_server.CQL.Gramatica
                 int cAs = raiz.ChildNodes.ElementAt(4).Token.Location.Column;
 
                 return new Expresion("ASIGNACIONUSER", lAs, cAs, lista, idAs);
+            }
+            else if(raiz.ChildNodes.Count() == 4)
+            {
+                string token = raiz.ChildNodes.ElementAt(0).Token.Text;
+                token = token.ToLower().TrimEnd().TrimStart();
+                int lc = raiz.ChildNodes.ElementAt(0).Token.Location.Line;
+                int cc = raiz.ChildNodes.ElementAt(0).Token.Location.Column;
+                string salida = "";
+                if (token.Equals("count")) salida = "COUNT";
+                else if (token.Equals("min")) salida = "MIN";
+                else if (token.Equals("max")) salida = "MAX";
+                else if (token.Equals("sum")) salida = "SUM";
+                else salida = "AVG";
+                LinkedList<InstruccionCQL> ins = (LinkedList<InstruccionCQL>)instruccion(raiz.ChildNodes.ElementAt(2));
+                if (ins.Count() > 0) return new Expresion(ins.ElementAt(0), salida, lc, cc);
+                return null;
             }
             else
             {

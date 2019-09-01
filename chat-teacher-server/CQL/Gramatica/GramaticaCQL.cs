@@ -100,6 +100,13 @@ namespace cql_teacher_server.CQL.Gramatica
             var BY = ToTerm("BY");
             var ASC = ToTerm("ASC");
             var DESC = ToTerm("DESC");
+            
+
+            var COUNT = ToTerm("COUNT");
+            var MIN = ToTerm("MIN");
+            var MAX = ToTerm("MAX");
+            var SUM = ToTerm("SUM");
+            var AVG = ToTerm("AVG");
 
             var IF = ToTerm("IF");
             var ELSE = ToTerm("ELSE");
@@ -249,6 +256,11 @@ namespace cql_teacher_server.CQL.Gramatica
                            | expresion + MODULO + expresion
                            | expresion + POTENCIA + expresion
                            | RESTA + expresion
+                           | COUNT + "(<" + inSelect + ">)"
+                           | MIN + "(<" + inSelect + ">)"
+                           | MAX + "(<" + inSelect + ">)"
+                           | SUM + "(<" + inSelect + ">)"
+                           | AVG + "(<" + inSelect + ">)"
                            | ToTerm("(") + expresion + ToTerm(")")
                            | ToTerm("(") + tipoVariable + ToTerm(")") + expresion
                            | NEW + ID

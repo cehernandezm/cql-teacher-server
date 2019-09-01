@@ -767,6 +767,99 @@ namespace cql_teacher_server.CQL.Componentes
                     return null;
                 }
             }
+            //---------------------------------------------------COUNT ------------------------------------------------------------------------
+            else if (operacion.Equals("COUNT"))
+            {
+                Select select = (Select)valor;
+                object res = select.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                if(res != null)
+                {
+                    mensajes.RemoveLast();
+                    TablaSelect tabla = (TablaSelect)res;
+                    return tabla.datos.Count();
+                }
+                return null;
+            }
+            //---------------------------------------------------MIN ------------------------------------------------------------------------
+            else if (operacion.Equals("MIN"))
+            {
+                Mensaje mensa = new Mensaje();
+                Select select = (Select)valor;
+                object res = select.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                if (res != null)
+                {
+                    mensajes.RemoveLast();
+                    TablaSelect tabla = (TablaSelect)res;
+                    if(tabla.datos.Count() > 0)
+                    {
+                        if (tabla.columnas.ElementAt(0).tipo.Equals("int") || tabla.columnas.ElementAt(0).tipo.Equals("double") || tabla.columnas.ElementAt(0).tipo.Equals("date")) return getMinimun(tabla.datos);
+                        else mensajes.AddLast(mensa.error("MIN solo se aplica a valores numericos, no se reconoce el tipo: " + tabla.columnas.ElementAt(0).tipo, linea1, columna1, "Semantico"));
+                    }
+                    else mensajes.AddLast(mensa.error("La tabla tiene que tener almenos un registro", linea1, columna1, "Semantico"));
+
+                }
+                return null;
+            }
+            //---------------------------------------------------MAX ------------------------------------------------------------------------
+            else if (operacion.Equals("MAX"))
+            {
+                Mensaje mensa = new Mensaje();
+                Select select = (Select)valor;
+                object res = select.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                if (res != null)
+                {
+                    mensajes.RemoveLast();
+                    TablaSelect tabla = (TablaSelect)res;
+                    if (tabla.datos.Count() > 0)
+                    {
+                        if (tabla.columnas.ElementAt(0).tipo.Equals("int") || tabla.columnas.ElementAt(0).tipo.Equals("double") || tabla.columnas.ElementAt(0).tipo.Equals("date")) return getMaximo(tabla.datos);
+                        else mensajes.AddLast(mensa.error("MMAX  solo se aplica a valores numericos o tipo date, no se reconoce el tipo: " + tabla.columnas.ElementAt(0).tipo, linea1, columna1, "Semantico"));
+                    }
+                    else mensajes.AddLast(mensa.error("La tabla tiene que tener almenos un registro", linea1, columna1, "Semantico"));
+
+                }
+                return null;
+            }
+            //---------------------------------------------------SUM ------------------------------------------------------------------------
+            else if (operacion.Equals("SUM"))
+            {
+                Mensaje mensa = new Mensaje();
+                Select select = (Select)valor;
+                object res = select.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                if (res != null)
+                {
+                    mensajes.RemoveLast();
+                    TablaSelect tabla = (TablaSelect)res;
+                    if (tabla.datos.Count() > 0)
+                    {
+                        if (tabla.columnas.ElementAt(0).tipo.Equals("int") || tabla.columnas.ElementAt(0).tipo.Equals("double")) return getSum(tabla.datos);
+                        else mensajes.AddLast(mensa.error("SUM  solo se aplica a valores numericos, no se reconoce el tipo: " + tabla.columnas.ElementAt(0).tipo, linea1, columna1, "Semantico"));
+                    }
+                    else mensajes.AddLast(mensa.error("La tabla tiene que tener almenos un registro", linea1, columna1, "Semantico"));
+
+                }
+                return null;
+            }
+            //---------------------------------------------------SUM ------------------------------------------------------------------------
+            else if (operacion.Equals("AVG"))
+            {
+                Mensaje mensa = new Mensaje();
+                Select select = (Select)valor;
+                object res = select.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                if (res != null)
+                {
+                    mensajes.RemoveLast();
+                    TablaSelect tabla = (TablaSelect)res;
+                    if (tabla.datos.Count() > 0)
+                    {
+                        if (tabla.columnas.ElementAt(0).tipo.Equals("int") || tabla.columnas.ElementAt(0).tipo.Equals("double")) return getPromedio(tabla.datos);
+                        else mensajes.AddLast(mensa.error("AVG  solo se aplica a valores numericos, no se reconoce el tipo: " + tabla.columnas.ElementAt(0).tipo, linea1, columna1, "Semantico"));
+                    }
+                    else mensajes.AddLast(mensa.error("La tabla tiene que tener almenos un registro", linea1, columna1, "Semantico"));
+
+                }
+                return null;
+            }
             //------------------------------------------------- ENTERO -------------------------------------------------------------------------
             else if (operacion.Equals("ENTERO")) return Int32.Parse(valor.ToString());
             //------------------------------------------------- DOUBLE -------------------------------------------------------------------------
@@ -859,7 +952,7 @@ namespace cql_teacher_server.CQL.Componentes
          * 
          */
 
-        public LinkedList<Atributo> compareListas(LinkedList<Atributo> a , LinkedList<Expresion> e, TablaDeSimbolos ts, string user,ref string baseD, LinkedList<string> mensaje,TablaDeSimbolos tsT)
+        private LinkedList<Atributo> compareListas(LinkedList<Atributo> a , LinkedList<Expresion> e, TablaDeSimbolos ts, string user,ref string baseD, LinkedList<string> mensaje,TablaDeSimbolos tsT)
         {
             LinkedList<Atributo> listaAtributo = new LinkedList<Atributo>();
             for (int i = 0; i < a.Count(); i++)
@@ -905,6 +998,72 @@ namespace cql_teacher_server.CQL.Componentes
                 }
             }
             return listaAtributo;
+        }
+
+
+        /*
+         * Metodo que obtiene el minimo de una columna
+         * @param {datas} toda la informacion de la tabla
+         * @return {int|double|date}
+         */
+        private object getMinimun(LinkedList<Data> datas)
+        {
+            object minimo = datas.ElementAt(0).valores.ElementAt(0).valor;
+            foreach(Data data in datas)
+            {
+                Atributo atributo = data.valores.ElementAt(0);
+                if (atributo.tipo.Equals("int")) { if ((int)atributo.valor < (int)minimo) minimo = (int)atributo.valor; }
+                else if (atributo.tipo.Equals("double")) { if ((Double)atributo.valor < (Double)minimo) minimo = (Double)atributo.valor; }
+                else if (atributo.tipo.Equals("date")) { if ((DateTime)atributo.valor < (DateTime)minimo) minimo = (DateTime)atributo.valor; }
+            }
+            return minimo;
+        }
+
+        /*
+         * Metodo que obtiene el maximo de una columna
+         * @param {datas} toda la informacion de la tabla
+         * @return {int|double|date}
+         */
+        private object getMaximo(LinkedList<Data> datas)
+        {
+            object minimo = datas.ElementAt(0).valores.ElementAt(0).valor;
+            foreach (Data data in datas)
+            {
+                Atributo atributo = data.valores.ElementAt(0);
+                if (atributo.tipo.Equals("int")) { if ((int)atributo.valor > (int)minimo) minimo = (int)atributo.valor; }
+                else if (atributo.tipo.Equals("double")) { if ((Double)atributo.valor > (Double)minimo) minimo = (Double)atributo.valor; }
+                else if (atributo.tipo.Equals("date")) { if ((DateTime)atributo.valor > (DateTime)minimo) minimo = (DateTime)atributo.valor; }
+            }
+            return minimo;
+        }
+
+        /*
+        * Metodo que obtiene la suma de una columna
+        * @param {datas} toda la informacion de la tabla
+        * @return {int|double}
+        */
+        private object getSum(LinkedList<Data> datas)
+        {
+            object minimo = datas.ElementAt(0).valores.ElementAt(0).valor;
+            foreach (Data data in datas)
+            {
+                Atributo atributo = data.valores.ElementAt(0);
+                if (atributo.tipo.Equals("int"))  minimo = (int)minimo + (int)atributo.valor; 
+                else if (atributo.tipo.Equals("double")) minimo = (Double)minimo + (Double)atributo.valor; 
+            }
+            return minimo;
+        }
+
+        /*
+        * Metodo que obtiene el promedio de una columna
+        * @param {datas} toda la informacion de la tabla
+        * @return {int|double}
+        */
+        private object getPromedio(LinkedList<Data> datas)
+        {
+            object sum = getSum(datas);
+            if (sum.GetType() == typeof(int)) return ((int)sum / datas.Count());
+            else return (Double)((Double)sum / datas.Count());
         }
     }
 
