@@ -117,6 +117,7 @@ namespace cql_teacher_server.CQL.Gramatica
             var CASE = ToTerm("CASE");
             var BREAK = ToTerm("Break");
             var DEFAULT = ToTerm("Default");
+            var WHILE = ToTerm("WHILE");
             
 
 
@@ -201,6 +202,7 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal userTypeCQL = new NonTerminal("usertypecql");
 
             NonTerminal inBreak = new NonTerminal("inbreak");
+            NonTerminal inWhile = new NonTerminal("inwhile");
             #endregion
 
             #region Gramatica
@@ -230,6 +232,7 @@ namespace cql_teacher_server.CQL.Gramatica
                              | inDelete + ";"
                              | inSelect + ";"
                              | inBreak + ";"
+                             | inWhile
                              ;
 
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
@@ -489,7 +492,10 @@ namespace cql_teacher_server.CQL.Gramatica
             orderby.Rule = ID
                          | ID + ASC
                          | ID + DESC
-                         ; 
+                         ;
+
+            //----------------------------------------------- WHILE -----------------------------------------------------------------------------------------
+            inWhile.Rule = WHILE + "(" + expresion + ")" + "{" + instrucciones + "}";
 
             #endregion
 

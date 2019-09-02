@@ -707,13 +707,15 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 if(op1.GetType() == typeof(int))
                 {
+                    int copia = (int)op1;
                     ts.setValor(casteo, (int)op1 + 1);
-                    return (int)op1;
+                    return copia;
                 }
                 else if (op1.GetType() == typeof(Double))
                 {
+                    Double copia = (Double)op1;
                     ts.setValor(casteo, (Double)op1 + 1);
-                    return (Double)op1;
+                    return copia;
                 }
                 else
                 {
@@ -727,13 +729,15 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 if (op1.GetType() == typeof(int))
                 {
+                    int copia = (int)op1;
                     ts.setValor(casteo, (int)op1 - 1);
-                    return (int)op1;
+                    return copia;
                 }
                 else if (op1.GetType() == typeof(Double))
                 {
+                    Double copia = (Double)op1;
                     ts.setValor(casteo, (Double)op1 - 1);
-                    return (Double)op1;
+                    return (copia);
                 }
                 else
                 {

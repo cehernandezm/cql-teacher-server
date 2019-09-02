@@ -752,6 +752,20 @@ namespace cql_teacher_server.CQL.Gramatica
                     LinkedList<InstruccionCQL> listaBR = new LinkedList<InstruccionCQL>();
                     listaBR.AddLast(new Break());
                     return listaBR;
+
+
+
+
+
+
+                //------------------------------------------------------ WHILE ----------------------------------------------------------------------------------------
+                case "inwhile":
+                    LinkedList<InstruccionCQL> listaWH = new LinkedList<InstruccionCQL>();
+                    int lwh = hijo.ChildNodes.ElementAt(0).Token.Location.Line;
+                    int cwh = hijo.ChildNodes.ElementAt(0).Token.Location.Column;
+                    LinkedList<InstruccionCQL> cuerpowh = instrucciones(hijo.ChildNodes.ElementAt(3));
+                    listaWH.AddLast(new While(lwh, cwh, resolver_expresion(hijo.ChildNodes.ElementAt(1)), cuerpowh));
+                    return listaWH;
             }
             return null;
 
