@@ -798,6 +798,15 @@ namespace cql_teacher_server.CQL.Gramatica
             if(raiz.ChildNodes.Count() == 4)
             {
                 lista = resolver_setcql(raiz.ChildNodes.ElementAt(0));
+                string token = raiz.ChildNodes.ElementAt(1).Term.Name;
+                if (token.Equals("usertypecql"))
+                {
+                    id = raiz.ChildNodes.ElementAt(1).ChildNodes.ElementAt(1).Token.Text;
+                    id = id.ToLower().TrimStart().TrimEnd();
+                    expresion = resolver_expresion(raiz.ChildNodes.ElementAt(3));
+                    l = raiz.ChildNodes.ElementAt(1).ChildNodes.ElementAt(1).Token.Location.Line;
+                    c = raiz.ChildNodes.ElementAt(1).ChildNodes.ElementAt(1).Token.Location.Column;
+                }
                 id = raiz.ChildNodes.ElementAt(1).Token.Text;
                 id = id.ToLower().TrimStart().TrimEnd();
                 expresion = resolver_expresion(raiz.ChildNodes.ElementAt(3));
@@ -806,13 +815,24 @@ namespace cql_teacher_server.CQL.Gramatica
             }
             else
             {
+                string token = raiz.ChildNodes.ElementAt(0).Term.Name;
+                if (token.Equals("usertypecql"))
+                {
+                    id = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).Token.Text;
+                    id = id.ToLower().TrimStart().TrimEnd();
+                    expresion = resolver_expresion(raiz.ChildNodes.ElementAt(2));
+                    l = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1).Token.Location.Line;
+                    c = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1).Token.Location.Column;
+                    lista.AddLast(new SetCQL(id, expresion, resolver_expresion(raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0)), "USER", l, c));
+                    return lista;
+                }
                 id = raiz.ChildNodes.ElementAt(0).Token.Text;
                 id = id.ToLower().TrimStart().TrimEnd();
                 expresion = resolver_expresion(raiz.ChildNodes.ElementAt(2));
                 l = raiz.ChildNodes.ElementAt(0).Token.Location.Line;
                 c = raiz.ChildNodes.ElementAt(0).Token.Location.Column;
             }
-            lista.AddLast(new SetCQL(id, expresion, l, c));
+            lista.AddLast(new SetCQL(id, expresion,"NORMAL" ,l, c));
             return lista;
         }
 
@@ -1194,7 +1214,6 @@ namespace cql_teacher_server.CQL.Gramatica
          */
         public Expresion getValor(string token, string valor, int l1, int c1)
         {
-            System.Diagnostics.Debug.WriteLine(valor);
             token = token.ToLower().TrimEnd().TrimStart();
             string valorT = valor.ToLower().TrimEnd().TrimStart();
             if (token.Equals("entero")) return new Expresion(valor, "ENTERO", l1, c1);

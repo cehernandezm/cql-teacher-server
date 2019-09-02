@@ -899,10 +899,8 @@ namespace cql_teacher_server.CQL.Componentes
                     mensajes.AddLast(me.error("el campo " + valor + " no existe en este ambito", linea1, columna1, "Semantico"));
                     return null;
                 }
-                else
-                {
-                    return a;
-                }
+                else return a;
+                
             }
             //----------------------------------------------------- NULL ------------------------------------------------------------------------
             return null;

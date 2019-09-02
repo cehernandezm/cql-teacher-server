@@ -146,7 +146,15 @@ namespace cql_teacher_server.CQL.Componentes
                                                     {
 
                                                         LinkedList<int> pos = posicionesColumnas(tablaSelect.columnas);
-                                                        if(pos.Count() > 0) tablaSelect.datos = new LinkedList<Data>(sort(tablaSelect.datos, pos, 0));
+                                                        try
+                                                        {
+                                                            if (pos.Count() > 0) tablaSelect.datos = new LinkedList<Data>(sort(tablaSelect.datos, pos, 0));
+                                                        }
+                                                        catch (Exception)
+                                                        {
+                                                            mensajes.AddLast(mensa.error("Esta intentando ordenar por un dato no primitivo", l, c, "Semantico"));
+                                                        }
+                                                        
 
                                                     }
                                                     else return null;
@@ -262,7 +270,7 @@ namespace cql_teacher_server.CQL.Componentes
                         if (res != null) valores.AddLast(new Atributo(cabeceras.ElementAt(i).name, res, cabeceras.ElementAt(i).tipo));
                         else
                         {
-                            mensajes.AddLast(mensa.error("No se aceptan columnas null", l, c, "Semantico"));
+                            mensajes.AddLast(mensa.error("No se aceptan columnas null como datos", l, c, "Semantico"));
                             return null;
                         }
                     }
@@ -425,6 +433,11 @@ namespace cql_teacher_server.CQL.Componentes
                 TablaDeSimbolos tsT = new TablaDeSimbolos();
                 setColumnas(t.columnas, tsT);
                 object res = (e == null) ? null : e.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                if (res == null && e != null)
+                {
+                    mensajes.RemoveLast();
+                    res = "descripcion";
+                }
                 if (res != null)
                 {
                     Columna columna = searchColumna(t.columnas, res.ToString().ToLower().TrimEnd().TrimStart());
@@ -443,7 +456,7 @@ namespace cql_teacher_server.CQL.Componentes
                 }
                 else
                 {
-                    mensajes.AddLast(mensa.error("No puede haber una columna null", l, c, "Semantico"));
+                    mensajes.AddLast(mensa.error("No puede haber una columna null como cabecera", l, c, "Semantico"));
                     return null;
                 }
             }

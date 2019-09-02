@@ -141,39 +141,70 @@ namespace cql_teacher_server.CQL.Componentes
                     {
                         foreach (Atributo atributo in data.valores)
                         {
-                            if (set.campo.Equals(atributo.nombre))
-                            {
-                                object res = (condicion == null) ? null : condicion.ejecutar(ts, user, ref baseD, mensajes, tsT);
 
-                                if (condicion != null)
+                            object res = (condicion == null) ? null : condicion.ejecutar(ts, user, ref baseD, mensajes, tsT);
+
+                            if (condicion != null)
+                            {
+                                if (res != null)
                                 {
-                                    if (res != null)
+                                    if (res.GetType() == typeof(Boolean))
                                     {
-                                        if (res.GetType() == typeof(Boolean))
+                                        System.Diagnostics.Debug.WriteLine(res.ToString());
+                                        if ((Boolean)res)
                                         {
-                                            if ((Boolean)res)
+                                            object op1 = (set.valor == null) ? null : set.valor.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                                            if (set.operacion.Equals("NORMAL"))
                                             {
-                                                object op1 = (set.valor == null) ? null : set.valor.ejecutar(ts, user, ref baseD, mensajes, tsT);
-                                                Atributo temp = checkinfo(getColumna(t.columnas, set.campo), op1, set.valor, mensajes, db);
-                                                if (temp != null) atributo.valor = temp.valor;
-                                                else return null;
+
+                                                if (set.campo.Equals(atributo.nombre))
+                                                {
+                                                    Atributo temp = checkinfo(getColumna(t.columnas, set.campo), op1, set.valor, mensajes, db);
+                                                    if (temp != null) atributo.valor = temp.valor;
+                                                    else return null;
+                                                }
+
+                                            }
+                                            else
+                                            {
+                                                object op2 = (set.accesoUS == null) ? null : set.accesoUS.ejecutar(ts, user, ref baseD, mensajes, tsT);
+
+                                                if (op2 != null)
+                                                {
+                                                    if (op2.GetType() == typeof(InstanciaUserType))
+                                                    {
+
+                                                        InstanciaUserType temp = (InstanciaUserType)op2;
+                                                        foreach (Atributo a in temp.lista)
+                                                        {
+                                                            if (a.nombre.Equals(set.campo))
+                                                            {
+                                                                Columna co = new Columna(a.nombre, a.tipo, false);
+                                                                Atributo temp2 = checkinfo(co, op1, set.valor, mensajes, db);
+                                                                if (temp2 != null) a.valor = temp2.valor;
+                                                                else return null;
+                                                            }
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
-                                        else
-                                        {
-                                            mensajes.AddLast(mensa.error("La condicion tiene que ser de tipo bool no ser reconoce: " + res, l, c, "Semantico"));
-                                            return null;
-                                        }
                                     }
-                                    else return null;
+                                    else
+                                    {
+                                        mensajes.AddLast(mensa.error("La condicion tiene que ser de tipo bool no ser reconoce: " + res, l, c, "Semantico"));
+                                        return null;
+                                    }
                                 }
-                                else
-                                {
-                                    mensajes.AddLast(mensa.error("La condicion en un where no puede ser null", l, c, "Semantico"));
-                                    return null;
-                                }
-
+                                else return null;
                             }
+                            else
+                            {
+                                mensajes.AddLast(mensa.error("La condicion en un where no puede ser null", l, c, "Semantico"));
+                                return null;
+                            }
+
+
                         }
                     }
 
@@ -208,14 +239,42 @@ namespace cql_teacher_server.CQL.Componentes
                     {
                         foreach (Atributo atributo in data.valores)
                         {
-                            if (set.campo.Equals(atributo.nombre))
+                            object op1 = (set.valor == null) ? null : set.valor.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                            if (set.operacion.Equals("NORMAL"))
                             {
-
-                                object op1 = (set.valor == null) ? null : set.valor.ejecutar(ts, user, ref baseD, mensajes, tsT);
-                                Atributo temp = checkinfo(getColumna(t.columnas, set.campo), op1, set.valor, mensajes, db);
-                                if (temp != null) atributo.valor = temp.valor;
-                                else return null;
+                                
+                                if (set.campo.Equals(atributo.nombre))
+                                {
+                                    Atributo temp = checkinfo(getColumna(t.columnas, set.campo), op1, set.valor, mensajes, db);
+                                    if (temp != null) atributo.valor = temp.valor;
+                                    else return null;
+                                }
+                               
                             }
+                            else
+                            {
+                                object op2 = (set.accesoUS == null) ? null : set.accesoUS.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                                
+                                if (op2 != null)
+                                {
+                                    if (op2.GetType() == typeof(InstanciaUserType))
+                                    {
+                                        
+                                        InstanciaUserType temp = (InstanciaUserType)op2;
+                                        foreach (Atributo a in temp.lista)
+                                        {
+                                            if (a.nombre.Equals(set.campo))
+                                            {
+                                                Columna co = new Columna(a.nombre, a.tipo, false);
+                                                Atributo temp2 = checkinfo(co, op1, set.valor, mensajes, db);
+                                                if (temp2 != null) a.valor = temp2.valor;
+                                                else return null;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
                         }
                     }
 
@@ -255,7 +314,7 @@ namespace cql_teacher_server.CQL.Componentes
                 {
                     if (columna.name.Equals(setcql.campo)) flag = true;
                 }
-                if (!flag)
+                if (!flag && setcql.accesoUS == null)
                 {
                     mensajes.AddLast(mensa.error("No se encontro la columna: " + setcql.campo, setcql.l, setcql.c, "Semantico"));
                     return false;

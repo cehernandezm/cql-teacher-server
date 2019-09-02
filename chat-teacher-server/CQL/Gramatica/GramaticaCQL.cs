@@ -197,6 +197,8 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal inLimit = new NonTerminal("inlimit");
             NonTerminal inOrder = new NonTerminal("inorder");
             NonTerminal orderby = new NonTerminal("orderby");
+
+            NonTerminal userTypeCQL = new NonTerminal("usertypecql");
             #endregion
 
             #region Gramatica
@@ -444,8 +446,14 @@ namespace cql_teacher_server.CQL.Gramatica
                           ;
 
             listaSet.Rule = listaSet + "," + ID + "=" + expresion
+                          | listaSet + "," + userTypeCQL + "=" + expresion
                           | ID + "=" + expresion
+                          | userTypeCQL + "=" + expresion
                           ;
+
+            userTypeCQL.Rule = userTypeCQL + "." + ID
+                             | ID
+                             ;
 
             //--------------------------------------------------------------- DELETE -------------------------------------------------------------------------
             inDelete.Rule = DELETE + FROM + ID
