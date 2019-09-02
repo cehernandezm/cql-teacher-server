@@ -199,6 +199,8 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal orderby = new NonTerminal("orderby");
 
             NonTerminal userTypeCQL = new NonTerminal("usertypecql");
+
+            NonTerminal inBreak = new NonTerminal("inbreak");
             #endregion
 
             #region Gramatica
@@ -227,6 +229,7 @@ namespace cql_teacher_server.CQL.Gramatica
                              | inUpdate + ";"
                              | inDelete + ";"
                              | inSelect + ";"
+                             | inBreak + ";"
                              ;
 
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
@@ -362,21 +365,19 @@ namespace cql_teacher_server.CQL.Gramatica
             inselse.Rule = ELSE + "{" + instrucciones + "}";
 
             //------------------------------------------------------------ SWITCH -------------------------------------------------------------------------
-            inSwitch.Rule = SWITCH + "(" + expresion + ")" + "{" + lisCase + "}"
-                          | SWITCH + "(" + expresion + ")" + "{" + lisCase + inDefault + "}"
-                          ;
+            inSwitch.Rule = SWITCH + "(" + expresion + ")" + "{" + lisCase  + inDefault + "}";
             //------------------------------------------------------------- LISTADO DE CASES ---------------------------------------------------------------
             lisCase.Rule = lisCase + inCase
                          | inCase
                          ;
             //------------------------------------------------------------- CASE ---------------------------------------------------------------------------
-            inCase.Rule = CASE + expresion + ":" + instrucciones
-                        | CASE + expresion + ":" + instrucciones + BREAK + ";"
-                        ;
+            inCase.Rule = CASE + expresion + ":" + "{" + instrucciones + "}";
+
+            //---------------------------------------------------------------------------------------------------------------------------------------------
+            inBreak.Rule = BREAK;
+            
             //-------------------------------------------------------------- DEFAULT -----------------------------------------------------------------------
-            inDefault.Rule = DEFAULT + ":" + instrucciones
-                           | DEFAULT + ":" + instrucciones + BREAK + ";"
-                           ;
+            inDefault.Rule = DEFAULT + ":" + "{" + instrucciones + "}";
             //------------------------------------------------------------- DROP DATABASE ------------------------------------------------------------------
             inDrop.Rule = DROP + DATABASE + ID
                         | DROP + DATABASE + IF + EXISTS + ID;

@@ -116,7 +116,7 @@ namespace cql_teacher_server.CQL.Componentes
                                 if (tipo.Equals(temp.tipo.ToLower()))
                                 {
                                     ts.setValor(id, temp);
-                                    return null;
+                                    return "";
                                 }
                                 else
                                 {
@@ -133,7 +133,6 @@ namespace cql_teacher_server.CQL.Componentes
                             }
                             return "";
                         }
-                        return null;
                     }
                 }
                 else mensajes.AddLast(mensa.error("La variable: " + id + " no existe en este ambito", l, c, "Semantico"));

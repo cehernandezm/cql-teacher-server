@@ -96,6 +96,7 @@ namespace cql_teacher_server.CQL.Componentes
                                 object r = i.ejecutar(ambitoLocal, user, ref baseD, mensajes,tsT);
                                 if (r == null) return r;
                             }
+                            return "";
                         }
                     }
                     else
