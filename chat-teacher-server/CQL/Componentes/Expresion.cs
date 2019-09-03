@@ -32,6 +32,28 @@ namespace cql_teacher_server.CQL.Componentes
         LinkedList<Expresion> listaUser { set; get; }
         string idAs { set; get; }
   
+        string tipo1 { set; get; }
+
+        string tipo2 { set; get; }
+
+
+        /*
+         * Constructor para instanciar map
+         * @param {operacion} = CREAR MAP
+         * @param {linea1} linea de los tipos
+         * @param {columna} columna de los tipos
+         * @param {tipo1} tipo de la key
+         * @param {tipo2} tipo del valor
+         */
+        public Expresion(string operacion, int linea1, int columna1, string tipo1, string tipo2)
+        {
+            this.operacion = operacion;
+            this.linea1 = linea1;
+            this.columna1 = columna1;
+            this.tipo1 = tipo1;
+            this.tipo2 = tipo2;
+        }
+
 
 
         /* 
@@ -385,11 +407,14 @@ namespace cql_teacher_server.CQL.Componentes
                     else if (op1.GetType() == typeof(string) && op2 == null) return (string)op1 == null;
                     else if (op1.GetType() == typeof(DateTime) && op2 == null) return (DateTime)op1 == null;
                     else if (op1.GetType() == typeof(TimeSpan) && op2 == null) return (TimeSpan)op1 == null;
+                    else if (op1.GetType() == typeof(Map) && op2 == null) return ((Map)op1).datos == null;
+                    else
                     {
                         Mensaje mes = new Mensaje();
                         mensajes.AddLast(mes.error("No se puede conocer si es igual   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                         return null;
                     }
+                   
                 }
                 else if (op2 != null && op1 == null)
                 {
@@ -397,6 +422,8 @@ namespace cql_teacher_server.CQL.Componentes
                     else if (op2.GetType() == typeof(string) && op1 == null) return (string)op2 == null;
                     else if (op2.GetType() == typeof(DateTime) && op1 == null) return (DateTime)op2 == null;
                     else if (op2.GetType() == typeof(TimeSpan) && op1 == null) return (TimeSpan)op2 == null;
+                    else if (op2.GetType() == typeof(Map) && op1 == null) return ((Map)op2).datos == null;
+                    else
                     {
                         Mensaje mes = new Mensaje();
                         mensajes.AddLast(mes.error("No se puede conocer si es igual   " + op2.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
@@ -432,6 +459,8 @@ namespace cql_teacher_server.CQL.Componentes
                     else if (op1.GetType() == typeof(string) && op2 == null) return (string)op1 != null;
                     else if (op1.GetType() == typeof(DateTime) && op2 == null) return (DateTime)op1 != null;
                     else if (op1.GetType() == typeof(TimeSpan) && op2 == null) return (TimeSpan)op1 != null;
+                    else if (op1.GetType() == typeof(Map) && op2 == null) return ((Map)op1).datos != null;
+                    else
                     {
                         Mensaje mes = new Mensaje();
                         mensajes.AddLast(mes.error("No se puede conocer si es diferente   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
@@ -444,6 +473,8 @@ namespace cql_teacher_server.CQL.Componentes
                     else if (op2.GetType() == typeof(string) && op1 == null) return (string)op2 != null;
                     else if (op2.GetType() == typeof(DateTime) && op1 == null) return (DateTime)op2 != null;
                     else if (op2.GetType() == typeof(TimeSpan) && op1 == null) return (TimeSpan)op2 != null;
+                    else if (op2.GetType() == typeof(Map) && op1 == null) return ((Map)op2).datos != null;
+                    else
                     {
                         Mensaje mes = new Mensaje();
                         mensajes.AddLast(mes.error("No se puede conocer si es diferente   " + op2.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
@@ -745,6 +776,19 @@ namespace cql_teacher_server.CQL.Componentes
                     mensajes.AddLast(men.error("No se puede hacer un decremento en la variable: " + casteo + " porque no es de tipo entero", linea1, columna1, "Semantico"));
                     return null;
                 }
+            }
+            //------------------------------------------------------ CREAR MAP -------------------------------------------------------------------
+            else if (operacion.Equals("CREARMAP"))
+            {
+                Mensaje mensa = new Mensaje();
+                if (tipo1.Equals("string") || tipo1.Equals("boolean") || tipo1.Equals("date") || tipo1.Equals("time") || tipo1.Equals("int") || tipo1.Equals("double"))
+                {
+                    string identificador = tipo1 + "/" + tipo2;
+                    Map map = new Map(identificador, null);
+                    return map;
+                }
+                else mensajes.AddLast(mensa.error("El tipo de la key para un map tiene que ser primitivo",linea1,columna1,"Semantico"));
+                return null;
             }
             //--------------------------------------------------------- TERNARIO -----------------------------------------------------------------
             else if (operacion.Equals("TERNARIO"))

@@ -36,6 +36,7 @@ namespace cql_teacher_server.CQL.Gramatica
             var DATE = ToTerm("date");
             var TIME = ToTerm("time");
             var COUNTER = ToTerm("counter");
+            var MAP = ToTerm("MAP");
 
 
             var TRUE = ToTerm("True");
@@ -281,6 +282,7 @@ namespace cql_teacher_server.CQL.Gramatica
                            | ToTerm("(") + expresion + ToTerm(")")
                            | ToTerm("(") + tipoVariable + ToTerm(")") + expresion
                            | NEW + ID
+                           | NEW + MAP + "<" + tipoVariable + "," + tipoVariable + ">"
                            | expresion + "." + ID
                            | "{" + asigna_UserType + "}" + AS + ID
                            | ENTERO
@@ -314,6 +316,7 @@ namespace cql_teacher_server.CQL.Gramatica
                               | TIME
                               | ID
                               | COUNTER
+                              | MAP
                               ;
 
             //------------------------------------------------------- DECLARACION DE VARIABLE --------------------------------------------------------------------

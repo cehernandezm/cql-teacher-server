@@ -1161,6 +1161,15 @@ namespace cql_teacher_server.CQL.Gramatica
                 if (ins.Count() > 0) return new Expresion(ins.ElementAt(0), salida, lc, cc);
                 return null;
             }
+            else if(raiz.ChildNodes.Count() == 6)
+            {
+                int li = raiz.ChildNodes.ElementAt(3).ChildNodes.ElementAt(0).Token.Location.Line;
+                int ci = raiz.ChildNodes.ElementAt(3).ChildNodes.ElementAt(0).Token.Location.Column;
+
+                string tipo1 = raiz.ChildNodes.ElementAt(3).ChildNodes.ElementAt(0).Token.Text.ToLower().TrimStart().TrimEnd();
+                string tipo2 = raiz.ChildNodes.ElementAt(4).ChildNodes.ElementAt(0).Token.Text.ToLower().TrimStart().TrimEnd();
+                return new Expresion("CREARMAP",li,ci,tipo1,tipo2);
+            }
             else
             {
                 string toke = raiz.ChildNodes.ElementAt(0).Term.Name;

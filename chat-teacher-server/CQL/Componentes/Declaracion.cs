@@ -72,11 +72,16 @@ namespace cql_teacher_server.CQL.Componentes
                     }
                     else
                     {
-                        if(tipo.Equals("string") || tipo.Equals("date") || tipo.Equals("time") || tipo.Equals("map"))
+                        if(tipo.Equals("string") || tipo.Equals("date") || tipo.Equals("time"))
                         {
                             ts.AddLast(new Simbolo(tipo, id));
                             ts.setValor(id, null);
                             return "";
+                        }
+                        else if (tipo.Equals("map"))
+                        {
+                            mensajes.AddLast(mensa.error("El tipo MAP necesita ser instanciado",l,c,"Semantico"));
+                            return null;
                         }
                         BaseDeDatos bd = TablaBaseDeDatos.getBase(baseD);
                         if(bd != null)
@@ -144,6 +149,11 @@ namespace cql_teacher_server.CQL.Componentes
                         {
                             ts.AddLast(new Simbolo(tipo, id));
                             ts.setValor(id, (TimeSpan)a);
+                        }
+                        else if (tipo.Equals("map") && a.GetType() == typeof(Map))
+                        {
+                            ts.AddLast(new Simbolo(tipo, id));
+                            ts.setValor(id, (Map)a);
                         }
                         else if (a.GetType() == typeof(InstanciaUserType))
                         {
