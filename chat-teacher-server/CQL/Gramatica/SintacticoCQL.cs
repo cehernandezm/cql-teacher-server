@@ -372,7 +372,7 @@ namespace cql_teacher_server.CQL.Gramatica
                 //------------------------------------------------------- SWITCH --------------------------------------------------------------------------------
                 case "inswitch":
                     Expresion condicionS = resolver_expresion(hijo.ChildNodes.ElementAt(1));
-                    LinkedList<Case> listadoCase = resolver_case(hijo.ChildNodes.ElementAt(3),condicionS);
+                    LinkedList<Case> listadoCase = resolver_case(hijo.ChildNodes.ElementAt(3), condicionS);
                     LinkedList<InstruccionCQL> listadoR = new LinkedList<InstruccionCQL>();
 
 
@@ -388,7 +388,7 @@ namespace cql_teacher_server.CQL.Gramatica
 
                 //---------------------------------------------------------- DROP ------------------------------
                 case "indrop":
-                    int lineaDrop ;
+                    int lineaDrop;
                     int columnaDrop;
                     string idDrop;
                     Boolean flagD;
@@ -410,7 +410,7 @@ namespace cql_teacher_server.CQL.Gramatica
                     }
 
                     LinkedList<InstruccionCQL> listaDR = new LinkedList<InstruccionCQL>();
-                    listaDR.AddLast(new Drop(idDrop, lineaDrop, columnaDrop,flagD));
+                    listaDR.AddLast(new Drop(idDrop, lineaDrop, columnaDrop, flagD));
                     return listaDR;
 
 
@@ -436,7 +436,7 @@ namespace cql_teacher_server.CQL.Gramatica
                         columnaTa = hijo.ChildNodes.ElementAt(5).Token.Location.Column;
                         flagTa = true;
                     }
-                    else if(hijo.ChildNodes.Count() == 8)
+                    else if (hijo.ChildNodes.Count() == 8)
                     {
                         nombreT = hijo.ChildNodes.ElementAt(5).Token.Text;
                         nombreT = nombreT.ToLower().TrimEnd().TrimStart();
@@ -447,7 +447,7 @@ namespace cql_teacher_server.CQL.Gramatica
                         columnaTa = hijo.ChildNodes.ElementAt(5).Token.Location.Column;
                         flagTa = true;
                         LinkedList<string> primariasCompuestas = getCompuestas(hijo.ChildNodes.ElementAt(7).ChildNodes.ElementAt(2));
-                        listaRT.AddLast(new CreateTable(nombreT,listaTa,primariasCompuestas,lineaTa,columnaTa,flagTa));
+                        listaRT.AddLast(new CreateTable(nombreT, listaTa, primariasCompuestas, lineaTa, columnaTa, flagTa));
                         return listaRT;
                     }
                     else if (hijo.ChildNodes.Count() == 5)
@@ -518,7 +518,7 @@ namespace cql_teacher_server.CQL.Gramatica
                     int cDT;
                     Boolean flagDT;
 
-                    if(hijo.ChildNodes.Count() == 5)
+                    if (hijo.ChildNodes.Count() == 5)
                     {
                         idDT = hijo.ChildNodes.ElementAt(4).Token.Text;
                         idDT = idDT.ToLower().TrimEnd().TrimStart();
@@ -539,7 +539,7 @@ namespace cql_teacher_server.CQL.Gramatica
 
                         flagDT = false;
                     }
-                    listaRDT.AddLast(new DropTable(idDT,flagDT, lDT, cDT));
+                    listaRDT.AddLast(new DropTable(idDT, flagDT, lDT, cDT));
                     return listaRDT;
 
 
@@ -606,8 +606,8 @@ namespace cql_teacher_server.CQL.Gramatica
                 //-------------------------------------------------- INSERT VALUES --------------------------------------------------------------------------
                 case "ininsert":
                     LinkedList<InstruccionCQL> listaII = new LinkedList<InstruccionCQL>();
-                    string idII ;
-                    int lII ;
+                    string idII;
+                    int lII;
                     int cII;
                     idII = hijo.ChildNodes.ElementAt(2).Token.Text;
                     idII = idII.ToLower().TrimEnd().TrimStart();
@@ -615,8 +615,8 @@ namespace cql_teacher_server.CQL.Gramatica
                     lII = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
                     cII = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
                     if (hijo.ChildNodes.Count() == 5) listaII.AddLast(new Insert(idII, listaExpresiones(hijo.ChildNodes.ElementAt(4)), "NORMAL", lII, cII));
-                    else listaII.AddLast(new Insert(idII, listaExpresiones(hijo.ChildNodes.ElementAt(5)), getCompuestas(hijo.ChildNodes.ElementAt(3)),"ESPECIAL", lII, cII));
-                   
+                    else listaII.AddLast(new Insert(idII, listaExpresiones(hijo.ChildNodes.ElementAt(5)), getCompuestas(hijo.ChildNodes.ElementAt(3)), "ESPECIAL", lII, cII));
+
 
                     return listaII;
 
@@ -635,7 +635,7 @@ namespace cql_teacher_server.CQL.Gramatica
                     cUP = hijo.ChildNodes.ElementAt(1).Token.Location.Column;
 
                     LinkedList<SetCQL> listaSet = resolver_setcql(hijo.ChildNodes.ElementAt(3));
-                    if(hijo.ChildNodes.Count() == 6) listaUP.AddLast(new Update(idUP, listaSet,resolver_expresion(hijo.ChildNodes.ElementAt(5)), lUP, cUP, "WHERE"));
+                    if (hijo.ChildNodes.Count() == 6) listaUP.AddLast(new Update(idUP, listaSet, resolver_expresion(hijo.ChildNodes.ElementAt(5)), lUP, cUP, "WHERE"));
                     else listaUP.AddLast(new Update(idUP, listaSet, lUP, cUP, "NORMAL"));
                     return listaUP;
 
@@ -661,7 +661,7 @@ namespace cql_teacher_server.CQL.Gramatica
 
 
 
-                
+
                 //------------------------------------------------------- SELECT -------------------------------------------------------------------------------------
                 case "inselect":
                     LinkedList<InstruccionCQL> listaSE = new LinkedList<InstruccionCQL>();
@@ -672,22 +672,22 @@ namespace cql_teacher_server.CQL.Gramatica
                     int cSE = hijo.ChildNodes.ElementAt(3).Token.Location.Column;
 
                     string tkSE = hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).Term.Name;
-                    if(hijo.ChildNodes.Count() == 5)
+                    if (hijo.ChildNodes.Count() == 5)
                     {
                         string operaSS = hijo.ChildNodes.ElementAt(4).Term.Name;
                         if (operaSS.Equals("inwhere"))
                         {
                             ParseTreeNode accion = hijo.ChildNodes.ElementAt(4);
                             if (tkSE.Equals("listvalues")) listaSE.AddLast(new Select(idSE, listaExpresiones(hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0)), lSE, cSE, "a",
-                                resolver_expresion(accion.ChildNodes.ElementAt(1)),null));
-                            else listaSE.AddLast(new Select(idSE, null, lSE, cSE,"a", resolver_expresion(accion.ChildNodes.ElementAt(1)),null));
+                                resolver_expresion(accion.ChildNodes.ElementAt(1)), null));
+                            else listaSE.AddLast(new Select(idSE, null, lSE, cSE, "a", resolver_expresion(accion.ChildNodes.ElementAt(1)), null));
                         }
                         else if (operaSS.Equals("inlimit"))
                         {
                             ParseTreeNode accion = hijo.ChildNodes.ElementAt(4);
                             if (tkSE.Equals("listvalues")) listaSE.AddLast(new Select(idSE, listaExpresiones(hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0)), lSE, cSE, "c",
                                null, resolver_expresion(accion.ChildNodes.ElementAt(1))));
-                            else listaSE.AddLast(new Select(idSE, null, lSE, cSE, "c",null, resolver_expresion(accion.ChildNodes.ElementAt(1))));
+                            else listaSE.AddLast(new Select(idSE, null, lSE, cSE, "c", null, resolver_expresion(accion.ChildNodes.ElementAt(1))));
                         }
                         else if (operaSS.Equals("inorder"))
                         {
@@ -698,17 +698,17 @@ namespace cql_teacher_server.CQL.Gramatica
                         }
 
                     }
-                    else if(hijo.ChildNodes.Count() == 6)
+                    else if (hijo.ChildNodes.Count() == 6)
                     {
                         string op1 = hijo.ChildNodes.ElementAt(4).Term.Name;
                         string op2 = hijo.ChildNodes.ElementAt(5).Term.Name;
-                        if(op1.Equals("inwhere") && op2.Equals("inorder"))
+                        if (op1.Equals("inwhere") && op2.Equals("inorder"))
                         {
                             ParseTreeNode accion = hijo.ChildNodes.ElementAt(4);
                             ParseTreeNode accion2 = hijo.ChildNodes.ElementAt(5);
                             if (tkSE.Equals("listvalues")) listaSE.AddLast(new Select(idSE, listaExpresiones(hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0)), lSE, cSE, "ab",
-                                resolver_expresion(accion.ChildNodes.ElementAt(1)),null,getOrdenamiento(accion2)));
-                            else listaSE.AddLast(new Select(idSE, null, lSE, cSE, "ab", resolver_expresion(accion.ChildNodes.ElementAt(1)),null,getOrdenamiento(accion2)));
+                                resolver_expresion(accion.ChildNodes.ElementAt(1)), null, getOrdenamiento(accion2)));
+                            else listaSE.AddLast(new Select(idSE, null, lSE, cSE, "ab", resolver_expresion(accion.ChildNodes.ElementAt(1)), null, getOrdenamiento(accion2)));
                         }
                         else if (op1.Equals("inwhere") && op2.Equals("inlimit"))
                         {
@@ -723,7 +723,7 @@ namespace cql_teacher_server.CQL.Gramatica
                             ParseTreeNode accion = hijo.ChildNodes.ElementAt(5);
                             ParseTreeNode accion2 = hijo.ChildNodes.ElementAt(4);
                             if (tkSE.Equals("listvalues")) listaSE.AddLast(new Select(idSE, listaExpresiones(hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0)), lSE, cSE, "bc",
-                                null,resolver_expresion(accion.ChildNodes.ElementAt(1)), getOrdenamiento(accion2)));
+                                null, resolver_expresion(accion.ChildNodes.ElementAt(1)), getOrdenamiento(accion2)));
                             else listaSE.AddLast(new Select(idSE, null, lSE, cSE, "bc", null, resolver_expresion(accion.ChildNodes.ElementAt(1)), getOrdenamiento(accion2)));
                         }
                     }
@@ -733,15 +733,15 @@ namespace cql_teacher_server.CQL.Gramatica
                         ParseTreeNode accion2 = hijo.ChildNodes.ElementAt(6);
                         ParseTreeNode accion3 = hijo.ChildNodes.ElementAt(5);
                         if (tkSE.Equals("listvalues")) listaSE.AddLast(new Select(idSE, listaExpresiones(hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0)), lSE, cSE, "abc",
-                            resolver_expresion(accion.ChildNodes.ElementAt(1)), resolver_expresion(accion2.ChildNodes.ElementAt(1)),getOrdenamiento(accion3)));
+                            resolver_expresion(accion.ChildNodes.ElementAt(1)), resolver_expresion(accion2.ChildNodes.ElementAt(1)), getOrdenamiento(accion3)));
                         else listaSE.AddLast(new Select(idSE, null, lSE, cSE, "abc", resolver_expresion(accion.ChildNodes.ElementAt(1)), resolver_expresion(accion2.ChildNodes.ElementAt(1)), getOrdenamiento(accion3)));
                     }
                     else
                     {
-                        if (tkSE.Equals("listvalues")) listaSE.AddLast(new Select(idSE, listaExpresiones(hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0)), lSE, cSE,"none"));
-                        else listaSE.AddLast(new Select(idSE, null, lSE, cSE,"none"));
+                        if (tkSE.Equals("listvalues")) listaSE.AddLast(new Select(idSE, listaExpresiones(hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0)), lSE, cSE, "none"));
+                        else listaSE.AddLast(new Select(idSE, null, lSE, cSE, "none"));
                     }
-                   
+
 
                     return listaSE;
 
@@ -778,6 +778,24 @@ namespace cql_teacher_server.CQL.Gramatica
                     LinkedList<InstruccionCQL> cuerpoch = instrucciones(hijo.ChildNodes.ElementAt(2));
                     listaDW.AddLast(new While(cdh, cdh, resolver_expresion(hijo.ChildNodes.ElementAt(5)), cuerpoch));
                     return listaDW;
+
+
+                //----------------------------------------------------- FOR ---------------------------------------------------------------------------------------
+                case "infor":
+                    LinkedList<InstruccionCQL> listaF = new LinkedList<InstruccionCQL>();
+                    int lf = hijo.ChildNodes.ElementAt(0).Token.Location.Line;
+                    int cf = hijo.ChildNodes.ElementAt(0).Token.Location.Column;
+
+                    LinkedList<InstruccionCQL> accionF =(LinkedList<InstruccionCQL>)instruccion(hijo.ChildNodes.ElementAt(1));
+                    Expresion condiF = resolver_expresion(hijo.ChildNodes.ElementAt(2));
+                    Expresion asigna = resolver_expresion(hijo.ChildNodes.ElementAt(3));
+                    LinkedList<InstruccionCQL> instruF = instrucciones(hijo.ChildNodes.ElementAt(5));
+
+                    object instru = (accionF.Count() < 1) ? null : accionF.ElementAt(0);
+
+                    listaF.AddLast(new inFor(lf, cf, instru, condiF, asigna, instruF));
+
+                    return listaF;
             }
             return null;
 

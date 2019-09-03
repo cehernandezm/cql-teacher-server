@@ -119,6 +119,7 @@ namespace cql_teacher_server.CQL.Gramatica
             var DEFAULT = ToTerm("Default");
             var WHILE = ToTerm("WHILE");
             var DO = ToTerm("DO");
+            var FOR = ToTerm("FOR");
             
 
 
@@ -207,6 +208,8 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal inWhile = new NonTerminal("inwhile");
 
             NonTerminal inDoWhile = new NonTerminal("indowhile");
+
+            NonTerminal inFor = new NonTerminal("infor");
             #endregion
 
             #region Gramatica
@@ -238,6 +241,7 @@ namespace cql_teacher_server.CQL.Gramatica
                              | inBreak + ";"
                              | inWhile
                              | inDoWhile + ";"
+                             | inFor
                              ;
 
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
@@ -504,6 +508,11 @@ namespace cql_teacher_server.CQL.Gramatica
 
             //--------------------------------------------- DO WHILE ---------------------------------------------------------------------------------------
             inDoWhile.Rule = DO + "{" + instrucciones + "}" + WHILE + "(" + expresion + ")";
+
+            //----------------------------------------------- FOR ------------------------------------------------------------------------------------------
+            inFor.Rule = FOR + "(" + declaracionA + ";" + expresion + ";" + expresion + ")" + "{" + instrucciones + "}"
+                       | FOR + "(" + asignacion + ";" + expresion + ";" + expresion + ")" + "{" + instrucciones + "}"
+                       ;
 
             #endregion
 
