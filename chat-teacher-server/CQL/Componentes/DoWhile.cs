@@ -7,26 +7,22 @@ using System.Threading.Tasks;
 
 namespace cql_teacher_server.CQL.Componentes
 {
-    public class While : InstruccionCQL
-    {
+    public class DoWhile : InstruccionCQL
+    { 
+    
         int l { set; get; }
         int c { set; get; }
         Expresion condicion { set; get; }
         LinkedList<InstruccionCQL> cuerpo { set; get; }
 
-
-        
-
-
-
         /*
-         * CONSTRUCTOR DE LA CLASE
-         * @param {l} linea del inicio del while
-         * @param {c} columna del inicio de while
-         * @param {condicion} es la condicion que se evaluara siempre en el while
-         * @param {cuerpo} es las intrucciones a ejecutar
+         * Constructor de la clase
+         * @param {l} linea del id
+         * @param {c} columna del id
+         * @param {condicion} condicion del do while
+         * @param {cuerpo} lista de instrucciones
          */
-        public While(int l, int c, Expresion condicion, LinkedList<InstruccionCQL> cuerpo)
+        public DoWhile(int l, int c, Expresion condicion, LinkedList<InstruccionCQL> cuerpo)
         {
             this.l = l;
             this.c = c;
@@ -34,24 +30,33 @@ namespace cql_teacher_server.CQL.Componentes
             this.cuerpo = cuerpo;
         }
 
-
         /*
-            * Constructor de la clase padre
-            * @ts tabla de simbolos padre
-            * @user usuario que esta ejecutando las acciones
-            * @baseD string por referencia de que base de datos estamos trabajando
-            * @mensajes el output de la ejecucion
-            */
+           * Constructor de la clase padre
+           * @ts tabla de simbolos padre
+           * @user usuario que esta ejecutando las acciones
+           * @baseD string por referencia de que base de datos estamos trabajando
+           * @mensajes el output de la ejecucion
+           */
 
         public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
         {
             object res = (condicion == null) ? null : condicion.ejecutar(ts, user, ref baseD, mensajes, tsT);
             object condi = verificarCondicion(res, mensajes);
-            if(condi != null)
-            {             
+            if (condi != null)
+            {
+                TablaDeSimbolos nuevoAmbito = new TablaDeSimbolos();
+                foreach (Simbolo s in ts)
+                {
+                    nuevoAmbito.AddLast(s);
+                }
+                foreach (InstruccionCQL i in cuerpo)
+                {
+                    object resultado = i.ejecutar(nuevoAmbito, user, ref baseD, mensajes, tsT);
+                    if (resultado == null) return null;
+                }
                 while ((Boolean)condi)
                 {
-                    TablaDeSimbolos nuevoAmbito = new TablaDeSimbolos();
+                    nuevoAmbito = new TablaDeSimbolos();
                     foreach (Simbolo s in ts)
                     {
                         nuevoAmbito.AddLast(s);
@@ -75,7 +80,7 @@ namespace cql_teacher_server.CQL.Componentes
         private object verificarCondicion(object res, LinkedList<string> mensajes)
         {
             Mensaje mensa = new Mensaje();
-            if(res != null)
+            if (res != null)
             {
                 if (res.GetType() == typeof(Boolean)) return (Boolean)res;
                 else
