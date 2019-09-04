@@ -32,7 +32,10 @@ namespace cql_teacher_server.LUP.Gramatica
 
             #region ER
             var CUERPO = new RegexBasedTerminal("Cuerpo", "[^\n\\[]+");
+            
+            var CUERPO2 = new RegexBasedTerminal("Cuerpo", "((?!(\\[(\\+|\\-))).+)");
 
+            IdentifierTerminal ID = new IdentifierTerminal("ID");
             #endregion
 
 
@@ -73,15 +76,17 @@ namespace cql_teacher_server.LUP.Gramatica
                           LLAVEDER + LLAVEIZQ + MENOS + LOGOUT + LLAVEDER;
 
 
-            expresion_cuerpo.Rule = expresion_cuerpo + CUERPO 
-                                  | CUERPO;
+            
 
             data.Rule = LLAVEIZQ + MAS + DATA + LLAVEDER + expresion_cuerpo + LLAVEIZQ + MENOS + DATA + LLAVEDER;
 
 
-            query.Rule = LLAVEIZQ + MAS + QUERY + LLAVEDER + LLAVEIZQ + MAS + USER + LLAVEDER + CUERPO + LLAVEIZQ + MENOS + USER + LLAVEDER
+            query.Rule = LLAVEIZQ + MAS + QUERY + LLAVEDER + LLAVEIZQ + MAS + USER + LLAVEDER + ID + LLAVEIZQ + MENOS + USER + LLAVEDER
                        + data + LLAVEIZQ + MENOS + QUERY + LLAVEDER;
-            
+
+            expresion_cuerpo.Rule = expresion_cuerpo + CUERPO2
+                                  | CUERPO2;
+
             #endregion
 
             #region Preferencias

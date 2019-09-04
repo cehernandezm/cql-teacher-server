@@ -123,7 +123,7 @@ namespace cql_teacher_server.LUP.Gramatica
                     {
                         //----------------------------------- expresion_cuerpo CUERPO------------------------------------------------------------------
                         string cuerpo = actual.ChildNodes.ElementAt(1).Token.Text;
-                        return instruccion(actual.ChildNodes.ElementAt(0)) + cuerpo;
+                        return instruccion(actual.ChildNodes.ElementAt(0)) + "\n" +cuerpo;
                     }
                     else
                     {
