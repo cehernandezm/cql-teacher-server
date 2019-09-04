@@ -1054,21 +1054,11 @@ namespace cql_teacher_server.CQL.Gramatica
         {
             if (raiz.ChildNodes.Count() == 3)
             {
-                string toketemp = raiz.ChildNodes.ElementAt(1).Token.Text;
+                
+
                 string iden = raiz.ChildNodes.ElementAt(1).Term.Name;
-                if (toketemp.Equals("."))
-                {
-                    string sepa = raiz.ChildNodes.ElementAt(0).Term.Name;
-                    string opee = "";
-                    if (sepa.Equals("asignaciona") && !flagEx) opee = "GETATRIBUTO";
-                    else opee = "ACCESOUSER";
-                    int le = raiz.ChildNodes.ElementAt(2).Token.Location.Line;
-                    int ce = raiz.ChildNodes.ElementAt(2).Token.Location.Column;
-                    string idA = raiz.ChildNodes.ElementAt(2).Token.Text;
-                    idA = idA.ToLower().TrimEnd().TrimStart();
-                    return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), opee, le, ce, idA);
-                }
-                else if (iden.Equals("ID"))
+                //------------------------------------- ID ++ / ID -- ------------------------------------------------------
+                if (iden.Equals("ID"))
                 {
                     string idin = raiz.ChildNodes.ElementAt(1).Token.Text;
                     idin = idin.ToLower().TrimEnd().TrimStart();
@@ -1077,12 +1067,41 @@ namespace cql_teacher_server.CQL.Gramatica
                     int cn = raiz.ChildNodes.ElementAt(1).Token.Location.Column;
                     if (accio.Equals("++")) return new Expresion(new Expresion(idin, "ID", ln, cn), "INCREMENTO", ln, cn, idin);
                     else return new Expresion(new Expresion(idin, "ID", ln, cn), "DECREMENTO", ln, cn, idin);
-                    
+
                 }
-                string toke = raiz.ChildNodes.ElementAt(1).Token.Text;
-                int l1 = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
-                int c1 = raiz.ChildNodes.ElementAt(1).Token.Location.Column;
-                return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), resolver_expresion(raiz.ChildNodes.ElementAt(2)), getOperacion(toke), l1, c1);
+                //-------------------------- [ lista de valores para maps ]-------------------------
+                else if (iden.Equals("listamap"))
+                {
+                    int lM = raiz.ChildNodes.ElementAt(0).Token.Location.Line;
+                    int cM = raiz.ChildNodes.ElementAt(0).Token.Location.Column;
+                    return new Expresion(getListaValoresMap(raiz.ChildNodes.ElementAt(1)), "LISTAMAP", lM, cM);
+                }
+                else
+                {
+                    string toketemp = raiz.ChildNodes.ElementAt(1).Token.Text;
+                    //----------------------------------- USERTYPE . ATRIBUTO---------------------------------------------------
+                    if (toketemp.Equals("."))
+                    {
+                        string sepa = raiz.ChildNodes.ElementAt(0).Term.Name;
+                        string opee = "";
+                        if (sepa.Equals("asignaciona") && !flagEx) opee = "GETATRIBUTO";
+                        else opee = "ACCESOUSER";
+                        int le = raiz.ChildNodes.ElementAt(2).Token.Location.Line;
+                        int ce = raiz.ChildNodes.ElementAt(2).Token.Location.Column;
+                        string idA = raiz.ChildNodes.ElementAt(2).Token.Text;
+                        idA = idA.ToLower().TrimEnd().TrimStart();
+                        return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), opee, le, ce, idA);
+                    }
+
+                    //--------------------------------------- OPERACIONES TERNARIAS ------------------------------------------
+                    string toke = raiz.ChildNodes.ElementAt(1).Token.Text;
+                    int l1 = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
+                    int c1 = raiz.ChildNodes.ElementAt(1).Token.Location.Column;
+                    return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), resolver_expresion(raiz.ChildNodes.ElementAt(2)), getOperacion(toke), l1, c1);
+
+
+                }
+               
 
             }
             else if (raiz.ChildNodes.Count() == 2)
@@ -1181,6 +1200,32 @@ namespace cql_teacher_server.CQL.Gramatica
                 return getValor(toke, valor, l1, c1);
             }
         }
+
+
+        /*
+         * METODO QUE RECORRE UN SUB ARBOL BUSCANDO LA LISTA DE VALORES
+         * @param {raiz} subarbol a analizar
+         * @return una linkedlist tipo object con la clase KeyValue
+         */
+        public LinkedList<object> getListaValoresMap(ParseTreeNode raiz)
+        {
+            LinkedList<object> lista = new LinkedList<object>();
+            ParseTreeNode hijo;
+            if (raiz.ChildNodes.Count() == 2)
+            {
+                lista = getListaValoresMap(raiz.ChildNodes.ElementAt(0));
+                hijo = raiz.ChildNodes.ElementAt(1);
+            }
+            else hijo = raiz.ChildNodes.ElementAt(0);
+            Expresion key = resolver_expresion(hijo.ChildNodes.ElementAt(0));
+            Expresion value = resolver_expresion(hijo.ChildNodes.ElementAt(2));
+
+            KeyValue keyValue = new KeyValue(key, value);
+           
+            lista.AddLast(keyValue);
+            return lista;
+        }
+
 
         /*
          * Metodo que se encarga de regresar un lista de expresiones para asignarsela a un UserType

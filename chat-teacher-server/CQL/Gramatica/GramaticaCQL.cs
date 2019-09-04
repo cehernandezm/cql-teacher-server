@@ -211,9 +211,14 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal inDoWhile = new NonTerminal("indowhile");
 
             NonTerminal inFor = new NonTerminal("infor");
+
+            NonTerminal listaMap = new NonTerminal("listamap");
+            NonTerminal mapvalue = new NonTerminal("mapvalue");
             #endregion
 
             #region Gramatica
+
+            #region Instrucciones de inicio
             inicio.Rule = instrucciones;
 
             instrucciones.Rule = instrucciones + instruccion
@@ -244,19 +249,22 @@ namespace cql_teacher_server.CQL.Gramatica
                              | inDoWhile + ";"
                              | inFor
                              ;
-
+            #endregion
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
 
+            #region use
             use.Rule = USE + ID;
+            #endregion
 
+            #region crear base de datos
             //--------------------------------------------------- BASES DE DATOS-----------------------------------------------------------------------------
             createDatabase.Rule = CREATE + DATABASE + ID
                                 | CREATE + DATABASE + IF + NOT + EXISTS + ID
                                 ;
 
-
+            #endregion
             //---------------------------------------------------------- EXPRESIONES ------------------------------------------------------------------------
-
+            #region expresiones
             expresion.Rule = expresion + OR + expresion
                            | expresion + AND + expresion
                            | expresion + XOR + expresion
@@ -274,17 +282,18 @@ namespace cql_teacher_server.CQL.Gramatica
                            | expresion + MODULO + expresion
                            | expresion + POTENCIA + expresion
                            | RESTA + expresion
-                           | COUNT + "(<" + inSelect + ">)"
-                           | MIN + "(<" + inSelect + ">)"
-                           | MAX + "(<" + inSelect + ">)"
-                           | SUM + "(<" + inSelect + ">)"
-                           | AVG + "(<" + inSelect + ">)"
+                           | COUNT + "(" + "<<" + inSelect + ">>" +")"
+                           | MIN + "(" + "<<" + inSelect + ">>" + ")"
+                           | MAX + "(" + "<<" + inSelect + ">>" + ")"
+                           | SUM + "(" + "<<" + inSelect + ">>" + ")"
+                           | AVG + "(" + "<<" + inSelect + ">>" + ")"
                            | ToTerm("(") + expresion + ToTerm(")")
                            | ToTerm("(") + tipoVariable + ToTerm(")") + expresion
                            | NEW + ID
                            | NEW + MAP + "<" + tipoVariable + "," + tipoVariable + ">"
                            | expresion + "." + ID
                            | "{" + asigna_UserType + "}" + AS + ID
+                           | "[" + listaMap + "]"
                            | ENTERO
                            | ToTerm("@") + ID
                            | ToTerm("@") + ID + INCREMENTO
@@ -300,14 +309,15 @@ namespace cql_teacher_server.CQL.Gramatica
                            | NULL
                            ;
 
-
+            #endregion
             //-------------------------------------------------------- asignacion de valores de un usertype ----------------------------------------------------
+            #region asginacion de User types
             asigna_UserType.Rule = asigna_UserType + "," + expresion
                                  | expresion
                                  ;
-
+            #endregion
             //------------------------------------------------------ TIPO DE VARIABLES --------------------------------------------------------------------------
-
+            #region Tipo de variables
             tipoVariable.Rule = STRING
                               | INT
                               | BOOL
@@ -318,30 +328,34 @@ namespace cql_teacher_server.CQL.Gramatica
                               | COUNTER
                               | MAP
                               ;
-
+            #endregion
             //------------------------------------------------------- DECLARACION DE VARIABLE --------------------------------------------------------------------
-
+            #region declaracion de variables
             declaracion.Rule = declaracion + "," + "@" + ID
                              | tipoVariable + "@" + ID
                              ;
+            #endregion
             //--------------------------------------------------------- DECLARAR Y ASIGNAR UNA VARIABLE ------------------------------------------------------------
-
+            #region declaracion y asignacion
             declaracionA.Rule = tipoVariable + "@" + ID + "=" + expresion
                               | declaracion + "," + "@" + ID + "=" + expresion
                               ;
-
+            #endregion
             //---------------------------------------------------------- CREACION DE USER TYPES ---------------------------------------------------------------------
+            #region creacion de usertypes
             user_type.Rule = CREATE + TYPE + IF + NOT + EXISTS + ID + "(" + lista_user_type + ")"
                            | CREATE + TYPE + ID + "(" + lista_user_type + ")"
                            ;
-
+            #endregion
             //---------------------------------------------------------- Lista de atributos de un user_type ----------------------------------------------------------
+            #region atributos de un usertype
             lista_user_type.Rule = lista_user_type + "," + ID + tipoVariable
                                  | ID + tipoVariable
                                  ;
-
+            #endregion
 
             //--------------------------------------------------------- ASIGNACION DE VARIABLES ----------------------------------------------------------------------
+            #region asignacion de variables
             asignacion.Rule = "@" + ID + ToTerm("=") + expresion
                             | "@" + ID + ToTerm("+=") + expresion
                             | "@" + ID + ToTerm("*=") + expresion
@@ -353,18 +367,20 @@ namespace cql_teacher_server.CQL.Gramatica
                             | asignacionA + ToTerm("-=") + expresion
                             | asignacionA + ToTerm("/=") + expresion
                             ;
-
+            #endregion
             //-------------------------------------------------------- asignacion de un atributo ----------------------------------------------------------------------
+            #region setear atributos
             asignacionA.Rule = asignacionA + "." + ID
                              | ToTerm("@") + ID
                              ;
-
+            #endregion
 
 
 
 
 
             //---------------------------------------------------------- IF SUPERIOR ------------------------------------------------------------------------
+            #region if / else if / ese
             ifsuperior.Rule = insif
                             | insif + inselseif
                             | insif + inselseif + inselse
@@ -387,10 +403,10 @@ namespace cql_teacher_server.CQL.Gramatica
                          ;
             //------------------------------------------------------------- CASE ---------------------------------------------------------------------------
             inCase.Rule = CASE + expresion + ":" + "{" + instrucciones + "}";
-
+            #endregion
             //---------------------------------------------------------------------------------------------------------------------------------------------
             inBreak.Rule = BREAK;
-            
+            #region CQL
             //-------------------------------------------------------------- DEFAULT -----------------------------------------------------------------------
             inDefault.Rule = DEFAULT + ":" + "{" + instrucciones + "}";
             //------------------------------------------------------------- DROP DATABASE ------------------------------------------------------------------
@@ -505,7 +521,7 @@ namespace cql_teacher_server.CQL.Gramatica
                          | ID + ASC
                          | ID + DESC
                          ;
-
+            #endregion
             //----------------------------------------------- WHILE -----------------------------------------------------------------------------------------
             inWhile.Rule = WHILE + "(" + expresion + ")" + "{" + instrucciones + "}";
 
@@ -516,6 +532,13 @@ namespace cql_teacher_server.CQL.Gramatica
             inFor.Rule = FOR + "(" + declaracionA + ";" + expresion + ";" + expresion + ")" + "{" + instrucciones + "}"
                        | FOR + "(" + asignacion + ";" + expresion + ";" + expresion + ")" + "{" + instrucciones + "}"
                        ;
+
+            //----------------------------------------------- EXPRESIONES DENTRO DE UN MAP ----------------------------------------------
+            listaMap.Rule = listaMap + "," + mapvalue
+                          | mapvalue
+                          ;
+
+            mapvalue.Rule = expresion + ":" + expresion;
 
             #endregion
 

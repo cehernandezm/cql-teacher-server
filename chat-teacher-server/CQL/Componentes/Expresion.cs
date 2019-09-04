@@ -110,7 +110,7 @@ namespace cql_teacher_server.CQL.Componentes
         }
 
         /* 
-         * Constructor de la clase para valores puntuales:
+         * Constructor de la clase para valores puntuales o listado de map:
          * CADENA,ENTERO,DECIMAL,FECHA,HORA,BOOLEAN
          * @valor operador izquierdo
          * @operacion tipo de operacion
@@ -143,7 +143,7 @@ namespace cql_teacher_server.CQL.Componentes
         }
 
         /*
-         * Constructor de la clase para asignar valores a un usertype
+         * Constructor de la clase para asignar valores a un usertype 
          * @operacion el tipo de operacion que se realizara
          * @linea1 es la linea del id
          * @columna es la columna del id
@@ -790,6 +790,15 @@ namespace cql_teacher_server.CQL.Componentes
                 else mensajes.AddLast(mensa.error("El tipo de la key para un map tiene que ser primitivo",linea1,columna1,"Semantico"));
                 return null;
             }
+            else if (operacion.Equals("LISTAMAP"))
+            {
+
+                LinkedList<object> lista = (LinkedList<object>)valor;
+                Map map = getMap(lista, ts, user, ref baseD, mensajes, tsT);
+                if (map != null) return map;
+                return null;
+
+            }
             //--------------------------------------------------------- TERNARIO -----------------------------------------------------------------
             else if (operacion.Equals("TERNARIO"))
             {
@@ -954,6 +963,167 @@ namespace cql_teacher_server.CQL.Componentes
             return null;
         }
 
+        /*
+         * METODO ENCARGADO DE CONTROLAR LOS DATOS DEL LISTADO
+         * @param {listado} linkedlist con los valores de la lista
+         * @param {ts} tabla de simbolos
+         * @param {user} usuario que ejecuta la accion
+         * @ref param {baseD} base de datos donde se ejecutara todo
+         * @param {mensajes} outout
+         * @param {tsT} variables de una tabla CQL
+         * @return map o null
+         */
+
+         private Map getMap(LinkedList<object> listado, TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        {
+            Mensaje ms = new Mensaje();
+            if (listado.Count() > 0)
+            {
+                Expresion exp1 = (Expresion)((KeyValue)(listado.ElementAt(0))).key;
+                Expresion exp2 = (Expresion)((KeyValue)(listado.ElementAt(0))).value;
+
+                object op1 = (exp1 == null) ? null : exp1.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                object op2 = (exp2 == null) ? null : exp2.ejecutar(ts, user, ref baseD, mensajes, tsT);
+
+
+                string tipoKey = getTipoValorPrimario(op1, mensajes);
+                string tipoValor = (getTipoValorSecundario(op2, mensajes) == null) ? "null" : getTipoValorSecundario(op2, mensajes);
+                if(tipoKey != null)
+                {
+                    LinkedList<KeyValue> temporal = new LinkedList<KeyValue>();
+                    foreach(object o in listado)
+                    {
+                        exp1 = (Expresion)((KeyValue)o).key;
+                        exp2 = (Expresion)((KeyValue)o).value;
+                        op1 = (exp1 == null) ? null : exp1.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                        op2 = (exp2 == null) ? null : exp2.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                        temporal.AddLast(new KeyValue(op1, op2));
+                    }
+                    if (!verificarValoresRepetidos(temporal, mensajes))
+                    {
+                        if (!verificarTipos(tipoKey, ref tipoValor, mensajes, temporal)) return null;
+                        return new Map(tipoKey + "/" + tipoValor, temporal);
+                    }
+                }
+            }
+            else mensajes.AddLast(ms.error("La lista de valores tiene que tener al menos un key : value", linea1, columna1, "Semantico"));
+            return null;
+        }
+
+
+        private Boolean verificarTipos(string tipoKey,ref string tipoValor,LinkedList<string> mensajes, LinkedList<KeyValue> lista)
+        {
+            Mensaje ms = new Mensaje();
+            foreach(KeyValue valor in lista)
+            {
+
+                string tk = getTipoValorPrimario(valor.key, mensajes);
+                string tv = (getTipoValorSecundario(valor.value, mensajes) == null) ? "null" : getTipoValorSecundario(valor.value, mensajes);
+                if (tipoValor.Equals("null") && (!tv.Equals("null") && !tv.Equals("int") && !tv.Equals("double") && !tv.Equals("boolean"))) tipoValor = tv;
+                
+                if (!(tk.Equals(tipoKey) && tv.Equals(tipoValor)))
+                {
+                    mensajes.AddLast(ms.error("Los datos no son homogeneos <" + tipoKey + "," + tipoValor + "> con <" + tk + "," + tv + ">" , linea1, columna1, "Semantico"));
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /*
+         * METODO QUE BUSCARA VALORES REPETIDO O VALORES NULL EN LAS KEY
+         * @param {lista} lista de valores a guardar
+         * @param {mensajes} output
+         * @return true si encuentra uno repetido o un null, falso si no encuentra ningun repetido
+         */
+        private Boolean verificarValoresRepetidos(LinkedList<KeyValue> lista, LinkedList<string> mensajes)
+        {
+            Mensaje ms = new Mensaje();
+            foreach(KeyValue keyValue in lista)
+            {
+                int repetido = 0;
+                if(keyValue.key != null)
+                {
+                    foreach(KeyValue key2 in lista)
+                    {
+                        if(key2.key != null)
+                        {
+                            if (key2.key.Equals(keyValue.value)) repetido++;
+                        }
+                        else
+                        {
+                            mensajes.AddLast(ms.error("Map no acepta valores nulos como key", linea1, columna1, "Semantico"));
+                            return true;
+                        }
+                    }
+                    if (repetido > 1)
+                    {
+                        mensajes.AddLast(ms.error("El valor: " + keyValue.key + " esta repetido en la lista", linea1, columna1, "Semantico"));
+                        return true;
+                    }
+                }
+                else
+                {
+                    mensajes.AddLast(ms.error("Map no acepta valores nulos como key", linea1, columna1, "Semantico"));
+                    return true;
+                }
+
+            }
+            return false;
+        }
+
+        /*
+         * METODO QUE DEVUELVE EL VALOR PERMITIDO EN UNA KEY
+         * @param {valor} valor a guardar
+         * @return string con tipo o null si no existe ese tipo como key posible
+         */
+        private string getTipoValorPrimario(object valor, LinkedList<string> mensajes)
+        {
+            Mensaje ms = new Mensaje();
+            if(valor != null)
+            {
+                if (valor.GetType() == typeof(string)) return "string";
+                else if (valor.GetType() == typeof(int)) return "int";
+                else if (valor.GetType() == typeof(double)) return "double";
+                else if (valor.GetType() == typeof(Boolean)) return "boolean";
+                else if (valor.GetType() == typeof(DateTime)) return "date";
+                else if (valor.GetType() == typeof(TimeSpan)) return "time";
+                else
+                {
+                    mensajes.AddLast(ms.error("No se acepta este tipo de valor como clave primaria : " + valor, linea1, columna1, "Semantico"));
+                    return null;
+                }
+            }
+            mensajes.AddLast(ms.error("No se aceptan valores nulos como parte de una key", linea1, columna1, "Semantico"));
+            return null;
+        }
+
+        /*
+         * METODO QUE DEVUELVE EL VALOR PERMITIDO EN UNA VALUE
+         * @param {valor} valor a guardar
+         * @return string con tipo o null si no existe ese tipo como key posible
+         */
+        private string getTipoValorSecundario(object valor, LinkedList<string> mensajes)
+        {
+            Mensaje ms = new Mensaje();
+            if (valor != null)
+            {
+                if (valor.GetType() == typeof(string)) return "string";
+                else if (valor.GetType() == typeof(int)) return "int";
+                else if (valor.GetType() == typeof(double)) return "double";
+                else if (valor.GetType() == typeof(Boolean)) return "boolean";
+                else if (valor.GetType() == typeof(DateTime)) return "date";
+                else if (valor.GetType() == typeof(TimeSpan)) return "time";
+                else if (valor.GetType() == typeof(InstanciaUserType)) return ((InstanciaUserType)valor).tipo;
+                else if (valor.GetType() == typeof(Map)) return ((Map)valor).id;
+                else
+                {
+                    mensajes.AddLast(ms.error("No se acepta este tipo de valor como clave Secundaria : " + valor, linea1, columna1, "Semantico"));
+                    return null;
+                }
+            }
+            return null;
+        }
 
         /*
          * Metodo que recorre un USER TYPE y crear una declaracion de cada atributo
