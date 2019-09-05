@@ -122,6 +122,7 @@ namespace cql_teacher_server.CQL.Gramatica
             var DO = ToTerm("DO");
             var FOR = ToTerm("FOR");
             
+        
 
 
 
@@ -214,6 +215,8 @@ namespace cql_teacher_server.CQL.Gramatica
 
             NonTerminal listaMap = new NonTerminal("listamap");
             NonTerminal mapvalue = new NonTerminal("mapvalue");
+
+            NonTerminal inInsertMap = new NonTerminal("ininsertmap");
             #endregion
 
             #region Gramatica
@@ -226,6 +229,7 @@ namespace cql_teacher_server.CQL.Gramatica
                                ;
 
             instruccion.Rule = use + ";"
+                             | inInsertMap + ";"
                              | createDatabase + ";"
                              | declaracion + ";"
                              | declaracionA + ";"
@@ -247,6 +251,7 @@ namespace cql_teacher_server.CQL.Gramatica
                              | inBreak + ";"
                              | inWhile
                              | inDoWhile + ";"
+                             
                              | inFor
                              ;
             #endregion
@@ -370,8 +375,7 @@ namespace cql_teacher_server.CQL.Gramatica
             #endregion
             //-------------------------------------------------------- asignacion de un atributo ----------------------------------------------------------------------
             #region setear atributos
-            asignacionA.Rule = asignacionA + "." + ID
-                             | ToTerm("@") + ID
+            asignacionA.Rule = expresion + "." + ID
                              ;
             #endregion
 
@@ -533,12 +537,17 @@ namespace cql_teacher_server.CQL.Gramatica
                        | FOR + "(" + asignacion + ";" + expresion + ";" + expresion + ")" + "{" + instrucciones + "}"
                        ;
 
+            #region MAp
             //----------------------------------------------- EXPRESIONES DENTRO DE UN MAP ----------------------------------------------
             listaMap.Rule = listaMap + "," + mapvalue
                           | mapvalue
                           ;
 
             mapvalue.Rule = expresion + ":" + expresion;
+
+            inInsertMap.Rule = expresion + "." + INSERT + "(" + expresion + "," + expresion + ")";
+            #endregion
+
 
             #endregion
 

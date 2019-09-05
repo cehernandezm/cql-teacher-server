@@ -784,12 +784,13 @@ namespace cql_teacher_server.CQL.Componentes
                 if (tipo1.Equals("string") || tipo1.Equals("boolean") || tipo1.Equals("date") || tipo1.Equals("time") || tipo1.Equals("int") || tipo1.Equals("double"))
                 {
                     string identificador = tipo1 + "/" + tipo2;
-                    Map map = new Map(identificador, null);
+                    Map map = new Map(identificador, new LinkedList<KeyValue>());
                     return map;
                 }
                 else mensajes.AddLast(mensa.error("El tipo de la key para un map tiene que ser primitivo",linea1,columna1,"Semantico"));
                 return null;
             }
+            //------------------------------------------------------- CREACION DE MAP POR LISTA DE VALORES---------------------------------------
             else if (operacion.Equals("LISTAMAP"))
             {
 
@@ -1048,7 +1049,7 @@ namespace cql_teacher_server.CQL.Componentes
                     {
                         if(key2.key != null)
                         {
-                            if (key2.key.Equals(keyValue.value)) repetido++;
+                            if (key2.key.Equals(keyValue.key)) repetido++;
                         }
                         else
                         {
@@ -1056,6 +1057,7 @@ namespace cql_teacher_server.CQL.Componentes
                             return true;
                         }
                     }
+
                     if (repetido > 1)
                     {
                         mensajes.AddLast(ms.error("El valor: " + keyValue.key + " esta repetido en la lista", linea1, columna1, "Semantico"));

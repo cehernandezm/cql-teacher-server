@@ -82,58 +82,7 @@ namespace cql_teacher_server.CQL.Componentes
                 tipo = tipo.ToLower().TrimEnd().TrimStart();
                 if (!tipo.Equals("none"))
                 {
-                    if (a == null)
-                    {
-                        if (tipo.Equals("string") || tipo.Equals("date") || tipo.Equals("time")) ts.setValor(id, null);
-                        else if (!tipo.Equals("int") || !tipo.Equals("boolean") || !tipo.Equals("double"))
-                        {
-                            InstanciaUserType temp = new InstanciaUserType(tipo, null);
-                            ts.setValor(id, temp);
-                        }
-                        else
-                        {
-                            mensajes.AddLast(mensa.error("No se le puede asignar a la variable: " + id + " el valor: null", l, c, "Semantico"));
-                            return null;
-
-                        }
-                        return "";
-                    }
-                    else
-                    {
-                        if (op1 != null)
-                        {
-                            if (op1.GetType() == typeof(string) && tipo.Equals("string")) ts.setValor(id, (string)op1);
-                            else if (op1.GetType() == typeof(int) && tipo.Equals("int")) ts.setValor(id, (int)op1);
-                            else if (op1.GetType() == typeof(int) && tipo.Equals("double")) ts.setValor(id, Convert.ToInt32((Double)op1));
-                            else if (op1.GetType() == typeof(Double) && tipo.Equals("double")) ts.setValor(id, (Double)op1);
-                            else if (op1.GetType() == typeof(Double) && tipo.Equals("int")) ts.setValor(id, Convert.ToDouble((int)op1));
-                            else if (op1.GetType() == typeof(Boolean) && tipo.Equals("boolean")) ts.setValor(id, (Boolean)op1);
-                            else if (op1.GetType() == typeof(DateTime) && tipo.Equals("date")) ts.setValor(id, (DateTime)op1);
-                            else if (op1.GetType() == typeof(TimeSpan) && tipo.Equals("time")) ts.setValor(id, (TimeSpan)op1);
-                            else if (op1.GetType() == typeof(InstanciaUserType))
-                            {
-                                InstanciaUserType temp = (InstanciaUserType)op1;
-                                if (tipo.Equals(temp.tipo.ToLower()))
-                                {
-                                    ts.setValor(id, temp);
-                                    return "";
-                                }
-                                else
-                                {
-                                    mensajes.AddLast(mensa.error("No se le puede asignar a la variable: " + id + " el valor: " + op1, l, c, "Semantico"));
-                                    return null;
-                                }
-
-                            }
-                            else
-                            {
-                                mensajes.AddLast(mensa.error("No se le puede asignar a la variable: " + id + " el valor: " + op1, l, c, "Semantico"));
-                                return null;
-
-                            }
-                            return "";
-                        }
-                    }
+                    return checkValues(op1, tipo, a, mensajes, ts);
                 }
                 else mensajes.AddLast(mensa.error("La variable: " + id + " no existe en este ambito", l, c, "Semantico"));
             }
@@ -142,67 +91,171 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 if(atri != null)
                 {
-                    InstanciaUserType tempa = (InstanciaUserType)atri;
-                    foreach(Atributo at in tempa.lista)
+                    if(atri.GetType() == typeof(InstanciaUserType))
                     {
-                        if (at.nombre.Equals(id))
+                        InstanciaUserType tempa = (InstanciaUserType)atri;
+                        foreach (Atributo at in tempa.lista)
                         {
-                            string tipo = at.tipo.ToLower();
-                            if (a == null)
+                            if (at.nombre.Equals(id))
                             {
-                                if (tipo.Equals("string") || tipo.Equals("date") || tipo.Equals("time")) at.valor = null;
-                                else if (!tipo.Equals("int") || !tipo.Equals("boolean") || !tipo.Equals("double"))
+                                string tipo = at.tipo.ToLower();
+                                if (a == null)
                                 {
-                                    InstanciaUserType temp = new InstanciaUserType(tipo, null);
-                                    at.valor = temp;
-                                }
-                                else
-                                {
-                                    mensajes.AddLast(mensa.error("No se le puede asignar al atributo: " + at.nombre + " el valor: null", l, c, "Semantico"));
-                                    return null;
-
-                                }
-                                return "";
-                            }
-                            else
-                            {
-                                if (op1 != null)
-                                {
-
-                                    if (op1.GetType() == typeof(string) && tipo.Equals("string")) at.valor = (string)op1;
-                                    else if (op1.GetType() == typeof(int) && tipo.Equals("int")) at.valor = (int)op1;
-                                    else if (op1.GetType() == typeof(int) && tipo.Equals("double")) at.valor = Convert.ToInt32((Double)op1);
-                                    else if (op1.GetType() == typeof(Double) && tipo.Equals("double")) at.valor = (Double)op1;
-                                    else if (op1.GetType() == typeof(Double) && tipo.Equals("int")) at.valor = Convert.ToDouble((int)op1);
-                                    else if (op1.GetType() == typeof(Boolean) && tipo.Equals("boolean")) at.valor = (Boolean)op1;
-                                    else if (op1.GetType() == typeof(DateTime) && tipo.Equals("date")) at.valor = (DateTime)op1;
-                                    else if (op1.GetType() == typeof(TimeSpan) && tipo.Equals("time")) at.valor = (TimeSpan)op1;
-                                    else if (op1.GetType() == typeof(InstanciaUserType))
+                                    if (tipo.Equals("string") || tipo.Equals("date") || tipo.Equals("time")) at.valor = null;
+                                    else if (!tipo.Equals("int") || !tipo.Equals("boolean") || !tipo.Equals("double") || !tipo.Equals("map"))
                                     {
-                                        InstanciaUserType temp = (InstanciaUserType)op1;
-                                        if (tipo.Equals(temp.tipo.ToLower())) at.valor = temp;
-                                        else
-                                        {
-                                            mensajes.AddLast(mensa.error("No se le puede asignar al atributo " + at.nombre + " el valor: " + op1, l, c, "Semantico"));
-                                            return null;
-                                        }
-                                        
+                                        InstanciaUserType temp = new InstanciaUserType(tipo, null);
+                                        at.valor = temp;
                                     }
                                     else
                                     {
-                                        mensajes.AddLast(mensa.error("No se le puede asignar al atributo: " + at.nombre + " el valor: " + op1, l, c, "Semantico"));
+                                        mensajes.AddLast(mensa.error("No se le puede asignar al atributo: " + at.nombre + " el valor: null", l, c, "Semantico"));
                                         return null;
 
                                     }
                                     return "";
                                 }
+                                else
+                                {
+                                    if (op1 != null)
+                                    {
+
+                                        if (op1.GetType() == typeof(string) && tipo.Equals("string")) at.valor = (string)op1;
+                                        else if (op1.GetType() == typeof(int) && tipo.Equals("int")) at.valor = (int)op1;
+                                        else if (op1.GetType() == typeof(int) && tipo.Equals("double")) at.valor = Convert.ToInt32((Double)op1);
+                                        else if (op1.GetType() == typeof(Double) && tipo.Equals("double")) at.valor = (Double)op1;
+                                        else if (op1.GetType() == typeof(Double) && tipo.Equals("int")) at.valor = Convert.ToDouble((int)op1);
+                                        else if (op1.GetType() == typeof(Boolean) && tipo.Equals("boolean")) at.valor = (Boolean)op1;
+                                        else if (op1.GetType() == typeof(DateTime) && tipo.Equals("date")) at.valor = (DateTime)op1;
+                                        else if (op1.GetType() == typeof(TimeSpan) && tipo.Equals("time")) at.valor = (TimeSpan)op1;
+                                        else if (op1.GetType() == typeof(InstanciaUserType))
+                                        {
+                                            InstanciaUserType temp = (InstanciaUserType)op1;
+                                            if (tipo.Equals(temp.tipo.ToLower())) at.valor = temp;
+                                            else
+                                            {
+                                                mensajes.AddLast(mensa.error("No se le puede asignar al atributo " + at.nombre + " el valor: " + op1, l, c, "Semantico"));
+                                                return null;
+                                            }
+
+                                        }
+                                        else if (op1.GetType() == typeof(Map) && tipo.Equals("map"))
+                                        {
+                                            Map temp = (Map)op1;
+                                            Map valor = (Map)at.valor;
+                                            if (valor.id.Equals(temp.id))
+                                            {
+                                                at.valor = temp;
+                                                return "";
+                                            }
+                                            else
+                                            {
+                                                mensajes.AddLast(mensa.error("No coincide los tipos: " + valor.id + " con: " + temp.id, l, c, "Semantico"));
+                                                return null;
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            mensajes.AddLast(mensa.error("No se le puede asignar al atributo: " + at.nombre + " el valor: " + op1, l, c, "Semantico"));
+                                            return null;
+
+                                        }
+                                        return "";
+                                    }
+                                }
+                                return null;
                             }
-                            return null;
                         }
                     }
+                    else  mensajes.AddLast(mensa.error("Para acceder a un atributo se necesita que sea de tipo USERTYPE no se reconoce: " + atri.ToString(), l, c, "Semantico"));
+                    
+                    
                 }
             }
             
+            return null;
+        }
+
+        /*
+         * METODO QUE VERIFICA LOS VALORES A GUARDAR
+         * @param {op1} valor a guardar
+         * @param {tipo} tipo de variable
+         * @param {a} expresion original
+         * @param {mensajes} output
+         * @param {ts} tabla de variables
+         */
+        private object checkValues(object op1, string tipo, object a, LinkedList<string> mensajes, TablaDeSimbolos ts)   
+        {
+            Mensaje mensa = new Mensaje();
+            if (a == null)
+            {
+                if (tipo.Equals("string") || tipo.Equals("date") || tipo.Equals("time")) ts.setValor(id, null);
+                else if (!tipo.Equals("int") && !tipo.Equals("boolean") && !tipo.Equals("double") && !tipo.Equals("map"))
+                {
+                    InstanciaUserType temp = new InstanciaUserType(tipo, null);
+                    ts.setValor(id, temp);
+                }
+                else
+                {
+                    mensajes.AddLast(mensa.error("No se le puede asignar a la variable: " + id + " el valor: null", l, c, "Semantico"));
+                    return null;
+
+                }
+                return "";
+            }
+            else
+            {
+                if (op1 != null)
+                {
+                    if (op1.GetType() == typeof(string) && tipo.Equals("string")) ts.setValor(id, (string)op1);
+                    else if (op1.GetType() == typeof(int) && tipo.Equals("int")) ts.setValor(id, (int)op1);
+                    else if (op1.GetType() == typeof(int) && tipo.Equals("double")) ts.setValor(id, Convert.ToInt32((Double)op1));
+                    else if (op1.GetType() == typeof(Double) && tipo.Equals("double")) ts.setValor(id, (Double)op1);
+                    else if (op1.GetType() == typeof(Double) && tipo.Equals("int")) ts.setValor(id, Convert.ToDouble((int)op1));
+                    else if (op1.GetType() == typeof(Boolean) && tipo.Equals("boolean")) ts.setValor(id, (Boolean)op1);
+                    else if (op1.GetType() == typeof(DateTime) && tipo.Equals("date")) ts.setValor(id, (DateTime)op1);
+                    else if (op1.GetType() == typeof(TimeSpan) && tipo.Equals("time")) ts.setValor(id, (TimeSpan)op1);
+                    else if (op1.GetType() == typeof(InstanciaUserType) && tipo.Equals("map"))
+                    {
+                        InstanciaUserType temp = (InstanciaUserType)op1;
+                        if (tipo.Equals(temp.tipo.ToLower()))
+                        {
+                            ts.setValor(id, temp);
+                            return "";
+                        }
+                        else
+                        {
+                            mensajes.AddLast(mensa.error("No se le puede asignar a la variable: " + id + " el valor: " + op1, l, c, "Semantico"));
+                            return null;
+                        }
+
+                    }
+                    else if(op1.GetType() == typeof(Map))
+                    {
+                        Map temp = (Map)op1;
+                        Map valor =(Map)ts.getValor(id);
+                        if (valor.id.Equals(temp.id))
+                        {
+                            ts.setValor(id, temp);
+                            return "";
+                        }
+                        else
+                        {
+                            mensajes.AddLast(mensa.error("No coincide los tipos: " + valor.id + " con: " + temp.id, l, c, "Semantico"));
+                            return null;
+                        }
+                             
+                    }
+                    else
+                    {
+                        mensajes.AddLast(mensa.error("No se le puede asignar a la variable: " + id + " el valor: " + op1, l, c, "Semantico"));
+                        return null;
+
+                    }
+                    return "";
+                }
+            }
             return null;
         }
     }

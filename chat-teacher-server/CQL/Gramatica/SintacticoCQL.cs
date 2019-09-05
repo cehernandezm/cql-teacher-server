@@ -246,7 +246,7 @@ namespace cql_teacher_server.CQL.Gramatica
                         idAs = hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).Token.Text;
                         idAs = idAs.ToLower().TrimEnd().TrimStart();
                         operaAs = hijo.ChildNodes.ElementAt(1).Token.Text;
-                        if (operaAs.Equals("=")) lAs.AddLast(new Asignacion(idAs, liAs, coAs, resolver_expresion(hijo.ChildNodes.ElementAt(0)), resolver_expresion(hijo.ChildNodes.ElementAt(2)), "ASIGNACIONA"));
+                        if (operaAs.Equals("=")) lAs.AddLast(new Asignacion(idAs, liAs, coAs, resolver_expresion(hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0)), resolver_expresion(hijo.ChildNodes.ElementAt(2)), "ASIGNACIONA"));
                         else if (operaAs.Equals("+="))
                         {
                             flagEx = true;
@@ -796,6 +796,21 @@ namespace cql_teacher_server.CQL.Gramatica
                     listaF.AddLast(new inFor(lf, cf, instru, condiF, asigna, instruF));
 
                     return listaF;
+
+
+
+
+
+                //---------------------------------------------------- MAP . INSERT (KEY : VALUE ) ----------------------------------------------------------------
+                case "ininsertmap":
+                    LinkedList<InstruccionCQL> listaIM = new LinkedList<InstruccionCQL>();
+                    int lim = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
+                    int cim = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
+                    Expresion mp = resolver_expresion(hijo.ChildNodes.ElementAt(0));
+                    Expresion ky = resolver_expresion(hijo.ChildNodes.ElementAt(3));
+                    Expresion vl = resolver_expresion(hijo.ChildNodes.ElementAt(4));
+                    listaIM.AddLast(new InsertMap(mp, ky, vl, lim, cim));
+                    return listaIM;
             }
             return null;
 
@@ -1083,9 +1098,7 @@ namespace cql_teacher_server.CQL.Gramatica
                     if (toketemp.Equals("."))
                     {
                         string sepa = raiz.ChildNodes.ElementAt(0).Term.Name;
-                        string opee = "";
-                        if (sepa.Equals("asignaciona") && !flagEx) opee = "GETATRIBUTO";
-                        else opee = "ACCESOUSER";
+                        string opee = "ACCESOUSER";
                         int le = raiz.ChildNodes.ElementAt(2).Token.Location.Line;
                         int ce = raiz.ChildNodes.ElementAt(2).Token.Location.Column;
                         string idA = raiz.ChildNodes.ElementAt(2).Token.Text;
