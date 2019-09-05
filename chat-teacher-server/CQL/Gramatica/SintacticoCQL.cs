@@ -249,38 +249,28 @@ namespace cql_teacher_server.CQL.Gramatica
                         if (operaAs.Equals("=")) lAs.AddLast(new Asignacion(idAs, liAs, coAs, resolver_expresion(hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0)), resolver_expresion(hijo.ChildNodes.ElementAt(2)), "ASIGNACIONA"));
                         else if (operaAs.Equals("+="))
                         {
-                            flagEx = true;
                             Expresion opa = resolver_expresion(hijo.ChildNodes.ElementAt(0));
                             Expresion ge = new Expresion(opa, resolver_expresion(hijo.ChildNodes.ElementAt(2)), "SUMA", liAs, coAs);
-                            flagEx = false;
-                            lAs.AddLast(new Asignacion(idAs, liAs, coAs, resolver_expresion(hijo.ChildNodes.ElementAt(0)), ge, "ASIGNACIONA"));
+                            lAs.AddLast(new Asignacion(idAs, liAs, coAs, resolver_expresion(hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0)), ge, "ASIGNACIONA"));
                         }
                         else if (operaAs.Equals("-="))
                         {
-                            flagEx = true;
                             Expresion opa = resolver_expresion(hijo.ChildNodes.ElementAt(0));
                             Expresion ge = new Expresion(opa, resolver_expresion(hijo.ChildNodes.ElementAt(2)), "RESTA", liAs, coAs);
-                            flagEx = false;
-                            lAs.AddLast(new Asignacion(idAs, liAs, coAs, resolver_expresion(hijo.ChildNodes.ElementAt(0)), ge, "ASIGNACIONA"));
+                            lAs.AddLast(new Asignacion(idAs, liAs, coAs, resolver_expresion(hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0)), ge, "ASIGNACIONA"));
                         }
                         else if (operaAs.Equals("*="))
                         {
-                            flagEx = true;
                             Expresion opa = resolver_expresion(hijo.ChildNodes.ElementAt(0));
                             Expresion ge = new Expresion(opa, resolver_expresion(hijo.ChildNodes.ElementAt(2)), "MULTIPLICACION", liAs, coAs);
-                            flagEx = false;
-                            lAs.AddLast(new Asignacion(idAs, liAs, coAs, resolver_expresion(hijo.ChildNodes.ElementAt(0)), ge, "ASIGNACIONA"));
+                            lAs.AddLast(new Asignacion(idAs, liAs, coAs, resolver_expresion(hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0)), ge, "ASIGNACIONA"));
                         }
                         else
                         {
-                            flagEx = true;
                             Expresion opa = resolver_expresion(hijo.ChildNodes.ElementAt(0));
                             Expresion ge = new Expresion(opa, resolver_expresion(hijo.ChildNodes.ElementAt(2)), "DIVISION", liAs, coAs);
-                            flagEx = false;
-                            lAs.AddLast(new Asignacion(idAs, liAs, coAs, resolver_expresion(hijo.ChildNodes.ElementAt(0)), ge, "ASIGNACIONA"));
+                            lAs.AddLast(new Asignacion(idAs, liAs, coAs, resolver_expresion(hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0)), ge, "ASIGNACIONA"));
                         }
-                        flagEx = false;
-
                         return lAs;
                     }
 
