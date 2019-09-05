@@ -160,10 +160,6 @@ namespace cql_teacher_server.CQL.Componentes
             return null;
         }
 
-        /*
-         * Metodo que recorre un USER TYPE y crear una declaracion de cada atributo
-         * @u User type que se recorrera
-         * @bd base de datos donde se encuentra el user type
-         */
+        
     }
 }

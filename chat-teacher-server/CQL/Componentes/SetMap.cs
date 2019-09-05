@@ -52,15 +52,33 @@ namespace cql_teacher_server.CQL.Componentes
                     if (mp.GetType() == typeof(Map))
                     {
                         Map temp = (Map)mp;
+                        string t2 = temp.id.Split("/")[1];
                         string tV = (getTipoValorSecundario(vl, mensajes) == null) ? "null" : (getTipoValorSecundario(vl, mensajes));
                         foreach(KeyValue key in temp.datos)
                         {
                             if (key.key.Equals(ky))
                             {
-
+                                if (t2.Equals(tV))
+                                {
+                                    key.value = vl;
+                                    return "";
+                                }
+                                else if (tV.Equals("null"))
+                                {
+                                    if(!t2.Equals("int") && !t2.Equals("double") && !t2.Equals("boolean") && !t2.Equals("map"))
+                                    {
+                                        key.value = vl;
+                                        return "";
+                                    }
+                                    else
+                                    {
+                                        mensajes.AddLast("El valor es de tipo " + t2 + " no es igual con: " + tV);
+                                        return null;
+                                    }
+                                }
                             }
                         }
-                        mensajes.AddLast(ms.error("No se encontro la key: " + key, l, c, "Semantico"));
+                        mensajes.AddLast(ms.error("No se encontro la key: " + ky, l, c, "Semantico"));
                     }
                     else mensajes.AddLast(ms.error("No se puede aplicar un insert en un tipo no map, no se reconoce: " + mp, l, c, "Semantico"));
                 }

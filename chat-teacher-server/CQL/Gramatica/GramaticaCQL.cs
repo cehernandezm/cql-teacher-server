@@ -232,6 +232,7 @@ namespace cql_teacher_server.CQL.Gramatica
 
             instruccion.Rule = use + ";"
                              | inInsertMap + ";"
+                             | inSetMap + ";"
                              | createDatabase + ";"
                              | declaracion + ";"
                              | declaracionA + ";"

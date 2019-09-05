@@ -776,7 +776,7 @@ namespace cql_teacher_server.CQL.Gramatica
                     int lf = hijo.ChildNodes.ElementAt(0).Token.Location.Line;
                     int cf = hijo.ChildNodes.ElementAt(0).Token.Location.Column;
 
-                    LinkedList<InstruccionCQL> accionF =(LinkedList<InstruccionCQL>)instruccion(hijo.ChildNodes.ElementAt(1));
+                    LinkedList<InstruccionCQL> accionF = (LinkedList<InstruccionCQL>)instruccion(hijo.ChildNodes.ElementAt(1));
                     Expresion condiF = resolver_expresion(hijo.ChildNodes.ElementAt(2));
                     Expresion asigna = resolver_expresion(hijo.ChildNodes.ElementAt(3));
                     LinkedList<InstruccionCQL> instruF = instrucciones(hijo.ChildNodes.ElementAt(5));
@@ -801,6 +801,22 @@ namespace cql_teacher_server.CQL.Gramatica
                     Expresion vl = resolver_expresion(hijo.ChildNodes.ElementAt(4));
                     listaIM.AddLast(new InsertMap(mp, ky, vl, lim, cim));
                     return listaIM;
+
+
+
+
+                //-------------------------------------------------------- MAP . SET (KEY,VALUE) -------------------------------------------------------------
+                case "insetmap":
+                    LinkedList<InstruccionCQL> listaSM = new LinkedList<InstruccionCQL>();
+                    int lsm = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
+                    int csm = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
+
+                    Expresion mps = resolver_expresion(hijo.ChildNodes.ElementAt(0));
+                    Expresion kys = resolver_expresion(hijo.ChildNodes.ElementAt(3));
+                    Expresion vls = resolver_expresion(hijo.ChildNodes.ElementAt(4));
+                    listaSM.AddLast(new SetMap(mps, kys, vls, lsm, csm));
+
+                    return listaSM;
             }
             return null;
 
