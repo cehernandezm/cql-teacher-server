@@ -121,6 +121,7 @@ namespace cql_teacher_server.CQL.Gramatica
             var WHILE = ToTerm("WHILE");
             var DO = ToTerm("DO");
             var FOR = ToTerm("FOR");
+            var GET = ToTerm("GET");
             
         
 
@@ -217,6 +218,7 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal mapvalue = new NonTerminal("mapvalue");
 
             NonTerminal inInsertMap = new NonTerminal("ininsertmap");
+            NonTerminal inSetMap = new NonTerminal("insetmap");
             #endregion
 
             #region Gramatica
@@ -251,7 +253,6 @@ namespace cql_teacher_server.CQL.Gramatica
                              | inBreak + ";"
                              | inWhile
                              | inDoWhile + ";"
-                             
                              | inFor
                              ;
             #endregion
@@ -304,6 +305,7 @@ namespace cql_teacher_server.CQL.Gramatica
                            | ToTerm("@") + ID + INCREMENTO
                            | ToTerm("@") + ID + DECREMENTO
                            | expresion + ToTerm("?") + expresion + ToTerm(":") + expresion
+                           | expresion + "." + GET + "(" + expresion + ")"
                            | CADENA
                            | FECHA
                            | HORA
@@ -312,6 +314,7 @@ namespace cql_teacher_server.CQL.Gramatica
                            | DECIMALN
                            | ID
                            | NULL
+                           
                            ;
 
             #endregion
@@ -546,6 +549,9 @@ namespace cql_teacher_server.CQL.Gramatica
             mapvalue.Rule = expresion + ":" + expresion;
 
             inInsertMap.Rule = expresion + "." + INSERT + "(" + expresion + "," + expresion + ")";
+
+            inSetMap.Rule = expresion + "." + SET + "(" + expresion + "," + expresion + ")";
+
             #endregion
 
 

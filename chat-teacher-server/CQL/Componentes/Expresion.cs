@@ -77,7 +77,7 @@ namespace cql_teacher_server.CQL.Componentes
 
         /*
          * Constructor de la clase para una operacion binario:
-         * SUMA,RESTA,MULTIPLICACION,DIVISION,MODULAR,MENOR,MAYOR,MENORIGUAL,MAYORIGUAL,IGUAL,POTENCIA
+         * SUMA,RESTA,MULTIPLICACION,DIVISION,MODULAR,MENOR,MAYOR,MENORIGUAL,MAYORIGUAL,IGUAL,POTENCIA, GETVALUE(map)
          * @a operador izquierdo
          * @b operador derecho
          * @operacion tipo de operacion.
@@ -799,6 +799,25 @@ namespace cql_teacher_server.CQL.Componentes
                 if (map != null) return map;
                 return null;
 
+            }
+            //--------------------------------------------------------- MAP . GET VALUE -----------------------------------------------------------
+            else if (operacion.Equals("GETMAP"))
+            {
+                Mensaje ms = new Mensaje();
+                if (op1 != null)
+                {
+                    if (op1.GetType() == typeof(Map))
+                    {
+                        Map temp = (Map)op1;
+                        foreach(KeyValue keyValue in temp.datos)
+                        {
+                            if (keyValue.key.Equals(op2)) return keyValue.value; 
+                        }
+                        return null;
+                    }
+                    else mensajes.AddLast(ms.error("No se reconoce este tipo de MAP: " + op1.ToString(), linea1, columna1, "Semantico"));
+                }
+                else mensajes.AddLast(ms.error("No se puede aplicar GET a un NULL", linea1, columna1, "Semantico"));
             }
             //--------------------------------------------------------- TERNARIO -----------------------------------------------------------------
             else if (operacion.Equals("TERNARIO"))

@@ -1169,6 +1169,17 @@ namespace cql_teacher_server.CQL.Gramatica
             }
             else if(raiz.ChildNodes.Count() == 4)
             {
+                string termN = raiz.ChildNodes.ElementAt(0).Term.Name;
+                //--------------------------- EXPRESION . GETVALUE ( EXPRESION )
+                if (termN.Equals("expresion"))
+                {
+                    Expresion mp = resolver_expresion(raiz.ChildNodes.ElementAt(0));
+                    Expresion vl = resolver_expresion(raiz.ChildNodes.ElementAt(3));
+                    int lp = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
+                    int cp = raiz.ChildNodes.ElementAt(1).Token.Location.Column;
+                    return new Expresion(mp, vl, "GETMAP", lp, cp);
+
+                }
                 string token = raiz.ChildNodes.ElementAt(0).Token.Text;
                 token = token.ToLower().TrimEnd().TrimStart();
                 int lc = raiz.ChildNodes.ElementAt(0).Token.Location.Line;

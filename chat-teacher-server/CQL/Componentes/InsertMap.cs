@@ -58,7 +58,7 @@ namespace cql_teacher_server.CQL.Componentes
                         {
                             if (!searchKey(temp.datos, ky, mensajes))
                             {
-                                temp.datos.AddLast(new KeyValue(ky, tV));
+                                temp.datos.AddLast(new KeyValue(ky, vl));
                                 return "";
                             }
                         }
@@ -69,7 +69,7 @@ namespace cql_teacher_server.CQL.Componentes
                             {
                                 if (!searchKey(temp.datos, ky, mensajes))
                                 {
-                                    temp.datos.AddLast(new KeyValue(ky, tV));
+                                    temp.datos.AddLast(new KeyValue(ky, vl));
                                     return "";
                                 }
                             }
