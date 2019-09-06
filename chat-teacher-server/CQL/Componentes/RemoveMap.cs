@@ -70,7 +70,40 @@ namespace cql_teacher_server.CQL.Componentes
                         }
                         mensajes.AddLast(ms.error("No se encontro la key: " + ky, l, c, "Semantico"));
                     }
-                    else mensajes.AddLast(ms.error("No se puede aplicar un REMOVE en un tipo no map, no se reconoce: " + mp, l, c, "Semantico"));
+                    else if(mp.GetType() == typeof(List))
+                    {
+                        if (ky.GetType() == typeof(int))
+                        {
+                            List temp = (List)mp;
+                            int index = (int)ky;
+                            if (index > -1)
+                            {
+                                if (index < temp.lista.Count())
+                                {
+                                    int i = 0;
+                                    if(temp.lista.Count() > 0)
+                                    {
+                                        var node = temp.lista.First;
+                                        while(node != null)
+                                        {
+                                            var nodeNext = node.Next;
+                                            if(i == index)
+                                            {
+                                                temp.lista.Remove(node);
+                                                return "";
+                                            }
+                                            i++;
+                                            node = nodeNext;
+                                        }
+                                    }
+                                }
+                                else mensajes.AddLast(ms.error("El index supera el tamaño de la lista",l,c,"Semantico"));
+                            }
+                            else mensajes.AddLast(ms.error("El index debe ser mayor a -1",l,c,"Semantico"));
+                        }
+                        else mensajes.AddLast(ms.error("El index debe de ser de tipo int: " + ky,l,c,"Semantico"));
+                    }
+                    else mensajes.AddLast(ms.error("No se puede aplicar un REMOVE en un tipo no Collection, no se reconoce: " + mp, l, c, "Semantico"));
                 }
                 else mensajes.AddLast(ms.error("La key no puede ser null", l, c, "Semantico"));
             }

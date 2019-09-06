@@ -15,6 +15,10 @@ namespace cql_teacher_server.CQL.Componentes
         int l { set; get; }
         int c { set; get; }
 
+        string operacion { set; get; }
+
+
+
         /*
         * Constructor de la clase
         * @param {id} es el objeto de tipo Map al cual se le agregara un valor
@@ -22,15 +26,18 @@ namespace cql_teacher_server.CQL.Componentes
         * @param {valor} es el valor a almacenar
         * @param {l} linea del id
         * @param {c} columna del id
+        * @param {operacion} que tipo de objeto tiene que ser
         */
-        public SetMap(Expresion id, Expresion key, Expresion valor, int l, int c)
+        public SetMap(Expresion id, Expresion key, Expresion valor, int l, int c, string operacion)
         {
             this.id = id;
             this.key = key;
             this.valor = valor;
             this.l = l;
             this.c = c;
+            this.operacion = operacion;
         }
+
 
         /*
           * Constructor de la clase padre
@@ -49,12 +56,13 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 if (ky != null)
                 {
+
                     if (mp.GetType() == typeof(Map))
                     {
                         Map temp = (Map)mp;
                         string t2 = temp.id.Split("/")[1];
                         string tV = (getTipoValorSecundario(vl, mensajes) == null) ? "null" : (getTipoValorSecundario(vl, mensajes));
-                        foreach(KeyValue key in temp.datos)
+                        foreach (KeyValue key in temp.datos)
                         {
                             if (key.key.Equals(ky))
                             {
@@ -65,10 +73,17 @@ namespace cql_teacher_server.CQL.Componentes
                                 }
                                 else if (tV.Equals("null"))
                                 {
-                                    if(!t2.Equals("int") && !t2.Equals("double") && !t2.Equals("boolean") && !t2.Equals("map"))
+                                    if (!t2.Equals("int") && !t2.Equals("double") && !t2.Equals("boolean") && !t2.Equals("map") && !t2.Equals("list"))
                                     {
-                                        key.value = vl;
-                                        return "";
+                                        if (t2.Equals("string") || t2.Equals("date") || t2.Equals("time"))
+                                        {
+                                            key.value = vl;
+                                            return "";
+                                        }
+                                        else
+                                        {
+                                            key.value = new InstanciaUserType(temp.id, null);
+                                        }
                                     }
                                     else
                                     {
@@ -80,13 +95,76 @@ namespace cql_teacher_server.CQL.Componentes
                         }
                         mensajes.AddLast(ms.error("No se encontro la key: " + ky, l, c, "Semantico"));
                     }
+                    else if(mp.GetType() == typeof(List))
+                    {
+                        List temp = (List)mp;
+                        if (ky.GetType() == typeof(int))
+                        {
+                            int index = (int)ky;
+                            if (index > -1)
+                            {
+                                if (index < temp.lista.Count())
+                                {
+                                    string tipoValor = (getTipoValorSecundario(vl, mensajes) == null) ? "null" : getTipoValorSecundario(vl, mensajes);
+                                    if (tipoValor.Equals(temp.id))
+                                    {
+
+                                        ChangeValueList(temp.lista, index, vl);
+                                        return "";
+                                    }
+                                    else if (tipoValor.Equals("null"))
+                                    {
+                                        if (!temp.id.Equals("int") && !temp.id.Equals("double") && !temp.id.Equals("boolean") && !temp.id.Equals("map") && !temp.id.Equals("list"))
+                                        {
+                                            if (temp.id.Equals("string") || temp.id.Equals("date") || temp.id.Equals("time"))
+                                            {
+                                                ChangeValueList(temp.lista, index, vl);
+                                                return "";
+                                            }
+                                            else
+                                            {
+                                                ChangeValueList(temp.lista, index, new InstanciaUserType(temp.id, null));
+                                                return "";
+                                            }
+                                        }
+                                        else mensajes.AddLast(ms.error("No se puede asignar null al tipo: " + temp.id,l,c,"Semantico"));
+                                    }
+                                    else mensajes.AddLast(ms.error("No coinciden los tipos: " + temp.id + " con: " + tipoValor,l,c,"Semantico"));
+                                    
+                                }
+                                else mensajes.AddLast(ms.error("El index es mayor al tamaño de la lista", l, c, "Semantico"));
+                            }
+                            else mensajes.AddLast(ms.error("Index tiene que ser mayor a 0 : " + index, l, c, "Semantico"));
+                        }
+                        else mensajes.AddLast(ms.error("Index tiene que ser de tipo numerico: " + ky, l, c, "Semantico"));
+                    }
                     else mensajes.AddLast(ms.error("No se puede aplicar un SET en un tipo no map, no se reconoce: " + mp, l, c, "Semantico"));
+
+
+
                 }
                 else mensajes.AddLast(ms.error("La key no puede ser null", l, c, "Semantico"));
             }
             else mensajes.AddLast(ms.error("No se puede insertar en un null", l, c, "Semantico"));
 
             return null;
+        }
+
+
+        private void ChangeValueList(LinkedList<object> lista, int index,object valor)
+        {
+            if(lista.Count() > 0)
+            {
+                var node = lista.First;
+                int i = 0;
+                while(node != null)
+                {
+                    var nodeNext = node.Next;
+                    if (i == index) node.Value = valor;
+                    i++;
+                    node = nodeNext;
+                }
+            }
         }
 
         /*

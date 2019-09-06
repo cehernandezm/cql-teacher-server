@@ -829,7 +829,26 @@ namespace cql_teacher_server.CQL.Componentes
                         mensajes.AddLast(ms.error("No se encontro la key: " + op2, linea1, columna1, "Semantico"));
                         return null;
                     }
-                    else mensajes.AddLast(ms.error("No se reconoce este tipo de MAP: " + op1.ToString(), linea1, columna1, "Semantico"));
+                    else if(op1.GetType() == typeof(List))
+                    {
+                        List temp = (List)op1;
+                        if (op2 != null)
+                        {
+                            if (op2.GetType() == typeof(int))
+                            {
+                                int index = (int)op2;
+                                if (index > -1)
+                                {
+                                    if (index < temp.lista.Count()) return temp.lista.ElementAt(index);
+                                    else mensajes.AddLast(ms.error("El index supera el tamaño de la lista", linea1, columna1, "Semantico"));
+                                }
+                                else mensajes.AddLast(ms.error("El index debe ser positivo: " + index, linea1, columna1, "Semantico"));
+                            }
+                            else mensajes.AddLast(ms.error("El index debe ser tipo numerico no se reconoce: " + op2, linea1, columna1, "Semantico"));
+                        }
+                        else mensajes.AddLast(ms.error("No se permite un index null", linea1, columna1, "Semantico"));
+                    }
+                    else mensajes.AddLast(ms.error("No se reconoce este tipo de Collection: " + op1.ToString(), linea1, columna1, "Semantico"));
                 }
                 else mensajes.AddLast(ms.error("No se puede aplicar GET a un NULL", linea1, columna1, "Semantico"));
             }
@@ -839,7 +858,9 @@ namespace cql_teacher_server.CQL.Componentes
                 Mensaje ms = new Mensaje();
                 if(op1 != null)
                 {
-                    if(op1.GetType() == typeof(Map)) return ((Map)op1).datos.Count();
+                    if (op1.GetType() == typeof(Map)) return ((Map)op1).datos.Count();
+                    else if (op1.GetType() == typeof(List)) return ((List)op1).lista.Count();
+                    else mensajes.AddLast(ms.error("No se puede aplicar Size a un tipo no Collection: " + op1 ,linea1,columna1,"Semantico"));
 
                 }
                 mensajes.AddLast(ms.error("No se puede aplicar SIZE en null", linea1, columna1, "Semantico"));
@@ -860,7 +881,16 @@ namespace cql_teacher_server.CQL.Componentes
                         }
                         return false;
                     }
-                    else mensajes.AddLast(ms.error("No se reconoce este tipo de MAP: " + op1.ToString(), linea1, columna1, "Semantico"));
+                    else if(op1.GetType() == typeof(List))
+                    {
+                        List temp = (List)op1;
+                        foreach(object o in temp.lista)
+                        {
+                            if (o.Equals(op2)) return true;
+                        }
+                        return false;
+                    }
+                    else mensajes.AddLast(ms.error("No se reconoce este tipo de Collection: " + op1.ToString(), linea1, columna1, "Semantico"));
                 }
                 else mensajes.AddLast(ms.error("No se puede aplicar GET a un NULL", linea1, columna1, "Semantico"));
             }
@@ -1050,7 +1080,7 @@ namespace cql_teacher_server.CQL.Componentes
                 object res = (e == null) ? null : e.ejecutar(ts, user, ref baseD, mensajes, tsT);
                 string tp = (getTipoValorSecundario(res, mensajes) == null) ? "null" : getTipoValorSecundario(res, mensajes);
                 if (tipo.Equals("none")) tipo = tp;
-                else if (tipo.Equals(tp)) valores.AddLast(tp);
+                if (tipo.Equals(tp)) valores.AddLast(res);
                 else
                 {
                     if (tp.Equals("null"))

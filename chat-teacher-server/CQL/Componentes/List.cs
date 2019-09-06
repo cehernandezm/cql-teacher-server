@@ -8,7 +8,7 @@ namespace cql_teacher_server.CQL.Componentes
     public class List
     {
         public string id { set; get; }
-        LinkedList<object> lista { set; get; }
+        public LinkedList<object> lista { set; get; }
 
         /*
          * Constructor de la clase

@@ -47,7 +47,13 @@ namespace cql_teacher_server.CQL.Componentes
                     temp.datos.Clear();
                     return "";
                 }
-                else mensajes.AddLast(ms.error("No se puede aplicar un REMOVE en un tipo no map, no se reconoce: " + mp, l, c, "Semantico"));
+                else if(mp.GetType() == typeof(List))
+                {
+                    List temp = (List)mp;
+                    temp.lista.Clear();
+                    return "";
+                }
+                else mensajes.AddLast(ms.error("No se puede aplicar un REMOVE en un tipo no Collection, no se reconoce: " + mp, l, c, "Semantico"));
 
             }
             else mensajes.AddLast(ms.error("No se puede insertar en un null", l, c, "Semantico"));

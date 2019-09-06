@@ -567,7 +567,9 @@ namespace cql_teacher_server.CQL.Gramatica
             #endregion
 
             #region Operacion Collections
-            inInsertMap.Rule = expresion + "." + INSERT + "(" + expresion + "," + expresion + ")";
+            inInsertMap.Rule = expresion + "." + INSERT + "(" + expresion + "," + expresion + ")"
+                             | expresion + "." + INSERT + "(" + expresion + ")"
+                             ;
 
             inSetMap.Rule = expresion + "." + SET + "(" + expresion + "," + expresion + ")";
 

@@ -798,8 +798,14 @@ namespace cql_teacher_server.CQL.Gramatica
                     int cim = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
                     Expresion mp = resolver_expresion(hijo.ChildNodes.ElementAt(0));
                     Expresion ky = resolver_expresion(hijo.ChildNodes.ElementAt(3));
-                    Expresion vl = resolver_expresion(hijo.ChildNodes.ElementAt(4));
-                    listaIM.AddLast(new InsertMap(mp, ky, vl, lim, cim));
+                    if(hijo.ChildNodes.Count() == 5)
+                    {
+                        Expresion vl = resolver_expresion(hijo.ChildNodes.ElementAt(4));
+                        listaIM.AddLast(new InsertMap(mp, ky, vl, lim, cim, "MAP"));
+                    }
+                    else listaIM.AddLast(new InsertMap(mp, ky, null, lim, cim, "LIST"));
+                    
+                   
                     return listaIM;
 
 
@@ -814,7 +820,7 @@ namespace cql_teacher_server.CQL.Gramatica
                     Expresion mps = resolver_expresion(hijo.ChildNodes.ElementAt(0));
                     Expresion kys = resolver_expresion(hijo.ChildNodes.ElementAt(3));
                     Expresion vls = resolver_expresion(hijo.ChildNodes.ElementAt(4));
-                    listaSM.AddLast(new SetMap(mps, kys, vls, lsm, csm));
+                    listaSM.AddLast(new SetMap(mps, kys, vls, lsm, csm,"MAP"));
 
                     return listaSM;
 
