@@ -791,7 +791,7 @@ namespace cql_teacher_server.CQL.Gramatica
 
 
 
-                //---------------------------------------------------- MAP . INSERT (KEY : VALUE ) ----------------------------------------------------------------
+                //---------------------------------------------------- Expresion . INSERT (KEY : VALUE ) ----------------------------------------------------------------
                 case "ininsertmap":
                     LinkedList<InstruccionCQL> listaIM = new LinkedList<InstruccionCQL>();
                     int lim = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
@@ -805,7 +805,7 @@ namespace cql_teacher_server.CQL.Gramatica
 
 
 
-                //-------------------------------------------------------- MAP . SET (KEY,VALUE) -------------------------------------------------------------
+                //-------------------------------------------------------- Expresion . SET (KEY,VALUE) -------------------------------------------------------------
                 case "insetmap":
                     LinkedList<InstruccionCQL> listaSM = new LinkedList<InstruccionCQL>();
                     int lsm = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
@@ -817,6 +817,44 @@ namespace cql_teacher_server.CQL.Gramatica
                     listaSM.AddLast(new SetMap(mps, kys, vls, lsm, csm));
 
                     return listaSM;
+
+
+
+
+
+
+                //-------------------------------------------------------- Expresion . REMOVE ( KEY ) ----------------------------------------------------------
+                case "inremovemap":
+                    LinkedList<InstruccionCQL> lisatRM = new LinkedList<InstruccionCQL>();
+                    int lrm = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
+                    int crm = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
+
+                    Expresion mpr = resolver_expresion(hijo.ChildNodes.ElementAt(0));
+                    Expresion kyr = resolver_expresion(hijo.ChildNodes.ElementAt(3));
+
+                    lisatRM.AddLast(new RemoveMap(mpr, kyr, lrm, crm));
+                    return lisatRM;
+
+
+
+
+
+
+                //------------------------------------------------------ Expresion . CLEAR ( ) -------------------------------------------------------------
+                case "inclear":
+                    LinkedList<InstruccionCQL> listaCL = new LinkedList<InstruccionCQL>();
+
+                    int lcl = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
+                    int ccl = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
+
+                    Expresion mcl = resolver_expresion(hijo.ChildNodes.ElementAt(0));
+
+                    listaCL.AddLast(new Clear(mcl, lcl, ccl));
+                    return listaCL;
+
+
+
+
             }
             return null;
 
@@ -1103,13 +1141,19 @@ namespace cql_teacher_server.CQL.Gramatica
                     //----------------------------------- USERTYPE . ATRIBUTO---------------------------------------------------
                     if (toketemp.Equals("."))
                     {
-                        string sepa = raiz.ChildNodes.ElementAt(0).Term.Name;
-                        string opee = "ACCESOUSER";
+                        string sepa = raiz.ChildNodes.ElementAt(2).Term.Name;
                         int le = raiz.ChildNodes.ElementAt(2).Token.Location.Line;
                         int ce = raiz.ChildNodes.ElementAt(2).Token.Location.Column;
-                        string idA = raiz.ChildNodes.ElementAt(2).Token.Text;
-                        idA = idA.ToLower().TrimEnd().TrimStart();
-                        return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), opee, le, ce, idA);
+                        if (sepa.Equals("ID"))
+                        {
+                            string opee = "ACCESOUSER";
+                            string idA = raiz.ChildNodes.ElementAt(2).Token.Text;
+                            idA = idA.ToLower().TrimEnd().TrimStart();
+                            return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), opee, le, ce, idA);
+                        }
+                        //--------------------------------- EXPRESION . SIZE
+                        else return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), "SIZE", le, ce);
+                        
                     }
 
                     //--------------------------------------- OPERACIONES TERNARIAS ------------------------------------------
@@ -1186,14 +1230,20 @@ namespace cql_teacher_server.CQL.Gramatica
             else if(raiz.ChildNodes.Count() == 4)
             {
                 string termN = raiz.ChildNodes.ElementAt(0).Term.Name;
+                
                 //--------------------------- EXPRESION . GETVALUE ( EXPRESION )
                 if (termN.Equals("expresion"))
                 {
-                    Expresion mp = resolver_expresion(raiz.ChildNodes.ElementAt(0));
-                    Expresion vl = resolver_expresion(raiz.ChildNodes.ElementAt(3));
+                    string tokenOperacion = raiz.ChildNodes.ElementAt(2).Token.Text;
+                    tokenOperacion = tokenOperacion.ToLower().TrimEnd().TrimStart();
                     int lp = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
                     int cp = raiz.ChildNodes.ElementAt(1).Token.Location.Column;
-                    return new Expresion(mp, vl, "GETMAP", lp, cp);
+                    Expresion mp = resolver_expresion(raiz.ChildNodes.ElementAt(0));
+                    Expresion vl = resolver_expresion(raiz.ChildNodes.ElementAt(3));
+                    if (tokenOperacion.Equals("get")) return new Expresion(mp, vl, "GETMAP", lp, cp);
+                    else if (tokenOperacion.Equals("contains")) return new Expresion(mp, vl, "CONTAINS", lp, cp);
+                   
+                    
 
                 }
                 string token = raiz.ChildNodes.ElementAt(0).Token.Text;

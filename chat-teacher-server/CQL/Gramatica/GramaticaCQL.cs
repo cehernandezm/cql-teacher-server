@@ -101,7 +101,7 @@ namespace cql_teacher_server.CQL.Gramatica
             var BY = ToTerm("BY");
             var ASC = ToTerm("ASC");
             var DESC = ToTerm("DESC");
-            
+
 
             var COUNT = ToTerm("COUNT");
             var MIN = ToTerm("MIN");
@@ -122,8 +122,11 @@ namespace cql_teacher_server.CQL.Gramatica
             var DO = ToTerm("DO");
             var FOR = ToTerm("FOR");
             var GET = ToTerm("GET");
-            
-        
+            var REMOVE = ToTerm("REMOVE");
+            var SIZE = ToTerm("SIZE");
+            var CLEAR = ToTerm("CLEAR");
+            var CONTAINS = ToTerm("CONTAINS");
+
 
 
 
@@ -219,6 +222,8 @@ namespace cql_teacher_server.CQL.Gramatica
 
             NonTerminal inInsertMap = new NonTerminal("ininsertmap");
             NonTerminal inSetMap = new NonTerminal("insetmap");
+            NonTerminal inRemoveMap = new NonTerminal("inremovemap");
+            NonTerminal inClear = new NonTerminal("inclear");
             #endregion
 
             #region Gramatica
@@ -233,6 +238,8 @@ namespace cql_teacher_server.CQL.Gramatica
             instruccion.Rule = use + ";"
                              | inInsertMap + ";"
                              | inSetMap + ";"
+                             | inRemoveMap + ";"
+                             | inClear + ";"
                              | createDatabase + ";"
                              | declaracion + ";"
                              | declaracionA + ";"
@@ -289,7 +296,7 @@ namespace cql_teacher_server.CQL.Gramatica
                            | expresion + MODULO + expresion
                            | expresion + POTENCIA + expresion
                            | RESTA + expresion
-                           | COUNT + "(" + "<<" + inSelect + ">>" +")"
+                           | COUNT + "(" + "<<" + inSelect + ">>" + ")"
                            | MIN + "(" + "<<" + inSelect + ">>" + ")"
                            | MAX + "(" + "<<" + inSelect + ">>" + ")"
                            | SUM + "(" + "<<" + inSelect + ">>" + ")"
@@ -301,12 +308,14 @@ namespace cql_teacher_server.CQL.Gramatica
                            | expresion + "." + ID
                            | "{" + asigna_UserType + "}" + AS + ID
                            | "[" + listaMap + "]"
+                           | expresion + "." + SIZE + "(" + ")"
                            | ENTERO
                            | ToTerm("@") + ID
                            | ToTerm("@") + ID + INCREMENTO
                            | ToTerm("@") + ID + DECREMENTO
                            | expresion + ToTerm("?") + expresion + ToTerm(":") + expresion
                            | expresion + "." + GET + "(" + expresion + ")"
+                           | expresion + "." + CONTAINS + "(" + expresion + ")"
                            | CADENA
                            | FECHA
                            | HORA
@@ -315,7 +324,7 @@ namespace cql_teacher_server.CQL.Gramatica
                            | DECIMALN
                            | ID
                            | NULL
-                           
+
                            ;
 
             #endregion
@@ -404,7 +413,7 @@ namespace cql_teacher_server.CQL.Gramatica
             inselse.Rule = ELSE + "{" + instrucciones + "}";
 
             //------------------------------------------------------------ SWITCH -------------------------------------------------------------------------
-            inSwitch.Rule = SWITCH + "(" + expresion + ")" + "{" + lisCase  + inDefault + "}";
+            inSwitch.Rule = SWITCH + "(" + expresion + ")" + "{" + lisCase + inDefault + "}";
             //------------------------------------------------------------- LISTADO DE CASES ---------------------------------------------------------------
             lisCase.Rule = lisCase + inCase
                          | inCase
@@ -549,13 +558,17 @@ namespace cql_teacher_server.CQL.Gramatica
 
             mapvalue.Rule = expresion + ":" + expresion;
 
+            #endregion
+
+            #region Operacion Collections
             inInsertMap.Rule = expresion + "." + INSERT + "(" + expresion + "," + expresion + ")";
 
             inSetMap.Rule = expresion + "." + SET + "(" + expresion + "," + expresion + ")";
 
+            inRemoveMap.Rule = expresion + "." + REMOVE + "(" + expresion + ")";
+
+            inClear.Rule = expresion + "." + CLEAR + "(" + ")";
             #endregion
-
-
             #endregion
 
             #region Preferencias

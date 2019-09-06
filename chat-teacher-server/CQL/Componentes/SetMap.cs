@@ -80,7 +80,7 @@ namespace cql_teacher_server.CQL.Componentes
                         }
                         mensajes.AddLast(ms.error("No se encontro la key: " + ky, l, c, "Semantico"));
                     }
-                    else mensajes.AddLast(ms.error("No se puede aplicar un insert en un tipo no map, no se reconoce: " + mp, l, c, "Semantico"));
+                    else mensajes.AddLast(ms.error("No se puede aplicar un SET en un tipo no map, no se reconoce: " + mp, l, c, "Semantico"));
                 }
                 else mensajes.AddLast(ms.error("La key no puede ser null", l, c, "Semantico"));
             }

@@ -800,7 +800,7 @@ namespace cql_teacher_server.CQL.Componentes
                 return null;
 
             }
-            //--------------------------------------------------------- MAP . GET VALUE -----------------------------------------------------------
+            //--------------------------------------------------------- EXPRESION . GET VALUE -----------------------------------------------------------
             else if (operacion.Equals("GETMAP"))
             {
                 Mensaje ms = new Mensaje();
@@ -813,7 +813,39 @@ namespace cql_teacher_server.CQL.Componentes
                         {
                             if (keyValue.key.Equals(op2)) return keyValue.value; 
                         }
+                        mensajes.AddLast(ms.error("No se encontro la key: " + op2, linea1, columna1, "Semantico"));
                         return null;
+                    }
+                    else mensajes.AddLast(ms.error("No se reconoce este tipo de MAP: " + op1.ToString(), linea1, columna1, "Semantico"));
+                }
+                else mensajes.AddLast(ms.error("No se puede aplicar GET a un NULL", linea1, columna1, "Semantico"));
+            }
+            //-----------------------------------------------------------EXPRESION . SIZE ------------------------------------------------------
+            else if (operacion.Equals("SIZE"))
+            {
+                Mensaje ms = new Mensaje();
+                if(op1 != null)
+                {
+                    if(op1.GetType() == typeof(Map)) return ((Map)op1).datos.Count();
+
+                }
+                mensajes.AddLast(ms.error("No se puede aplicar SIZE en null", linea1, columna1, "Semantico"));
+                return null;
+            }
+            //--------------------------------------------------------- EXPRESION . CONTAINS VALUE -----------------------------------------------------------
+            else if (operacion.Equals("CONTAINS"))
+            {
+                Mensaje ms = new Mensaje();
+                if (op1 != null)
+                {
+                    if (op1.GetType() == typeof(Map))
+                    {
+                        Map temp = (Map)op1;
+                        foreach (KeyValue keyValue in temp.datos)
+                        {
+                            if (keyValue.value.Equals(op2)) return true;
+                        }
+                        return false;
                     }
                     else mensajes.AddLast(ms.error("No se reconoce este tipo de MAP: " + op1.ToString(), linea1, columna1, "Semantico"));
                 }
