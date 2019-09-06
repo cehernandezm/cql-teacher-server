@@ -800,6 +800,19 @@ namespace cql_teacher_server.CQL.Componentes
                 return null;
 
             }
+            //-------------------------------------------------------- NEW LIST <TIPO> ---------------------------------------------------------
+            else if (operacion.Equals("NEWLIST"))
+            {
+                return new List(valor.ToString(), new LinkedList<object>());
+            }
+            //--------------------------------------------------------- LISTA LIST ------------------------------------------------------------------
+            else if (operacion.Equals("LISTALIST"))
+            {
+                LinkedList<Expresion> lista = (LinkedList<Expresion>)valor;
+                List list = getList(lista, ts, user, ref baseD, mensajes, tsT);
+                if (list != null) return list;
+                return null;
+            }
             //--------------------------------------------------------- EXPRESION . GET VALUE -----------------------------------------------------------
             else if (operacion.Equals("GETMAP"))
             {
@@ -1015,16 +1028,64 @@ namespace cql_teacher_server.CQL.Componentes
             return null;
         }
 
+
+
         /*
-         * METODO ENCARGADO DE CONTROLAR LOS DATOS DEL LISTADO
-         * @param {listado} linkedlist con los valores de la lista
-         * @param {ts} tabla de simbolos
-         * @param {user} usuario que ejecuta la accion
-         * @ref param {baseD} base de datos donde se ejecutara todo
-         * @param {mensajes} outout
-         * @param {tsT} variables de una tabla CQL
-         * @return map o null
-         */
+          * METODO ENCARGADO DE CONTROLAR LOS DATOS DEL LISTADO
+          * @param {listado} linkedlist con los valores de la lista
+          * @param {ts} tabla de simbolos
+          * @param {user} usuario que ejecuta la accion
+          * @ref param {baseD} base de datos donde se ejecutara todo
+          * @param {mensajes} outout
+          * @param {tsT} variables de una tabla CQL
+          * @return map o null
+          */
+        private List getList(LinkedList<Expresion> lista,TablaDeSimbolos ts, string user, ref string baseD,LinkedList<string> mensajes,TablaDeSimbolos tsT)
+        {
+            Mensaje ms = new Mensaje();
+            string tipo = "none";
+            LinkedList<object> valores = new LinkedList<object>();
+            foreach(Expresion e in lista)
+            {
+                object res = (e == null) ? null : e.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                string tp = (getTipoValorSecundario(res, mensajes) == null) ? "null" : getTipoValorSecundario(res, mensajes);
+                if (tipo.Equals("none")) tipo = tp;
+                else if (tipo.Equals(tp)) valores.AddLast(tp);
+                else
+                {
+                    if (tp.Equals("null"))
+                    {
+                        if (tipo.Equals("int") || tipo.Equals("double") || tipo.Equals("map") || tipo.Equals("list") || tipo.Equals("boolean")){
+                            mensajes.AddLast(ms.error("No puede existir un valor null con el tipo: " + tipo, linea1, columna1, "Semantico"));
+                            return null;
+                        }
+                        else if(tipo.Equals("string") || tipo.Equals("date") || tipo.Equals("time")) valores.AddLast(tp);
+                        else valores.AddLast(new InstanciaUserType(tipo,new LinkedList<Atributo>()));  
+                    }
+                    else
+                    {
+                        mensajes.AddLast(ms.error("No coincide el tipo: " + tipo + " con : " + tp, linea1, columna1, "Semantico"));
+                        return null;
+                    }
+                    
+                    
+                }
+                 
+            }
+            List list = new List(tipo, valores);
+            return list;
+        }
+
+         /*
+          * METODO ENCARGADO DE CONTROLAR LOS DATOS DEL LISTADO
+          * @param {listado} linkedlist con los valores de la lista
+          * @param {ts} tabla de simbolos
+          * @param {user} usuario que ejecuta la accion
+          * @ref param {baseD} base de datos donde se ejecutara todo
+          * @param {mensajes} outout
+          * @param {tsT} variables de una tabla CQL
+          * @return map o null
+          */
 
          private Map getMap(LinkedList<object> listado, TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
         {
@@ -1040,10 +1101,10 @@ namespace cql_teacher_server.CQL.Componentes
 
                 string tipoKey = getTipoValorPrimario(op1, mensajes);
                 string tipoValor = (getTipoValorSecundario(op2, mensajes) == null) ? "null" : getTipoValorSecundario(op2, mensajes);
-                if(tipoKey != null)
+                if (tipoKey != null)
                 {
                     LinkedList<KeyValue> temporal = new LinkedList<KeyValue>();
-                    foreach(object o in listado)
+                    foreach (object o in listado)
                     {
                         exp1 = (Expresion)((KeyValue)o).key;
                         exp2 = (Expresion)((KeyValue)o).value;
@@ -1169,6 +1230,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else if (valor.GetType() == typeof(TimeSpan)) return "time";
                 else if (valor.GetType() == typeof(InstanciaUserType)) return ((InstanciaUserType)valor).tipo;
                 else if (valor.GetType() == typeof(Map)) return ((Map)valor).id;
+                else if (valor.GetType() == typeof(List)) return ((List)valor).id;
                 else
                 {
                     mensajes.AddLast(ms.error("No se acepta este tipo de valor como clave Secundaria : " + valor, linea1, columna1, "Semantico"));

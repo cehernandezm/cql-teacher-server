@@ -102,7 +102,7 @@ namespace cql_teacher_server.CQL.Componentes
                                 if (a == null)
                                 {
                                     if (tipo.Equals("string") || tipo.Equals("date") || tipo.Equals("time")) at.valor = null;
-                                    else if (!tipo.Equals("int") || !tipo.Equals("boolean") || !tipo.Equals("double") || !tipo.Equals("map"))
+                                    else if (!tipo.Equals("int") && !tipo.Equals("boolean") && !tipo.Equals("double") && !tipo.Equals("map") && !tipo.Equals("list"))
                                     {
                                         InstanciaUserType temp = new InstanciaUserType(tipo, null);
                                         at.valor = temp;
@@ -128,17 +128,6 @@ namespace cql_teacher_server.CQL.Componentes
                                         else if (op1.GetType() == typeof(Boolean) && tipo.Equals("boolean")) at.valor = (Boolean)op1;
                                         else if (op1.GetType() == typeof(DateTime) && tipo.Equals("date")) at.valor = (DateTime)op1;
                                         else if (op1.GetType() == typeof(TimeSpan) && tipo.Equals("time")) at.valor = (TimeSpan)op1;
-                                        else if (op1.GetType() == typeof(InstanciaUserType))
-                                        {
-                                            InstanciaUserType temp = (InstanciaUserType)op1;
-                                            if (tipo.Equals(temp.tipo.ToLower())) at.valor = temp;
-                                            else
-                                            {
-                                                mensajes.AddLast(mensa.error("No se le puede asignar al atributo " + at.nombre + " el valor: " + op1, l, c, "Semantico"));
-                                                return null;
-                                            }
-
-                                        }
                                         else if (op1.GetType() == typeof(Map) && tipo.Equals("map"))
                                         {
                                             Map temp = (Map)op1;
@@ -155,6 +144,33 @@ namespace cql_teacher_server.CQL.Componentes
                                             }
 
                                         }
+                                        else if (op1.GetType() == typeof(List) && tipo.Equals("list"))
+                                        {
+                                            List temp = (List)op1;
+                                            List valor = (List)at.valor;
+                                            if (valor.id.Equals(temp.id))
+                                            {
+                                                at.valor = temp;
+                                                return "";
+                                            }
+                                            else
+                                            {
+                                                mensajes.AddLast(mensa.error("No coincide los tipos: " + valor.id + " con: " + temp.id, l, c, "Semantico"));
+                                                return null;
+                                            }
+                                        }
+                                        else if (op1.GetType() == typeof(InstanciaUserType))
+                                        {
+                                            InstanciaUserType temp = (InstanciaUserType)op1;
+                                            if (tipo.Equals(temp.tipo.ToLower())) at.valor = temp;
+                                            else
+                                            {
+                                                mensajes.AddLast(mensa.error("No se le puede asignar al atributo " + at.nombre + " el valor: " + op1, l, c, "Semantico"));
+                                                return null;
+                                            }
+
+                                        }
+                                        
                                         else
                                         {
                                             mensajes.AddLast(mensa.error("No se le puede asignar al atributo: " + at.nombre + " el valor: " + op1, l, c, "Semantico"));
@@ -191,7 +207,7 @@ namespace cql_teacher_server.CQL.Componentes
             if (a == null)
             {
                 if (tipo.Equals("string") || tipo.Equals("date") || tipo.Equals("time")) ts.setValor(id, null);
-                else if (!tipo.Equals("int") && !tipo.Equals("boolean") && !tipo.Equals("double") && !tipo.Equals("map"))
+                else if (!tipo.Equals("int") && !tipo.Equals("boolean") && !tipo.Equals("double") && !tipo.Equals("map") && !tipo.Equals("list"))
                 {
                     InstanciaUserType temp = new InstanciaUserType(tipo, null);
                     ts.setValor(id, temp);
@@ -216,7 +232,38 @@ namespace cql_teacher_server.CQL.Componentes
                     else if (op1.GetType() == typeof(Boolean) && tipo.Equals("boolean")) ts.setValor(id, (Boolean)op1);
                     else if (op1.GetType() == typeof(DateTime) && tipo.Equals("date")) ts.setValor(id, (DateTime)op1);
                     else if (op1.GetType() == typeof(TimeSpan) && tipo.Equals("time")) ts.setValor(id, (TimeSpan)op1);
-                    else if (op1.GetType() == typeof(InstanciaUserType) && tipo.Equals("map"))
+                    else if (op1.GetType() == typeof(Map) && tipo.Equals("map"))
+                    {
+                        Map temp = (Map)op1;
+                        Map valor = (Map)ts.getValor(id);
+                        if (valor.id.Equals(temp.id))
+                        {
+                            ts.setValor(id, temp);
+                            return "";
+                        }
+                        else
+                        {
+                            mensajes.AddLast(mensa.error("No coincide los tipos: " + valor.id + " con: " + temp.id, l, c, "Semantico"));
+                            return null;
+                        }
+
+                    }
+                    else if(op1.GetType() == typeof(List) && tipo.Equals("list"))
+                    {
+                        List temp = (List)op1;
+                        List valor = (List)ts.getValor(id);
+                        if (valor.id.Equals(temp.id))
+                        {
+                            ts.setValor(id, temp);
+                            return "";
+                        }
+                        else
+                        {
+                            mensajes.AddLast(mensa.error("No coincide los tipos: " + valor.id + " con: " + temp.id, l, c, "Semantico"));
+                            return null;
+                        }
+                    }
+                    else if (op1.GetType() == typeof(InstanciaUserType))
                     {
                         InstanciaUserType temp = (InstanciaUserType)op1;
                         if (tipo.Equals(temp.tipo.ToLower()))
@@ -231,22 +278,7 @@ namespace cql_teacher_server.CQL.Componentes
                         }
 
                     }
-                    else if(op1.GetType() == typeof(Map))
-                    {
-                        Map temp = (Map)op1;
-                        Map valor =(Map)ts.getValor(id);
-                        if (valor.id.Equals(temp.id))
-                        {
-                            ts.setValor(id, temp);
-                            return "";
-                        }
-                        else
-                        {
-                            mensajes.AddLast(mensa.error("No coincide los tipos: " + valor.id + " con: " + temp.id, l, c, "Semantico"));
-                            return null;
-                        }
-                             
-                    }
+                    
                     else
                     {
                         mensajes.AddLast(mensa.error("No se le puede asignar a la variable: " + id + " el valor: " + op1, l, c, "Semantico"));

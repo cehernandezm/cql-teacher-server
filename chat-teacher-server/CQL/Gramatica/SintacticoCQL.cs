@@ -1135,6 +1135,13 @@ namespace cql_teacher_server.CQL.Gramatica
                     int cM = raiz.ChildNodes.ElementAt(0).Token.Location.Column;
                     return new Expresion(getListaValoresMap(raiz.ChildNodes.ElementAt(1)), "LISTAMAP", lM, cM);
                 }
+                //----------------------------[ lista valores para list ] ------------------------------------------------------------------
+                else if (iden.Equals("listvalues"))
+                {
+                    int lM = raiz.ChildNodes.ElementAt(0).Token.Location.Line;
+                    int cM = raiz.ChildNodes.ElementAt(0).Token.Location.Column;
+                    return new Expresion(resolver_user_type(raiz.ChildNodes.ElementAt(1)), "LISTALIST", lM, cM);
+                }
                 else
                 {
                     string toketemp = raiz.ChildNodes.ElementAt(1).Token.Text;
@@ -1210,6 +1217,7 @@ namespace cql_teacher_server.CQL.Gramatica
             else if (raiz.ChildNodes.Count() == 5)
             {
                 string idDiferenciador = raiz.ChildNodes.ElementAt(0).Term.Name;
+                string tipoNew = raiz.ChildNodes.ElementAt(1).Term.Name;
                 //--------------------------------------------- OPERACION TERNARIA ---------------------------------------------------------
                 if (idDiferenciador.Equals("expresion"))
                 {
@@ -1219,13 +1227,23 @@ namespace cql_teacher_server.CQL.Gramatica
                         resolver_expresion(raiz.ChildNodes.ElementAt(4)),
                         resolver_expresion(raiz.ChildNodes.ElementAt(0)), "TERNARIO", lineaT, columnaT);
                 }
-                LinkedList<Expresion> lista = resolver_user_type(raiz.ChildNodes.ElementAt(1));
-                string idAs = raiz.ChildNodes.ElementAt(4).Token.Text;
-                idAs = idAs.ToLower().TrimEnd().TrimStart();
-                int lAs = raiz.ChildNodes.ElementAt(4).Token.Location.Line;
-                int cAs = raiz.ChildNodes.ElementAt(4).Token.Location.Column;
+                else if (tipoNew.Equals("expresion"))
+                {
+                    LinkedList<Expresion> lista = resolver_user_type(raiz.ChildNodes.ElementAt(1));
+                    string idAs = raiz.ChildNodes.ElementAt(4).Token.Text;
+                    idAs = idAs.ToLower().TrimEnd().TrimStart();
+                    int lAs = raiz.ChildNodes.ElementAt(4).Token.Location.Line;
+                    int cAs = raiz.ChildNodes.ElementAt(4).Token.Location.Column;
 
-                return new Expresion("ASIGNACIONUSER", lAs, cAs, lista, idAs);
+                    return new Expresion("ASIGNACIONUSER", lAs, cAs, lista, idAs);
+                }
+                string tipoList = raiz.ChildNodes.ElementAt(3).ChildNodes.ElementAt(0).Token.Text;
+                tipoList = tipoList.ToLower().TrimEnd().TrimStart();
+                int ltl = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
+                int ctl = raiz.ChildNodes.ElementAt(1).Token.Location.Column;
+                return new Expresion(tipoList, "NEWLIST", ltl, ctl);
+
+
             }
             else if(raiz.ChildNodes.Count() == 4)
             {

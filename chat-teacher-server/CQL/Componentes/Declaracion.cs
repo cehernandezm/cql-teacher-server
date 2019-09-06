@@ -70,19 +70,24 @@ namespace cql_teacher_server.CQL.Componentes
                         ts.AddLast(new Simbolo(tipo, id));
                         ts.setValor(id, false);
                     }
+                    else if (tipo.Equals("string") || tipo.Equals("date") || tipo.Equals("time"))
+                    {
+                        ts.AddLast(new Simbolo(tipo, id));
+                        ts.setValor(id, null);
+                        return "";
+                    }
+                    else if (tipo.Equals("map"))
+                    {
+                        mensajes.AddLast(mensa.error("El tipo MAP necesita ser instanciado", l, c, "Semantico"));
+                        return null;
+                    }
+                    else if (tipo.Equals("list"))
+                    {
+                        mensajes.AddLast(mensa.error("El tipo LIST necesita ser instanciado", l, c, "Semantico"));
+                        return null;
+                    }
                     else
                     {
-                        if(tipo.Equals("string") || tipo.Equals("date") || tipo.Equals("time"))
-                        {
-                            ts.AddLast(new Simbolo(tipo, id));
-                            ts.setValor(id, null);
-                            return "";
-                        }
-                        else if (tipo.Equals("map"))
-                        {
-                            mensajes.AddLast(mensa.error("El tipo MAP necesita ser instanciado",l,c,"Semantico"));
-                            return null;
-                        }
                         BaseDeDatos bd = TablaBaseDeDatos.getBase(baseD);
                         if(bd != null)
                         {
@@ -99,7 +104,6 @@ namespace cql_teacher_server.CQL.Componentes
 
                         }
                         return "";
-
                         
                     }
                    
@@ -154,6 +158,11 @@ namespace cql_teacher_server.CQL.Componentes
                         {
                             ts.AddLast(new Simbolo(tipo, id));
                             ts.setValor(id, (Map)a);
+                        }
+                        else if (tipo.Equals("list") && a.GetType() == typeof(List))
+                        {
+                            ts.AddLast(new Simbolo(tipo, id));
+                            ts.setValor(id, (List)a);
                         }
                         else if (a.GetType() == typeof(InstanciaUserType))
                         {

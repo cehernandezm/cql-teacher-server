@@ -126,7 +126,7 @@ namespace cql_teacher_server.CQL.Gramatica
             var SIZE = ToTerm("SIZE");
             var CLEAR = ToTerm("CLEAR");
             var CONTAINS = ToTerm("CONTAINS");
-
+            var LIST = ToTerm("LIST");
 
 
 
@@ -224,6 +224,7 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal inSetMap = new NonTerminal("insetmap");
             NonTerminal inRemoveMap = new NonTerminal("inremovemap");
             NonTerminal inClear = new NonTerminal("inclear");
+
             #endregion
 
             #region Gramatica
@@ -305,9 +306,11 @@ namespace cql_teacher_server.CQL.Gramatica
                            | ToTerm("(") + tipoVariable + ToTerm(")") + expresion
                            | NEW + ID
                            | NEW + MAP + "<" + tipoVariable + "," + tipoVariable + ">"
+                           | NEW + LIST + "<" + tipoVariable + ">"
                            | expresion + "." + ID
                            | "{" + asigna_UserType + "}" + AS + ID
                            | "[" + listaMap + "]"
+                           | "[" + listValues + "]"
                            | expresion + "." + SIZE + "(" + ")"
                            | ENTERO
                            | ToTerm("@") + ID
@@ -345,6 +348,7 @@ namespace cql_teacher_server.CQL.Gramatica
                               | ID
                               | COUNTER
                               | MAP
+                              | LIST
                               ;
             #endregion
             //------------------------------------------------------- DECLARACION DE VARIABLE --------------------------------------------------------------------
@@ -549,6 +553,8 @@ namespace cql_teacher_server.CQL.Gramatica
             inFor.Rule = FOR + "(" + declaracionA + ";" + expresion + ";" + expresion + ")" + "{" + instrucciones + "}"
                        | FOR + "(" + asignacion + ";" + expresion + ";" + expresion + ")" + "{" + instrucciones + "}"
                        ;
+
+        
 
             #region MAp
             //----------------------------------------------- EXPRESIONES DENTRO DE UN MAP ----------------------------------------------
