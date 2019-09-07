@@ -307,6 +307,7 @@ namespace cql_teacher_server.CQL.Gramatica
                            | NEW + ID
                            | NEW + MAP + "<" + tipoVariable + "," + tipoVariable + ">"
                            | NEW + LIST + "<" + tipoVariable + ">"
+                           | NEW + SET + "<" + tipoVariable + ">"
                            | expresion + "." + ID
                            | "{" + asigna_UserType + "}" + AS + ID
                            | "[" + listaMap + "]"
@@ -349,6 +350,7 @@ namespace cql_teacher_server.CQL.Gramatica
                               | COUNTER
                               | MAP
                               | LIST
+                              | SET
                               ;
             #endregion
             //------------------------------------------------------- DECLARACION DE VARIABLE --------------------------------------------------------------------
