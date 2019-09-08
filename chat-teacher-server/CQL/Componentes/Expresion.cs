@@ -805,6 +805,11 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 return new List(valor.ToString(), new LinkedList<object>());
             }
+            //-------------------------------------------------------- NEW SET <TIPO> ---------------------------------------------------------
+            else if (operacion.Equals("NEWSET"))
+            {
+                return new Set(valor.ToString(), new LinkedList<object>());
+            }
             //--------------------------------------------------------- LISTA LIST ------------------------------------------------------------------
             else if (operacion.Equals("LISTALIST"))
             {

@@ -86,6 +86,11 @@ namespace cql_teacher_server.CQL.Componentes
                         mensajes.AddLast(mensa.error("El tipo LIST necesita ser instanciado", l, c, "Semantico"));
                         return null;
                     }
+                    else if (tipo.Equals("set"))
+                    {
+                        mensajes.AddLast(mensa.error("El tipo SET necesita ser instanciado", l, c, "Semantico"));
+                        return null;
+                    }
                     else
                     {
                         BaseDeDatos bd = TablaBaseDeDatos.getBase(baseD);
@@ -163,6 +168,24 @@ namespace cql_teacher_server.CQL.Componentes
                         {
                             ts.AddLast(new Simbolo(tipo, id));
                             ts.setValor(id, (List)a);
+                        }
+                        else if (tipo.Equals("set") && a.GetType() == typeof(List))
+                        {
+                            ts.AddLast(new Simbolo(tipo, id));
+                            Set temp = new Set(((List)a).id, ((List)a).lista);
+                            object resp = temp.buscarRepetidos(mensajes, l, c);
+                            if (resp == null) return null;
+                            temp.order();
+                            ts.setValor(id, temp);
+                        }
+                        else if (tipo.Equals("set") && a.GetType() == typeof(Set))
+                        {
+                            ts.AddLast(new Simbolo(tipo, id));
+                            Set temp = (Set)a;
+                            object resp = temp.buscarRepetidos(mensajes,l,c);
+                            if (resp == null) return null;
+                            temp.order();
+                            ts.setValor(id, temp);
                         }
                         else if (a.GetType() == typeof(InstanciaUserType))
                         {

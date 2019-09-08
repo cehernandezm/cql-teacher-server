@@ -1233,7 +1233,7 @@ namespace cql_teacher_server.CQL.Gramatica
                         resolver_expresion(raiz.ChildNodes.ElementAt(4)),
                         resolver_expresion(raiz.ChildNodes.ElementAt(0)), "TERNARIO", lineaT, columnaT);
                 }
-                else if (tipoNew.Equals("expresion"))
+                else if (tipoNew.Equals("asignausertype"))
                 {
                     LinkedList<Expresion> lista = resolver_user_type(raiz.ChildNodes.ElementAt(1));
                     string idAs = raiz.ChildNodes.ElementAt(4).Token.Text;
@@ -1243,11 +1243,13 @@ namespace cql_teacher_server.CQL.Gramatica
 
                     return new Expresion("ASIGNACIONUSER", lAs, cAs, lista, idAs);
                 }
+                string tipoLista = raiz.ChildNodes.ElementAt(1).Token.Text.ToLower().TrimEnd().TrimStart();
                 string tipoList = raiz.ChildNodes.ElementAt(3).ChildNodes.ElementAt(0).Token.Text;
                 tipoList = tipoList.ToLower().TrimEnd().TrimStart();
                 int ltl = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
                 int ctl = raiz.ChildNodes.ElementAt(1).Token.Location.Column;
-                return new Expresion(tipoList, "NEWLIST", ltl, ctl);
+                if (tipoLista.Equals("list")) return new Expresion(tipoList, "NEWLIST", ltl, ctl);
+                else return new Expresion(tipoList, "NEWSET", ltl, ctl);
 
 
             }

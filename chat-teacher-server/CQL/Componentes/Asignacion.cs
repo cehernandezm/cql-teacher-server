@@ -159,6 +159,42 @@ namespace cql_teacher_server.CQL.Componentes
                                                 return null;
                                             }
                                         }
+                                        else if (tipo.Equals("set") && op1.GetType() == typeof(List))
+                                        {
+                                            Set original = (Set)at.valor;
+                                            Set temp = new Set(((List)op1).id, ((List)op1).lista);
+                                            if (original.id.Equals(temp.id))
+                                            {
+                                                object resp = temp.buscarRepetidos(mensajes, l, c);
+                                                if (resp == null) return null;
+                                                temp.order();
+                                                ts.setValor(id, temp);
+                                            }
+                                            else
+                                            {
+                                                mensajes.AddLast(mensa.error("No coincide los tipos: " + original.id + " con: " + temp.id, l, c, "Semantico"));
+                                                return null;
+                                            }
+
+                                        }
+                                        else if (tipo.Equals("set") && op1.GetType() == typeof(Set))
+                                        {
+                                            Set original = (Set)at.valor;
+                                            Set temp = (Set)op1;
+                                            if (original.id.Equals(temp.id))
+                                            {
+                                                object resp = temp.buscarRepetidos(mensajes, l, c);
+                                                if (resp == null) return null;
+                                                temp.order();
+                                                ts.setValor(id, temp);
+                                            }
+                                            else
+                                            {
+                                                mensajes.AddLast(mensa.error("No coincide los tipos: " + original.id + " con: " + temp.id, l, c, "Semantico"));
+                                                return null;
+                                            }
+
+                                        }
                                         else if (op1.GetType() == typeof(InstanciaUserType))
                                         {
                                             InstanciaUserType temp = (InstanciaUserType)op1;
@@ -260,6 +296,41 @@ namespace cql_teacher_server.CQL.Componentes
                         else
                         {
                             mensajes.AddLast(mensa.error("No coincide los tipos: " + valor.id + " con: " + temp.id, l, c, "Semantico"));
+                            return null;
+                        }
+                    }
+                    else if (tipo.Equals("set") && op1.GetType() == typeof(List))
+                    {
+                        Set original = (Set)ts.getValor(id);
+                        Set temp = new Set(((List)op1).id, ((List)op1).lista);
+                        if (original.id.Equals(temp.id))
+                        {
+                            object resp = temp.buscarRepetidos(mensajes, l, c);
+                            if (resp == null) return null;
+                            temp.order();
+                            ts.setValor(id, temp);
+                        }
+                        else
+                        {
+                            mensajes.AddLast(mensa.error("No coincide los tipos: " + original.id + " con: " + temp.id, l, c, "Semantico"));
+                            return null;
+                        }
+                       
+                    }
+                    else if (tipo.Equals("set") && op1.GetType() == typeof(Set))
+                    {
+                        Set original = (Set)ts.getValor(id);
+                        Set temp = (Set)op1;
+                        if (original.id.Equals(temp.id))
+                        {
+                            object resp = temp.buscarRepetidos(mensajes, l, c);
+                            if (resp == null) return null;
+                            temp.order();
+                            ts.setValor(id, temp);
+                        }
+                        else
+                        {
+                            mensajes.AddLast(mensa.error("No coincide los tipos: " + original.id + " con: " + temp.id, l, c, "Semantico"));
                             return null;
                         }
                     }
