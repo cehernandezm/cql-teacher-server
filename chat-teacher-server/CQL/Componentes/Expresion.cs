@@ -839,7 +839,8 @@ namespace cql_teacher_server.CQL.Componentes
                     }
                 }
                 return null;
-            }//--------------------------------------------------------- EXPRESION . GET VALUE -----------------------------------------------------------
+            }
+            //--------------------------------------------------------- EXPRESION . GET VALUE -----------------------------------------------------------
             else if (operacion.Equals("GETMAP"))
             {
                 Mensaje ms = new Mensaje();

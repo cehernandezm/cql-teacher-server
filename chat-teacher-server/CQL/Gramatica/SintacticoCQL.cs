@@ -1264,8 +1264,7 @@ namespace cql_teacher_server.CQL.Gramatica
                     return new Expresion("ASIGNACIONUSER", lAs, cAs, lista, idAs);
                 }
                 string tipoLista = raiz.ChildNodes.ElementAt(1).Token.Text.ToLower().TrimEnd().TrimStart();
-                string tipoList = raiz.ChildNodes.ElementAt(3).ChildNodes.ElementAt(0).Token.Text;
-                tipoList = tipoList.ToLower().TrimEnd().TrimStart();
+                string tipoList = concatenarTipo(raiz.ChildNodes.ElementAt(3));
                 int ltl = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
                 int ctl = raiz.ChildNodes.ElementAt(1).Token.Location.Column;
                 if (tipoLista.Equals("list")) return new Expresion(tipoList, "NEWLIST", ltl, ctl);
