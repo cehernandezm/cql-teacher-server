@@ -63,5 +63,29 @@ namespace cql_teacher_server.CQL.Componentes
             }
             return "";
         }
+
+        /*
+         * METODO QUE BUSCA DATOS REPETIDOS POR VALOR
+         * @param {valor} objecto a buscar
+         * @param {mensajes} output
+         * @param {l} linea de la instruccion
+         * @param {c} columna de la instruccion
+         * @return null si hay error | "" si todo esta bien
+         */
+
+        public object buscarRepetidosPorValor(LinkedList<string> mensajes, int l, int c,object valor)
+        {
+            Mensaje ms = new Mensaje();
+            foreach (object o in datos)
+            {
+                if (o.Equals(valor))
+                {
+                    mensajes.AddLast(ms.error("Este valor esta repetido: " + o.ToString(), l, c, "Semantico"));
+                    return null;
+                }
+
+            }
+            return "";
+        }
     }
 }

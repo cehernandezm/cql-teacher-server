@@ -114,7 +114,37 @@ namespace cql_teacher_server.CQL.Componentes
                             }
                             else mensajes.AddLast(ms.error("Los tipos : " + temp.id + " no coincide con: " + tV,l,c,"Semantico"));
                         }
-                        else mensajes.AddLast(ms.error("No se puede aplicar un insert en un tipo no LIST, no se reconoce: " + mp, l, c, "Semantico"));
+                        else if(mp.GetType() == typeof(Set))
+                        {
+                            Set temp = (Set)mp;
+                            string tV = (getTipoValorSecundario(ky, mensajes) == null) ? "null" : (getTipoValorSecundario(ky, mensajes));
+                            if (tV.Equals(temp.id))
+                            {
+                                object resp = temp.buscarRepetidosPorValor(mensajes, l, c, ky);
+                                if (resp == null) return null;
+                                temp.datos.AddLast(ky);
+                                temp.order();
+                                return "";
+                            }
+                            else if (tV.Equals("null"))
+                            {
+                                if (!temp.id.Equals("int") && !temp.id.Equals("double") && !temp.id.Equals("boolean") && !temp.id.Equals("map") && !temp.id.Equals("list"))
+                                {
+                                    if (temp.id.Equals("string") || temp.id.Equals("date") || temp.id.Equals("time"))
+                                    {
+                                        object resp = temp.buscarRepetidosPorValor(mensajes, l, c, ky);
+                                        if (resp == null) return null;
+                                        temp.datos.AddLast(ky);
+                                        return "";
+                                    }
+                                    temp.datos.AddLast(new InstanciaUserType(temp.id, null));
+                                    return "";
+                                }
+                                else mensajes.AddLast(ms.error("No se puede asignar un valor null a un : " + temp.id, l, c, "Semantico"));
+                            }
+                            else mensajes.AddLast(ms.error("Los tipos : " + temp.id + " no coincide con: " + tV, l, c, "Semantico"));
+                        } 
+                        else mensajes.AddLast(ms.error("No se puede aplicar un insert en un tipo no COLLECTION, no se reconoce: " + mp, l, c, "Semantico"));
                     }
                     
                 }

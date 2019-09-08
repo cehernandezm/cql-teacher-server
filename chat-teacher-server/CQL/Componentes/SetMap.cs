@@ -138,7 +138,57 @@ namespace cql_teacher_server.CQL.Componentes
                         }
                         else mensajes.AddLast(ms.error("Index tiene que ser de tipo numerico: " + ky, l, c, "Semantico"));
                     }
-                    else mensajes.AddLast(ms.error("No se puede aplicar un SET en un tipo no map, no se reconoce: " + mp, l, c, "Semantico"));
+                    else if (mp.GetType() == typeof(Set))
+                    {
+                        Set temp = (Set)mp;
+                        if (ky.GetType() == typeof(int))
+                        {
+                            int index = (int)ky;
+                            if (index > -1)
+                            {
+                                if (index < temp.datos.Count())
+                                {
+                                    string tipoValor = (getTipoValorSecundario(vl, mensajes) == null) ? "null" : getTipoValorSecundario(vl, mensajes);
+                                    if (tipoValor.Equals(temp.id))
+                                    {
+                                        object res = temp.buscarRepetidosPorValor(mensajes, l, c, vl);
+                                        if (res == null) return null;
+                                        ChangeValueList(temp.datos, index, vl);
+                                        temp.order();
+                                        return "";
+                                    }
+                                    else if (tipoValor.Equals("null"))
+                                    {
+                                        if (!temp.id.Equals("int") && !temp.id.Equals("double") && !temp.id.Equals("boolean") && !temp.id.Equals("map") && !temp.id.Equals("list"))
+                                        {
+                                            if (temp.id.Equals("string") || temp.id.Equals("date") || temp.id.Equals("time"))
+                                            {
+                                                object res = temp.buscarRepetidosPorValor(mensajes, l, c, vl);
+                                                if (res == null) return null;
+                                                ChangeValueList(temp.datos, index, vl);
+                                                temp.order();
+                                                return "";
+                                            }
+                                            else
+                                            {
+                                                object res = temp.buscarRepetidosPorValor(mensajes, l, c, new InstanciaUserType(temp.id, null));
+                                                if (res == null) return null;
+                                                ChangeValueList(temp.datos, index, new InstanciaUserType(temp.id, null));
+                                                return "";
+                                            }
+                                        }
+                                        else mensajes.AddLast(ms.error("No se puede asignar null al tipo: " + temp.id, l, c, "Semantico"));
+                                    }
+                                    else mensajes.AddLast(ms.error("No coinciden los tipos: " + temp.id + " con: " + tipoValor, l, c, "Semantico"));
+
+                                }
+                                else mensajes.AddLast(ms.error("El index es mayor al tamaño de la lista", l, c, "Semantico"));
+                            }
+                            else mensajes.AddLast(ms.error("Index tiene que ser mayor a 0 : " + index, l, c, "Semantico"));
+                        }
+                        else mensajes.AddLast(ms.error("Index tiene que ser de tipo numerico: " + ky, l, c, "Semantico"));
+                    }
+                    else mensajes.AddLast(ms.error("No se puede aplicar un SET en un tipo no Collection, no se reconoce: " + mp, l, c, "Semantico"));
 
 
 
@@ -150,7 +200,12 @@ namespace cql_teacher_server.CQL.Componentes
             return null;
         }
 
-
+        /*
+         * Metodo que cambia el valor de una lista de datos
+         * @param {lista} lista de datos
+         * @param {index}  posicion a cambiar
+         * @param {valor} nuevo valor
+         */
         private void ChangeValueList(LinkedList<object> lista, int index,object valor)
         {
             if(lista.Count() > 0)

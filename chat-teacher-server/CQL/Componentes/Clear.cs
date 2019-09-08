@@ -53,6 +53,12 @@ namespace cql_teacher_server.CQL.Componentes
                     temp.lista.Clear();
                     return "";
                 }
+                else if (mp.GetType() == typeof(Set))
+                {
+                    Set temp = (Set)mp;
+                    temp.datos.Clear();
+                    return "";
+                }
                 else mensajes.AddLast(ms.error("No se puede aplicar un REMOVE en un tipo no Collection, no se reconoce: " + mp, l, c, "Semantico"));
 
             }

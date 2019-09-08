@@ -103,6 +103,39 @@ namespace cql_teacher_server.CQL.Componentes
                         }
                         else mensajes.AddLast(ms.error("El index debe de ser de tipo int: " + ky,l,c,"Semantico"));
                     }
+                    else if (mp.GetType() == typeof(Set))
+                    {
+                        if (ky.GetType() == typeof(int))
+                        {
+                            Set temp = (Set)mp;
+                            int index = (int)ky;
+                            if (index > -1)
+                            {
+                                if (index < temp.datos.Count())
+                                {
+                                    int i = 0;
+                                    if (temp.datos.Count() > 0)
+                                    {
+                                        var node = temp.datos.First;
+                                        while (node != null)
+                                        {
+                                            var nodeNext = node.Next;
+                                            if (i == index)
+                                            {
+                                                temp.datos.Remove(node);
+                                                return "";
+                                            }
+                                            i++;
+                                            node = nodeNext;
+                                        }
+                                    }
+                                }
+                                else mensajes.AddLast(ms.error("El index supera el tamaño de la lista", l, c, "Semantico"));
+                            }
+                            else mensajes.AddLast(ms.error("El index debe ser mayor a -1", l, c, "Semantico"));
+                        }
+                        else mensajes.AddLast(ms.error("El index debe de ser de tipo int: " + ky, l, c, "Semantico"));
+                    }
                     else mensajes.AddLast(ms.error("No se puede aplicar un REMOVE en un tipo no Collection, no se reconoce: " + mp, l, c, "Semantico"));
                 }
                 else mensajes.AddLast(ms.error("La key no puede ser null", l, c, "Semantico"));
