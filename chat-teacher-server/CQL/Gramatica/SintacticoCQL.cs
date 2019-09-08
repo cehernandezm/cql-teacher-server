@@ -217,6 +217,7 @@ namespace cql_teacher_server.CQL.Gramatica
                         cUT = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
 
                     }
+                    //---------------------------------------- CON IF NOT EXISTS-------------------------------------------------------------------
                     else
                     {
                         idU = hijo.ChildNodes.ElementAt(5).Token.Text;
@@ -1085,22 +1086,17 @@ namespace cql_teacher_server.CQL.Gramatica
             if (raiz.ChildNodes.Count() == 3)
             {
                 lista = getListaUserType(raiz.ChildNodes.ElementAt(0));
-
                 id = raiz.ChildNodes.ElementAt(1).Token.Text;
                 id = id.ToLower().TrimEnd().TrimStart();
-
-                tipo = raiz.ChildNodes.ElementAt(2).ChildNodes.ElementAt(0).Token.Text;
-                tipo = tipo.ToLower().TrimEnd().TrimStart();
+                tipo = concatenarTipo(raiz.ChildNodes.ElementAt(2));
             }
             else
             {
                 id = raiz.ChildNodes.ElementAt(0).Token.Text;
                 id = id.ToLower().TrimEnd().TrimStart();
-
-                tipo = raiz.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).Token.Text;
-                tipo = tipo.ToLower().TrimEnd().TrimStart();
+                tipo = concatenarTipo(raiz.ChildNodes.ElementAt(1));
             }
-
+            tipo = tipo.ToLower().TrimEnd().TrimStart();
             Attrs a = new Attrs(id, tipo);
             lista.AddLast(a);
             return lista;
@@ -1108,6 +1104,27 @@ namespace cql_teacher_server.CQL.Gramatica
         }
 
 
+        /*
+         * Metodo que devuelve el tipo concatenado
+         * @raiz de subarbol a analizar
+         * @return string de tipo completo
+         */
+
+        private string concatenarTipo(ParseTreeNode raiz)
+        {
+            string salida = "";
+            if (raiz.ChildNodes.Count() == 5) salida += "map<" + concatenarTipo(raiz.ChildNodes.ElementAt(2)) + "," + concatenarTipo(raiz.ChildNodes.ElementAt(3)) + ">";
+            else
+            {
+                for (int i = 0; i < raiz.ChildNodes.Count(); i++)
+                {
+                    string name = raiz.ChildNodes.ElementAt(i).Term.Name;
+                    if (name.Equals("tipovariable")) salida += concatenarTipo(raiz.ChildNodes.ElementAt(i));
+                    else salida += raiz.ChildNodes.ElementAt(i).Token.Text;
+                }
+            }
+            return salida;
+        }
 
 
         /*
@@ -1146,7 +1163,9 @@ namespace cql_teacher_server.CQL.Gramatica
                 {
                     int lM = raiz.ChildNodes.ElementAt(0).Token.Location.Line;
                     int cM = raiz.ChildNodes.ElementAt(0).Token.Location.Column;
-                    return new Expresion(resolver_user_type(raiz.ChildNodes.ElementAt(1)), "LISTALIST", lM, cM);
+                    string simbolo = raiz.ChildNodes.ElementAt(0).Token.Text;
+                    if(simbolo.Equals("[")) return new Expresion(resolver_user_type(raiz.ChildNodes.ElementAt(1)), "LISTALIST", lM, cM);
+                    else return new Expresion(resolver_user_type(raiz.ChildNodes.ElementAt(1)), "LISTASET", lM, cM);
                 }
                 else
                 {
@@ -1233,7 +1252,7 @@ namespace cql_teacher_server.CQL.Gramatica
                         resolver_expresion(raiz.ChildNodes.ElementAt(4)),
                         resolver_expresion(raiz.ChildNodes.ElementAt(0)), "TERNARIO", lineaT, columnaT);
                 }
-                else if (tipoNew.Equals("asignausertype"))
+                else if (tipoNew.Equals("listvalues"))
                 {
                     LinkedList<Expresion> lista = resolver_user_type(raiz.ChildNodes.ElementAt(1));
                     string idAs = raiz.ChildNodes.ElementAt(4).Token.Text;

@@ -90,6 +90,7 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 if (a.type.Equals("string") || a.type.Equals("int") || a.type.Equals("double") || a.type.Equals("boolean") || a.type.Equals("map")
                     || a.type.Equals("date") || a.type.Equals("time")) newL.AddLast(a);
+                else if (a.type.ToLower().Contains("list") || a.type.ToLower().Contains("map") || a.type.ToLower().Contains("set")) newL.AddLast(a);
                 else if (TablaBaseDeDatos.getUserType(a.type.ToLower(), db)) newL.AddLast(a);
                 else
                 {

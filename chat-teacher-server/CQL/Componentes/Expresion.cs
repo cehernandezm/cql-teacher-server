@@ -623,7 +623,7 @@ namespace cql_teacher_server.CQL.Componentes
                     User_Types a = TablaBaseDeDatos.getUserTypeV(tipoA.ToLower(), db);
                     if (a != null)
                     {
-                        LinkedList<Atributo> lista = getAtributos(a, db);
+                        LinkedList<Atributo> lista = getAtributos(a, db,mensajes);
                         if (lista != null)
                         {
                             return new InstanciaUserType(tipoA, lista);
@@ -703,21 +703,26 @@ namespace cql_teacher_server.CQL.Componentes
                     User_Types a = TablaBaseDeDatos.getUserTypeV(idAs.ToLower(), db);
                     if(a != null)
                     {
-                        LinkedList<Atributo> listaA = getAtributos(a, db);
-                        if (listaA.Count() == listaUser.Count())
+                        LinkedList<Atributo> listaA = getAtributos(a, db,mensajes);
+                        if (listaA != null)
                         {
-                            LinkedList<Atributo> newLista = compareListas(listaA, listaUser, ts, user, ref baseD, mensajes,tsT);
-                            if (newLista == null) return null;
+                            if (listaA.Count() == listaUser.Count())
+                            {
+                                LinkedList<Atributo> newLista = compareListas(listaA, listaUser, ts, user, ref baseD, mensajes, tsT);
+                                if (newLista == null) return null;
 
-                            InstanciaUserType ius = new InstanciaUserType(idAs.ToLower(), newLista);
-                            return ius;
+                                InstanciaUserType ius = new InstanciaUserType(idAs.ToLower(), newLista);
+                                return ius;
+                            }
+                            else
+                            {
+                                Mensaje men = new Mensaje();
+                                mensajes.AddLast(men.error("La cantidad de atributos no con cuerda con la del user type" + idAs, linea1, columna1, "Semantico"));
+                                return null;
+                            }
                         }
-                        else
-                        {
-                            Mensaje men = new Mensaje();
-                            mensajes.AddLast(men.error("La cantidad de atributos no con cuerda con la del user type" + idAs, linea1, columna1, "Semantico"));
-                            return null;
-                        }
+                        else return null;
+                        
                     }
                     else
                     {
@@ -818,7 +823,23 @@ namespace cql_teacher_server.CQL.Componentes
                 if (list != null) return list;
                 return null;
             }
-            //--------------------------------------------------------- EXPRESION . GET VALUE -----------------------------------------------------------
+            //--------------------------------------------------------- LISTA SET ------------------------------------------------------------------
+            else if (operacion.Equals("LISTASET"))
+            {
+                LinkedList<Expresion> lista = (LinkedList<Expresion>)valor;
+                List list = getList(lista, ts, user, ref baseD, mensajes, tsT);
+                if (list != null)
+                {
+                    Set set = new Set(list.id, list.lista);
+                    object valoresRepetidos = set.buscarRepetidos(mensajes,linea1,columna1);
+                    if(valoresRepetidos!= null)
+                    {
+                        set.order();
+                        return set;
+                    }
+                }
+                return null;
+            }//--------------------------------------------------------- EXPRESION . GET VALUE -----------------------------------------------------------
             else if (operacion.Equals("GETMAP"))
             {
                 Mensaje ms = new Mensaje();
@@ -915,7 +936,7 @@ namespace cql_teacher_server.CQL.Componentes
                         }
                         return false;
                     }
-                    else if (op1.GetType() == typeof(List))
+                    else if (op1.GetType() == typeof(Set))
                     {
                         Set temp = (Set)op1;
                         foreach (object o in temp.datos)
@@ -1309,11 +1330,13 @@ namespace cql_teacher_server.CQL.Componentes
          * @u User type que se recorrera
          * @bd base de datos donde se encuentra el user type
          */
-        private LinkedList<Atributo> getAtributos(User_Types u, BaseDeDatos bd)
+        private LinkedList<Atributo> getAtributos(User_Types u, BaseDeDatos bd, LinkedList<string> mensajes)
         {
+            Mensaje ms = new Mensaje();
             LinkedList<Atributo> at = new LinkedList<Atributo>();
-            foreach(Attrs a in u.type)
+            foreach (Attrs a in u.type)
             {
+                System.Diagnostics.Debug.WriteLine("Este es el tipo: " + a.type);
                 Atributo att;
                 if (a.type.ToLower().Equals("string")) att = new Atributo(a.name.ToLower(), null, "string");
                 else if (a.type.ToLower().Equals("date")) att = new Atributo(a.name.ToLower(), null, "date");
@@ -1321,13 +1344,35 @@ namespace cql_teacher_server.CQL.Componentes
                 else if (a.type.ToLower().Equals("int")) att = new Atributo(a.name.ToLower(), 0, "int");
                 else if (a.type.ToLower().Equals("double")) att = new Atributo(a.name.ToLower(), 0.0, "double");
                 else if (a.type.ToLower().Equals("boolean")) att = new Atributo(a.name.ToLower(), false, "boolean");
+                else if (a.type.ToLower().Contains("list"))
+                {
+                    string tipo = a.type.ToLower().TrimStart('l').TrimStart('i').TrimStart('s').TrimStart('t').TrimStart('<').TrimEnd('>');
+                    att = new Atributo(a.name.ToLower(), new List(tipo, new LinkedList<object>()), "list");
+                }
+                else if (a.type.ToLower().Contains("set"))
+                {
+                    string tipo = a.type.ToLower().TrimStart('s').TrimStart('e').TrimStart('t').TrimStart('<').TrimEnd('>');
+                    att = new Atributo(a.name.ToLower(), new Set(tipo, new LinkedList<object>()), "set");
+                }
+                else if (a.type.ToLower().Contains("map"))
+                {
+                    string tipo = a.type.ToLower().TrimStart('m').TrimStart('a').TrimStart('p').TrimStart('<').TrimEnd('>');
+                    string tipoKey = tipo.Split(new[] { ',' }, 2)[0];
+                    string tipoValue = tipo.Split(new[] { ',' }, 2)[1];
+                    if (cheackPrimaryKey(tipoKey)) att = new Atributo(a.name.ToLower(), new Map(tipoKey + "/" + tipoValue, new LinkedList<KeyValue>()), "map");
+                    else
+                    {
+                        mensajes.AddLast(ms.error("El tipo map no puede tener este tipo: " + tipoKey + " como tipo de key", linea1, columna1, "Semantico"));
+                        return null;
+                    }
+                }
                 else
                 {
                     User_Types temp = TablaBaseDeDatos.getUserTypeV(a.type.ToLower(), bd);
 
                     if (temp != null)
                     {
-                        LinkedList<Atributo> tempA = getAtributos(temp, bd);
+                        LinkedList<Atributo> tempA = getAtributos(temp, bd,mensajes);
                         InstanciaUserType tm = new InstanciaUserType(a.type, tempA);
                         if (tempA != null)
                         {
@@ -1349,6 +1394,7 @@ namespace cql_teacher_server.CQL.Componentes
 
         private LinkedList<Atributo> compareListas(LinkedList<Atributo> a , LinkedList<Expresion> e, TablaDeSimbolos ts, string user,ref string baseD, LinkedList<string> mensaje,TablaDeSimbolos tsT)
         {
+            Mensaje ms = new Mensaje();
             LinkedList<Atributo> listaAtributo = new LinkedList<Atributo>();
             for (int i = 0; i < a.Count(); i++)
             {
@@ -1362,6 +1408,39 @@ namespace cql_teacher_server.CQL.Componentes
                     else if (at.tipo.Equals("boolean") && (operador1.GetType() == typeof(Boolean))) listaAtributo.AddLast(new Atributo(at.nombre, (Boolean)operador1, "boolean"));
                     else if (at.tipo.Equals("date") && (operador1.GetType() == typeof(DateTime))) listaAtributo.AddLast(new Atributo(at.nombre, (DateTime)operador1, "date"));
                     else if (at.tipo.Equals("time") && (operador1.GetType() == typeof(TimeSpan))) listaAtributo.AddLast(new Atributo(at.nombre, (TimeSpan)operador1, "time"));
+                    else if (at.tipo.Equals("list") && (operador1.GetType() == typeof(List)))
+                    {
+                        List actual = (List)at.valor;
+                        List temp = (List)operador1;
+                        if (actual.id.Equals(temp.id)) listaAtributo.AddLast(new Atributo(at.nombre, temp, "list"));
+                        else
+                        {
+                            mensaje.AddLast(ms.error("No coinciden los tipos de las listas: " + actual.id + " con: " + temp.id, linea1, columna1, "Semantico"));
+                            return null;
+                        }
+                    }
+                    else if (at.tipo.Equals("set") && (operador1.GetType() == typeof(Set)))
+                    {
+                        Set actual = (Set)at.valor;
+                        Set temp = (Set)operador1;
+                        if (actual.id.Equals(temp.id)) listaAtributo.AddLast(new Atributo(at.nombre, temp, "set"));
+                        else
+                        {
+                            mensaje.AddLast(ms.error("No coinciden los tipos de las Set: " + actual.id + " con: " + temp.id, linea1, columna1, "Semantico"));
+                            return null;
+                        }
+                    }
+                    else if (at.tipo.Equals("map") && (operador1.GetType() == typeof(Map)))
+                    {
+                        Map actual = (Map)at.valor;
+                        Map temp = (Map)operador1;
+                        if (actual.id.Equals(temp.id)) listaAtributo.AddLast(new Atributo(at.nombre, temp, "map"));
+                        else
+                        {
+                            mensaje.AddLast(ms.error("No coinciden los tipos de los MAP: " + actual.id + " con: " + temp.id, linea1, columna1, "Semantico"));
+                            return null;
+                        }
+                    }
                     else if (operador1.GetType() == typeof(InstanciaUserType))
                     {
                         InstanciaUserType temp = (InstanciaUserType)operador1;
@@ -1382,7 +1461,8 @@ namespace cql_teacher_server.CQL.Componentes
                 }
                 else
                 {
-                    if (at.tipo.Equals("string") || at.tipo.Equals("int") || at.tipo.Equals("double") || at.tipo.Equals("map") || at.tipo.Equals("boolean") || at.tipo.Equals("date") || at.tipo.Equals("time"))
+                    if(at.tipo.Equals("string") || at.tipo.Equals("date") || at.tipo.Equals("time")) listaAtributo.AddLast(new Atributo(at.nombre, null, at.tipo));
+                    else if (at.tipo.Contains("map") || at.tipo.Equals("int") || at.tipo.Equals("double") || at.tipo.Contains("list") || at.tipo.Equals("boolean") || at.tipo.Contains("set"))
                     {
                         Mensaje men = new Mensaje();
                         mensaje.AddLast(men.error("No coincide el tipo: " + at.tipo + " con el valor: null " , linea1, columna1, "Semantico"));
@@ -1459,6 +1539,19 @@ namespace cql_teacher_server.CQL.Componentes
             object sum = getSum(datas);
             if (sum.GetType() == typeof(int)) return ((int)sum / datas.Count());
             else return (Double)((Double)sum / datas.Count());
+        }
+
+
+        /*
+         * METODOQ QUE OBTENDRA EL VALOR DE LA KEY PRINCIPAL PARA MAPS
+         * @param {tipo} tipo de key
+         * @return false si hay un error | true si todo esta correcto
+         */
+
+        private Boolean cheackPrimaryKey(string tipo)
+        {
+            if (!tipo.Equals("string") && !tipo.Equals("int") && !tipo.Equals("double") && !tipo.Equals("boolean") && !tipo.Equals("date") && !tipo.Equals("time")) return false;
+            return true;
         }
     }
 

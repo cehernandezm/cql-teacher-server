@@ -153,13 +153,13 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal expresion = new NonTerminal("expresion");
 
             NonTerminal tipoVariable = new NonTerminal("tipovariable");
+            NonTerminal tipoVariable2 = new NonTerminal("tipovariable");
 
             NonTerminal declaracion = new NonTerminal("declaracion");
             NonTerminal declaracionA = new NonTerminal("declaracionA");
 
             NonTerminal user_type = new NonTerminal("usertype");
             NonTerminal lista_user_type = new NonTerminal("listausertype");
-            NonTerminal asigna_UserType = new NonTerminal("asignausertype");
 
             NonTerminal asignacion = new NonTerminal("asignacion");
             NonTerminal asignacionA = new NonTerminal("asignaciona");
@@ -308,8 +308,9 @@ namespace cql_teacher_server.CQL.Gramatica
                            | NEW + MAP + "<" + tipoVariable + "," + tipoVariable + ">"
                            | NEW + LIST + "<" + tipoVariable + ">"
                            | NEW + SET + "<" + tipoVariable + ">"
-                           | expresion + "." + ID
-                           | "{" + asigna_UserType + "}" + AS + ID
+                           | expresion + "." + ID 
+                           | "{" + listValues + "}"
+                           | "{" + listValues + "}" + AS + ID
                            | "[" + listaMap + "]"
                            | "[" + listValues + "]"
                            | expresion + "." + SIZE + "(" + ")"
@@ -332,12 +333,7 @@ namespace cql_teacher_server.CQL.Gramatica
                            ;
 
             #endregion
-            //-------------------------------------------------------- asignacion de valores de un usertype ----------------------------------------------------
-            #region asginacion de User types
-            asigna_UserType.Rule = asigna_UserType + "," + expresion
-                                 | expresion
-                                 ;
-            #endregion
+           
             //------------------------------------------------------ TIPO DE VARIABLES --------------------------------------------------------------------------
             #region Tipo de variables
             tipoVariable.Rule = STRING
@@ -351,6 +347,18 @@ namespace cql_teacher_server.CQL.Gramatica
                               | MAP
                               | LIST
                               | SET
+                              ;
+            tipoVariable2.Rule = STRING
+                              | INT
+                              | BOOL
+                              | DECIMAL
+                              | DATE
+                              | TIME
+                              | ID
+                              | COUNTER
+                              | MAP + "<" + tipoVariable2 + ToTerm(",") + tipoVariable2 + ">" 
+                              | LIST + "<" + tipoVariable2 + ">"
+                              | SET + "<" + tipoVariable2 + ">"
                               ;
             #endregion
             //------------------------------------------------------- DECLARACION DE VARIABLE --------------------------------------------------------------------
@@ -373,8 +381,8 @@ namespace cql_teacher_server.CQL.Gramatica
             #endregion
             //---------------------------------------------------------- Lista de atributos de un user_type ----------------------------------------------------------
             #region atributos de un usertype
-            lista_user_type.Rule = lista_user_type + "," + ID + tipoVariable
-                                 | ID + tipoVariable
+            lista_user_type.Rule = lista_user_type + "," + ID + tipoVariable2
+                                 | ID + tipoVariable2
                                  ;
             #endregion
 
