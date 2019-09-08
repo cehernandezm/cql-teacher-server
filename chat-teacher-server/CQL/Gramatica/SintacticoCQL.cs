@@ -1123,6 +1123,7 @@ namespace cql_teacher_server.CQL.Gramatica
                     else salida += raiz.ChildNodes.ElementAt(i).Token.Text;
                 }
             }
+            salida = salida.ToLower().TrimEnd().TrimStart();
             return salida;
         }
 
@@ -1310,8 +1311,8 @@ namespace cql_teacher_server.CQL.Gramatica
                 int li = raiz.ChildNodes.ElementAt(3).ChildNodes.ElementAt(0).Token.Location.Line;
                 int ci = raiz.ChildNodes.ElementAt(3).ChildNodes.ElementAt(0).Token.Location.Column;
 
-                string tipo1 = raiz.ChildNodes.ElementAt(3).ChildNodes.ElementAt(0).Token.Text.ToLower().TrimStart().TrimEnd();
-                string tipo2 = raiz.ChildNodes.ElementAt(4).ChildNodes.ElementAt(0).Token.Text.ToLower().TrimStart().TrimEnd();
+                string tipo1 = concatenarTipo(raiz.ChildNodes.ElementAt(3));
+                string tipo2 = concatenarTipo(raiz.ChildNodes.ElementAt(4));
                 return new Expresion("CREARMAP",li,ci,tipo1,tipo2);
             }
             else

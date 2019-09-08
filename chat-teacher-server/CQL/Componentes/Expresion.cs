@@ -788,7 +788,7 @@ namespace cql_teacher_server.CQL.Componentes
                 Mensaje mensa = new Mensaje();
                 if (tipo1.Equals("string") || tipo1.Equals("boolean") || tipo1.Equals("date") || tipo1.Equals("time") || tipo1.Equals("int") || tipo1.Equals("double"))
                 {
-                    string identificador = tipo1 + "/" + tipo2;
+                    string identificador = tipo1 + "," + tipo2;
                     Map map = new Map(identificador, new LinkedList<KeyValue>());
                     return map;
                 }
@@ -1200,7 +1200,7 @@ namespace cql_teacher_server.CQL.Componentes
                     if (!verificarValoresRepetidos(temporal, mensajes))
                     {
                         if (!verificarTipos(tipoKey, ref tipoValor, mensajes, temporal)) return null;
-                        return new Map(tipoKey + "/" + tipoValor, temporal);
+                        return new Map(tipoKey + "," + tipoValor, temporal);
                     }
                 }
             }
@@ -1314,8 +1314,9 @@ namespace cql_teacher_server.CQL.Componentes
                 else if (valor.GetType() == typeof(DateTime)) return "date";
                 else if (valor.GetType() == typeof(TimeSpan)) return "time";
                 else if (valor.GetType() == typeof(InstanciaUserType)) return ((InstanciaUserType)valor).tipo;
-                else if (valor.GetType() == typeof(Map)) return ((Map)valor).id;
-                else if (valor.GetType() == typeof(List)) return ((List)valor).id;
+                else if (valor.GetType() == typeof(Map)) return "map<" +((Map)valor).id + ">";
+                else if (valor.GetType() == typeof(List)) return "list<"+ ((List)valor).id + ">";
+                else if (valor.GetType() == typeof(Set)) return "set<" + ((Set)valor).id + ">";
                 else
                 {
                     mensajes.AddLast(ms.error("No se acepta este tipo de valor como clave Secundaria : " + valor, linea1, columna1, "Semantico"));
@@ -1359,7 +1360,7 @@ namespace cql_teacher_server.CQL.Componentes
                     string tipo = a.type.ToLower().TrimStart('m').TrimStart('a').TrimStart('p').TrimStart('<').TrimEnd('>');
                     string tipoKey = tipo.Split(new[] { ',' }, 2)[0];
                     string tipoValue = tipo.Split(new[] { ',' }, 2)[1];
-                    if (cheackPrimaryKey(tipoKey)) att = new Atributo(a.name.ToLower(), new Map(tipoKey + "/" + tipoValue, new LinkedList<KeyValue>()), "map");
+                    if (cheackPrimaryKey(tipoKey)) att = new Atributo(a.name.ToLower(), new Map(tipoKey + "," + tipoValue, new LinkedList<KeyValue>()), "map");
                     else
                     {
                         mensajes.AddLast(ms.error("El tipo map no puede tener este tipo: " + tipoKey + " como tipo de key", linea1, columna1, "Semantico"));

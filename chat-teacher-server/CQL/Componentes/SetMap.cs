@@ -60,7 +60,7 @@ namespace cql_teacher_server.CQL.Componentes
                     if (mp.GetType() == typeof(Map))
                     {
                         Map temp = (Map)mp;
-                        string t2 = temp.id.Split("/")[1];
+                        string t2 = (temp.id.Split(new[] { ',' } , 2))[1];
                         string tV = (getTipoValorSecundario(vl, mensajes) == null) ? "null" : (getTipoValorSecundario(vl, mensajes));
                         foreach (KeyValue key in temp.datos)
                         {
@@ -73,7 +73,7 @@ namespace cql_teacher_server.CQL.Componentes
                                 }
                                 else if (tV.Equals("null"))
                                 {
-                                    if (!t2.Equals("int") && !t2.Equals("double") && !t2.Equals("boolean") && !t2.Equals("map") && !t2.Equals("list"))
+                                    if (!t2.Equals("int") && !t2.Equals("double") && !t2.Equals("boolean") && !t2.Equals("map") && !t2.Equals("list") && !t2.Equals("set"))
                                     {
                                         if (t2.Equals("string") || t2.Equals("date") || t2.Equals("time"))
                                         {
@@ -114,7 +114,7 @@ namespace cql_teacher_server.CQL.Componentes
                                     }
                                     else if (tipoValor.Equals("null"))
                                     {
-                                        if (!temp.id.Equals("int") && !temp.id.Equals("double") && !temp.id.Equals("boolean") && !temp.id.Equals("map") && !temp.id.Equals("list"))
+                                        if (!temp.id.Equals("int") && !temp.id.Equals("double") && !temp.id.Equals("boolean") && !temp.id.Equals("map") && !temp.id.Equals("list") && !temp.id.Equals("set"))
                                         {
                                             if (temp.id.Equals("string") || temp.id.Equals("date") || temp.id.Equals("time"))
                                             {
@@ -159,7 +159,7 @@ namespace cql_teacher_server.CQL.Componentes
                                     }
                                     else if (tipoValor.Equals("null"))
                                     {
-                                        if (!temp.id.Equals("int") && !temp.id.Equals("double") && !temp.id.Equals("boolean") && !temp.id.Equals("map") && !temp.id.Equals("list"))
+                                        if (!temp.id.Equals("int") && !temp.id.Equals("double") && !temp.id.Equals("boolean") && !temp.id.Equals("map") && !temp.id.Equals("list") && !temp.id.Equals("set"))
                                         {
                                             if (temp.id.Equals("string") || temp.id.Equals("date") || temp.id.Equals("time"))
                                             {
@@ -239,7 +239,9 @@ namespace cql_teacher_server.CQL.Componentes
                 else if (valor.GetType() == typeof(DateTime)) return "date";
                 else if (valor.GetType() == typeof(TimeSpan)) return "time";
                 else if (valor.GetType() == typeof(InstanciaUserType)) return ((InstanciaUserType)valor).tipo;
-                else if (valor.GetType() == typeof(Map)) return ((Map)valor).id;
+                else if (valor.GetType() == typeof(Map)) return "map<" +  ((Map)valor).id + ">";
+                else if (valor.GetType() == typeof(List)) return "list<" + ((List)valor).id + ">";
+                else if (valor.GetType() == typeof(Set)) return "set<" + ((Set)valor).id + ">";
                 else
                 {
                     mensajes.AddLast(ms.error("No se acepta este tipo de valor como clave Secundaria : " + valor, l, c, "Semantico"));

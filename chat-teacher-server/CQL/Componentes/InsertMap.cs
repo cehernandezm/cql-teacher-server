@@ -61,7 +61,7 @@ namespace cql_teacher_server.CQL.Componentes
                             Map temp = (Map)mp;
                             string tK = (getTipoValorPrimario(ky, mensajes) == null) ? "null" : (getTipoValorPrimario(ky, mensajes));
                             string tV = (getTipoValorSecundario(vl, mensajes) == null) ? "null" : (getTipoValorSecundario(vl, mensajes));
-                            if (temp.id.Equals(tK + "/" + tV))
+                            if (temp.id.Equals(tK + "," + tV))
                             {
                                 if (!searchKey(temp.datos, ky, mensajes))
                                 {
@@ -71,8 +71,8 @@ namespace cql_teacher_server.CQL.Componentes
                             }
                             else if (tV.Equals("null"))
                             {
-                                string tipo2 = temp.id.Split("/")[1];
-                                if (!tipo2.Equals("int") && !tipo2.Equals("double") && !tipo2.Equals("boolean") && !tipo2.Equals("map"))
+                                string tipo2 = (temp.id.Split(new[] { ',' }, 2))[1];
+                                if (!tipo2.Equals("int") && !tipo2.Equals("double") && !tipo2.Equals("boolean") && !tipo2.Equals("map") && !tipo2.Equals("list") && !tipo2.Equals("set"))
                                 {
                                     if (!searchKey(temp.datos, ky, mensajes))
                                     {
@@ -83,7 +83,7 @@ namespace cql_teacher_server.CQL.Componentes
                                 }
                                 else mensajes.AddLast(ms.error("No se puede guardar null el tipo: " + tipo2, l, c, "Semantico"));
                             }
-                            else mensajes.AddLast(ms.error("No coinciden los tipo: " + temp.id + " con: " + tK + "/" + tV, l, c, "Semantico"));
+                            else mensajes.AddLast(ms.error("No coinciden los tipo: " + temp.id + " con: " + tK + "," + tV, l, c, "Semantico"));
                         }
                         else mensajes.AddLast(ms.error("No se puede aplicar un insert en un tipo no map, no se reconoce: " + mp, l, c, "Semantico"));
                     }
@@ -100,7 +100,7 @@ namespace cql_teacher_server.CQL.Componentes
                             }
                             else if (tV.Equals("null"))
                             {
-                                if(!temp.id.Equals("int") && !temp.id.Equals("double") && !temp.id.Equals("boolean") && !temp.id.Equals("map") && !temp.id.Equals("list"))
+                                if(!temp.id.Equals("int") && !temp.id.Equals("double") && !temp.id.Equals("boolean") && !temp.id.Equals("map") && !temp.id.Equals("list") && !temp.id.Equals("set"))
                                 {
                                     if(temp.id.Equals("string") || temp.id.Equals("date") || temp.id.Equals("time"))
                                     {
@@ -128,7 +128,7 @@ namespace cql_teacher_server.CQL.Componentes
                             }
                             else if (tV.Equals("null"))
                             {
-                                if (!temp.id.Equals("int") && !temp.id.Equals("double") && !temp.id.Equals("boolean") && !temp.id.Equals("map") && !temp.id.Equals("list"))
+                                if (!temp.id.Equals("int") && !temp.id.Equals("double") && !temp.id.Equals("boolean") && !temp.id.Equals("map") && !temp.id.Equals("list") && !temp.id.Equals("set"))
                                 {
                                     if (temp.id.Equals("string") || temp.id.Equals("date") || temp.id.Equals("time"))
                                     {
@@ -219,7 +219,9 @@ namespace cql_teacher_server.CQL.Componentes
                 else if (valor.GetType() == typeof(DateTime)) return "date";
                 else if (valor.GetType() == typeof(TimeSpan)) return "time";
                 else if (valor.GetType() == typeof(InstanciaUserType)) return ((InstanciaUserType)valor).tipo;
-                else if (valor.GetType() == typeof(Map)) return ((Map)valor).id;
+                else if (valor.GetType() == typeof(Map)) return "map<" + ((Map)valor).id + ">";
+                else if (valor.GetType() == typeof(List)) return "list<" + ((List)valor).id + ">";
+                else if (valor.GetType() == typeof(Set)) return "set<" + ((Set)valor).id + ">";
                 else
                 {
                     mensajes.AddLast(ms.error("No se acepta este tipo de valor como clave Secundaria : " + valor, l, c, "Semantico"));

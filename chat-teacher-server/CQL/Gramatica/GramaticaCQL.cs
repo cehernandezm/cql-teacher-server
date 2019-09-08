@@ -305,7 +305,7 @@ namespace cql_teacher_server.CQL.Gramatica
                            | ToTerm("(") + expresion + ToTerm(")")
                            | ToTerm("(") + tipoVariable + ToTerm(")") + expresion
                            | NEW + ID
-                           | NEW + MAP + "<" + tipoVariable + "," + tipoVariable + ">"
+                           | NEW + MAP + "<" + tipoVariable2 + "," + tipoVariable2 + ">"
                            | NEW + LIST + "<" + tipoVariable + ">"
                            | NEW + SET + "<" + tipoVariable + ">"
                            | expresion + "." + ID 
