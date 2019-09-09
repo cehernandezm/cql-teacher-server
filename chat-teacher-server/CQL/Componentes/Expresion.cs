@@ -57,7 +57,7 @@ namespace cql_teacher_server.CQL.Componentes
 
 
         /* 
-         * Constructor de la clase para casteos explicitos tambien sirve para acceder a User Types,INCREMENTO Y DECREMENTO:
+         * Constructor de la clase para casteos explicitos tambien sirve para acceder a User Types,INCREMENTO Y DECREMENTO, IN:
          * CADENA,ENTERO,DECIMAL,FECHA,HORA,BOOLEAN
          * @a expresion a evalular
          * @casteo a que se quiere convertir
@@ -220,6 +220,19 @@ namespace cql_teacher_server.CQL.Componentes
                 else if (op1.GetType() == typeof(string) && op2.GetType() == typeof(Boolean)) return op1.ToString() + op2.ToString();
                 else if (op1.GetType() == typeof(Boolean) && op2.GetType() == typeof(string)) return op1.ToString() + op2.ToString();
                 else if (op1.GetType() == typeof(string) && op2.GetType() == typeof(string)) return op1.ToString() + op2.ToString();
+                else if (op1.GetType() == typeof(Map) && op2.GetType() == typeof(Map))
+                {
+                    Mensaje ms = new Mensaje();
+                    Map temp = (Map)op1;
+                    Map temp2 = (Map)op2;
+                    if (temp.id.Equals(temp2.id))return new Map(temp.id, new LinkedList<KeyValue>(temp.datos.Union(temp2.datos)));
+  
+                    else
+                    {
+                        mensajes.AddLast(ms.error("No coinciden los tipos de MAPS: " + temp.id + " con: " + temp2.id,linea1,columna1,"Semantico"));
+                        return null;
+                    }
+                }
                 else
                 {
                     Mensaje mes = new Mensaje();
@@ -393,7 +406,10 @@ namespace cql_teacher_server.CQL.Componentes
                     else if (op1.GetType() == typeof(DateTime) && op2.GetType() == typeof(DateTime)) return (DateTime)op1 == (DateTime)op2;
                     else if (op1.GetType() == typeof(string) && op2.GetType() == typeof(string)) return op1.ToString().Equals(op2.ToString());
                     else if (op1.GetType() == typeof(Boolean) && op2.GetType() == typeof(Boolean)) return (Boolean)op1 == (Boolean)op2;
-                    else if (op1.GetType() == typeof(InstanciaUserType) && op2.GetType() == typeof(InstanciaUserType)) return ((InstanciaUserType)op1).tipo.Equals(((InstanciaUserType)op2).tipo);
+                    else if (op1.GetType() == typeof(InstanciaUserType) && op2.GetType() == typeof(InstanciaUserType)) return ((InstanciaUserType)op1).lista.Equals(((InstanciaUserType)op2).lista);
+                    else if (op1.GetType() == typeof(Map) && op2.GetType() == typeof(Map)) return ((Map)op1).datos.Equals(((Map)op2).datos);
+                    else if (op1.GetType() == typeof(List) && op2.GetType() == typeof(List)) return ((List)op1).lista.Equals(((List)op2).lista);
+                    else if (op1.GetType() == typeof(Set) && op2.GetType() == typeof(Set)) return ((Set)op1).datos.Equals(((Set)op2).datos);
                     else
                     {
                         Mensaje mes = new Mensaje();
@@ -407,7 +423,6 @@ namespace cql_teacher_server.CQL.Componentes
                     else if (op1.GetType() == typeof(string) && op2 == null) return (string)op1 == null;
                     else if (op1.GetType() == typeof(DateTime) && op2 == null) return (DateTime)op1 == null;
                     else if (op1.GetType() == typeof(TimeSpan) && op2 == null) return (TimeSpan)op1 == null;
-                    else if (op1.GetType() == typeof(Map) && op2 == null) return ((Map)op1).datos == null;
                     else
                     {
                         Mensaje mes = new Mensaje();
@@ -422,7 +437,6 @@ namespace cql_teacher_server.CQL.Componentes
                     else if (op2.GetType() == typeof(string) && op1 == null) return (string)op2 == null;
                     else if (op2.GetType() == typeof(DateTime) && op1 == null) return (DateTime)op2 == null;
                     else if (op2.GetType() == typeof(TimeSpan) && op1 == null) return (TimeSpan)op2 == null;
-                    else if (op2.GetType() == typeof(Map) && op1 == null) return ((Map)op2).datos == null;
                     else
                     {
                         Mensaje mes = new Mensaje();
@@ -445,7 +459,10 @@ namespace cql_teacher_server.CQL.Componentes
                     else if (op1.GetType() == typeof(DateTime) && op2.GetType() == typeof(DateTime)) return (DateTime)op1 != (DateTime)op2;
                     else if (op1.GetType() == typeof(string) && op2.GetType() == typeof(string)) return op1.ToString().Equals(op2.ToString());
                     else if (op1.GetType() == typeof(Boolean) && op2.GetType() == typeof(Boolean)) return (Boolean)op1 != (Boolean)op2;
-                    else if (op1.GetType() == typeof(InstanciaUserType) && op2.GetType() == typeof(InstanciaUserType)) return !((InstanciaUserType)op1).tipo.Equals(((InstanciaUserType)op2).tipo);
+                    else if (op1.GetType() == typeof(InstanciaUserType) && op2.GetType() == typeof(InstanciaUserType)) return ! ((InstanciaUserType)op1).lista.Equals(((InstanciaUserType)op2).lista);
+                    else if (op1.GetType() == typeof(Map) && op2.GetType() == typeof(Map)) return !((Map)op1).datos.Equals(((Map)op2).datos);
+                    else if (op1.GetType() == typeof(List) && op2.GetType() == typeof(List)) return !((List)op1).lista.Equals(((List)op2).lista);
+                    else if (op1.GetType() == typeof(Set) && op2.GetType() == typeof(Set)) return !((Set)op1).datos.Equals(((Set)op2).datos);
                     else
                     {
                         Mensaje mes = new Mensaje();
@@ -473,7 +490,6 @@ namespace cql_teacher_server.CQL.Componentes
                     else if (op2.GetType() == typeof(string) && op1 == null) return (string)op2 != null;
                     else if (op2.GetType() == typeof(DateTime) && op1 == null) return (DateTime)op2 != null;
                     else if (op2.GetType() == typeof(TimeSpan) && op1 == null) return (TimeSpan)op2 != null;
-                    else if (op2.GetType() == typeof(Map) && op1 == null) return ((Map)op2).datos != null;
                     else
                     {
                         Mensaje mes = new Mensaje();
@@ -781,6 +797,26 @@ namespace cql_teacher_server.CQL.Componentes
                     mensajes.AddLast(men.error("No se puede hacer un decremento en la variable: " + casteo + " porque no es de tipo entero", linea1, columna1, "Semantico"));
                     return null;
                 }
+            }
+            //-------------------------------------------------------- EXP IN EXP ------------------------------------------------------------------
+            else if(operacion.Equals("IN") && op1 != null)
+            {
+                Mensaje ms = new Mensaje();
+                object value = tsT.getValor(casteo);            
+                if (!value.Equals("none"))
+                {
+                    LinkedList<object> listaValores = new LinkedList<object>();
+                    if (op1.GetType() == typeof(List)) listaValores = ((List)op1).lista;
+                    else if (op1.GetType() == typeof(Set)) listaValores = ((Set)op1).datos;
+                    else
+                    {
+                        mensajes.AddLast(ms.error("La sentencia IN solo admite LIST O SET", linea1, columna1, "Semantico"));
+                        return null;
+                    }
+                    return buscarValorIN(listaValores, value);
+                }
+                else mensajes.AddLast(ms.error("No se encuentra la columna: " + casteo,linea1,columna1,"Semantico"));
+                return null;
             }
             //------------------------------------------------------ CREAR MAP -------------------------------------------------------------------
             else if (operacion.Equals("CREARMAP"))
@@ -1115,6 +1151,15 @@ namespace cql_teacher_server.CQL.Componentes
         }
 
 
+
+        private Boolean buscarValorIN(LinkedList<object> lista, object value)
+        {
+            foreach(object o in lista)
+            {
+                if (o.Equals(value)) return true;
+            }
+            return false;
+        }
 
         /*
           * METODO ENCARGADO DE CONTROLAR LOS DATOS DEL LISTADO

@@ -17,6 +17,8 @@ namespace cql_teacher_server.CQL.Componentes
         public int l { set; get; }
         public int c { set; get; }
 
+        public Expresion key { get; set; }
+
         /*
        * Constructor de la clase
        * @campo es el nombre del campo
@@ -34,9 +36,35 @@ namespace cql_teacher_server.CQL.Componentes
             this.c = c;
         }
 
+        /*
+         * Constructor de la clase
+         * @campo es el nombre del campo
+         * @valor es el valor nuevo a asignar
+         * @accesoUS es el parametro para MAP O USERTYPE,LIST, SET
+         * @l linea del campo
+         * @c columna del campo
+         */
         public SetCQL(string campo, Expresion valor, Expresion accesoUS, string operacion, int l, int c)
         {
             this.campo = campo;
+            this.valor = valor;
+            this.accesoUS = accesoUS;
+            this.operacion = operacion;
+            this.l = l;
+            this.c = c;
+        }
+
+        /*
+         * Constructor de la clase
+         * @campo es el nombre del campo
+         * @valor es el valor nuevo a asignar
+         * @accesoUS es el parametro para MAP O USERTYPE,LIST, SET
+         * @l linea del campo
+         * @c columna del campo
+         */
+        public SetCQL(Expresion key, Expresion valor, Expresion accesoUS, string operacion, int l, int c)
+        {
+            this.key = key;
             this.valor = valor;
             this.accesoUS = accesoUS;
             this.operacion = operacion;

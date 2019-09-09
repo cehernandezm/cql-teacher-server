@@ -101,6 +101,7 @@ namespace cql_teacher_server.CQL.Gramatica
             var BY = ToTerm("BY");
             var ASC = ToTerm("ASC");
             var DESC = ToTerm("DESC");
+            var IN = ToTerm("IN");
 
 
             var COUNT = ToTerm("COUNT");
@@ -321,6 +322,7 @@ namespace cql_teacher_server.CQL.Gramatica
                            | expresion + ToTerm("?") + expresion + ToTerm(":") + expresion
                            | expresion + "." + GET + "(" + expresion + ")"
                            | expresion + "." + CONTAINS + "(" + expresion + ")"
+                           | ID + IN + expresion
                            | CADENA
                            | FECHA
                            | HORA
@@ -451,10 +453,10 @@ namespace cql_teacher_server.CQL.Gramatica
                          | CREATE + TABLE + IF + NOT + EXISTS + ID + "(" + defColumn + "," + compPrimarias + ")"
                          ;
             //--------------------------------------------------------------- COLUMNAS ---------------------------------------------------------------------
-            defColumn.Rule = defColumn + "," + ID + tipoVariable
-                           | defColumn + "," + ID + tipoVariable + PRIMARY + KEY
-                           | ID + tipoVariable
-                           | ID + tipoVariable + PRIMARY + KEY
+            defColumn.Rule = defColumn + "," + ID + tipoVariable2
+                           | defColumn + "," + ID + tipoVariable2 + PRIMARY + KEY
+                           | ID + tipoVariable2
+                           | ID + tipoVariable2 + PRIMARY + KEY
                            ;
 
             //---------------------------------------------------- llaves compuestas ------------------------------------------------------------------------
@@ -472,8 +474,8 @@ namespace cql_teacher_server.CQL.Gramatica
                               ;
 
             //------------------------------------------------------------ LISTA DE COLUMNAS A AGREGAR ------------------------------------------------------
-            colTable.Rule = colTable + "," + ID + tipoVariable
-                          | ID + tipoVariable
+            colTable.Rule = colTable + "," + ID + tipoVariable2
+                          | ID + tipoVariable2
                           ;
 
             //------------------------------------------------------------ DROP TABLE ----------------------------------------------------------------------
@@ -514,8 +516,8 @@ namespace cql_teacher_server.CQL.Gramatica
                           | userTypeCQL + "=" + expresion
                           ;
 
-            userTypeCQL.Rule = userTypeCQL + "." + ID
-                             | ID
+            userTypeCQL.Rule = expresion + "." + ID
+                             | expresion + "[" + expresion + "]"
                              ;
 
             //--------------------------------------------------------------- DELETE -------------------------------------------------------------------------

@@ -908,49 +908,53 @@ namespace cql_teacher_server.CQL.Gramatica
         private LinkedList<SetCQL> resolver_setcql(ParseTreeNode raiz)
         {
             LinkedList<SetCQL> lista = new LinkedList<SetCQL>();
-            string id;
             Expresion expresion;
             int l;
             int c;
+            ParseTreeNode hijo;
+
+            //---------------------------- LISTA SET  ID/userTypeCQL = EXPRESION ----------------------------------------------------------------
             if(raiz.ChildNodes.Count() == 4)
             {
                 lista = resolver_setcql(raiz.ChildNodes.ElementAt(0));
-                string token = raiz.ChildNodes.ElementAt(1).Term.Name;
-                if (token.Equals("usertypecql"))
-                {
-                    id = raiz.ChildNodes.ElementAt(1).ChildNodes.ElementAt(1).Token.Text;
-                    id = id.ToLower().TrimStart().TrimEnd();
-                    expresion = resolver_expresion(raiz.ChildNodes.ElementAt(3));
-                    l = raiz.ChildNodes.ElementAt(1).ChildNodes.ElementAt(1).Token.Location.Line;
-                    c = raiz.ChildNodes.ElementAt(1).ChildNodes.ElementAt(1).Token.Location.Column;
-                }
-                id = raiz.ChildNodes.ElementAt(1).Token.Text;
-                id = id.ToLower().TrimStart().TrimEnd();
                 expresion = resolver_expresion(raiz.ChildNodes.ElementAt(3));
-                l = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
-                c = raiz.ChildNodes.ElementAt(1).Token.Location.Column;
+                l = raiz.ChildNodes.ElementAt(2).Token.Location.Line;
+                c = raiz.ChildNodes.ElementAt(2).Token.Location.Column;
+                hijo = raiz.ChildNodes.ElementAt(1);
+
             }
             else
             {
-                string token = raiz.ChildNodes.ElementAt(0).Term.Name;
-                if (token.Equals("usertypecql"))
-                {
-                    id = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(2).Token.Text;
-                    id = id.ToLower().TrimStart().TrimEnd();
-                    expresion = resolver_expresion(raiz.ChildNodes.ElementAt(2));
-                    l = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1).Token.Location.Line;
-                    c = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1).Token.Location.Column;
-                    lista.AddLast(new SetCQL(id, expresion, resolver_expresion(raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0)), "USER", l, c));
-                    return lista;
-                }
-                id = raiz.ChildNodes.ElementAt(0).Token.Text;
-                id = id.ToLower().TrimStart().TrimEnd();
                 expresion = resolver_expresion(raiz.ChildNodes.ElementAt(2));
-                l = raiz.ChildNodes.ElementAt(0).Token.Location.Line;
-                c = raiz.ChildNodes.ElementAt(0).Token.Location.Column;
+                l = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
+                c = raiz.ChildNodes.ElementAt(1).Token.Location.Column;
+                hijo = raiz.ChildNodes.ElementAt(0);
             }
-            lista.AddLast(new SetCQL(id, expresion,"NORMAL" ,l, c));
+            string term = hijo.Term.Name;
+            if (term.Equals("usertypecql"))
+            {
+                Expresion objeto = resolver_expresion(hijo.ChildNodes.ElementAt(0));
+                if(hijo.ChildNodes.Count() == 4)
+                {
+                    Expresion valor = resolver_expresion(hijo.ChildNodes.ElementAt(2));
+                    lista.AddLast(new SetCQL(valor, expresion,objeto, "USER", l, c));
+                }
+                else
+                {
+                    string id = hijo.ChildNodes.ElementAt(2).Token.Text.ToLower().TrimEnd().TrimStart();
+                    lista.AddLast(new SetCQL(id, expresion, objeto, "USER", l, c));
+                }
+                
+               
+            }
+            else
+            {
+                string id = hijo.Token.Text.ToLower().TrimEnd().TrimStart();
+                lista.AddLast(new SetCQL(id, expresion, "NORMAL", l, c));
+            }
             return lista;
+
+
         }
 
 
@@ -1021,7 +1025,7 @@ namespace cql_teacher_server.CQL.Gramatica
                 nombre = raiz.ChildNodes.ElementAt(1).Token.Text;
                 nombre = nombre.ToLower().TrimEnd().TrimStart();
 
-                tipo = raiz.ChildNodes.ElementAt(2).ChildNodes.ElementAt(0).Token.Text;
+                tipo = concatenarTipo(raiz.ChildNodes.ElementAt(2));
                 tipo = tipo.ToLower().TrimEnd().TrimStart();
 
             }
@@ -1031,7 +1035,7 @@ namespace cql_teacher_server.CQL.Gramatica
                 nombre = raiz.ChildNodes.ElementAt(0).Token.Text;
                 nombre = nombre.ToLower().TrimEnd().TrimStart();
 
-                tipo = raiz.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).Token.Text;
+                tipo = concatenarTipo(raiz.ChildNodes.ElementAt(1));
                 tipo = tipo.ToLower().TrimEnd().TrimStart();
             }
             lista.AddLast(new Columna(nombre, tipo, pk));
@@ -1056,7 +1060,7 @@ namespace cql_teacher_server.CQL.Gramatica
                 nombre = raiz.ChildNodes.ElementAt(1).Token.Text;
                 nombre = nombre.ToLower().TrimEnd().TrimStart();
 
-                tipo = raiz.ChildNodes.ElementAt(2).ChildNodes.ElementAt(0).Token.Text;
+                tipo = concatenarTipo(raiz.ChildNodes.ElementAt(2));
                 tipo = tipo.ToLower().TrimEnd().TrimStart();
 
             }
@@ -1065,7 +1069,7 @@ namespace cql_teacher_server.CQL.Gramatica
                 nombre = raiz.ChildNodes.ElementAt(0).Token.Text;
                 nombre = nombre.ToLower().TrimEnd().TrimStart();
 
-                tipo = raiz.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0).Token.Text;
+                tipo = concatenarTipo(raiz.ChildNodes.ElementAt(1));
                 tipo = tipo.ToLower().TrimEnd().TrimStart();
             }
             lista.AddLast(new Columna(nombre, tipo, pk));
@@ -1137,14 +1141,16 @@ namespace cql_teacher_server.CQL.Gramatica
         {
             if (raiz.ChildNodes.Count() == 3)
             {
-                
 
-                string iden = raiz.ChildNodes.ElementAt(1).Term.Name;
-                //------------------------------------- ID ++ / ID -- ------------------------------------------------------
+                
+                string iden = raiz.ChildNodes.ElementAt(1).Term.Name;                //------------------------------------- ID ++ / ID -- ------------------------------------------------------
                 if (iden.Equals("ID"))
                 {
+                    
                     string idin = raiz.ChildNodes.ElementAt(1).Token.Text;
                     idin = idin.ToLower().TrimEnd().TrimStart();
+                    
+                    
                     string accio = raiz.ChildNodes.ElementAt(2).Token.Text;
                     int ln = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
                     int cn = raiz.ChildNodes.ElementAt(1).Token.Location.Column;
@@ -1168,6 +1174,16 @@ namespace cql_teacher_server.CQL.Gramatica
                     if(simbolo.Equals("[")) return new Expresion(resolver_user_type(raiz.ChildNodes.ElementAt(1)), "LISTALIST", lM, cM);
                     else return new Expresion(resolver_user_type(raiz.ChildNodes.ElementAt(1)), "LISTASET", lM, cM);
                 }
+                //--------------------------------- ID  IN LISTA ---------------------------------------------------------
+                else if (iden.Equals("IN"))
+                {
+                    int le = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
+                    int ce = raiz.ChildNodes.ElementAt(1).Token.Location.Column;
+
+                    string idI = raiz.ChildNodes.ElementAt(0).Token.Text.ToLower().TrimEnd().TrimStart();
+                    Expresion listI = resolver_expresion(raiz.ChildNodes.ElementAt(2));
+                    return new Expresion(listI, "IN", le, ce, idI);
+                }
                 else
                 {
                     string toketemp = raiz.ChildNodes.ElementAt(1).Token.Text;
@@ -1188,6 +1204,7 @@ namespace cql_teacher_server.CQL.Gramatica
                         else return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), "SIZE", le, ce);
                         
                     }
+                    
 
                     //--------------------------------------- OPERACIONES TERNARIAS ------------------------------------------
                     string toke = raiz.ChildNodes.ElementAt(1).Token.Text;

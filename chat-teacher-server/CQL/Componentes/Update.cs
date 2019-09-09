@@ -16,6 +16,8 @@ namespace cql_teacher_server.CQL.Componentes
 
         Expresion condicion { set; get; }
 
+        Expresion key { set; get; }
+
         int l { set; get; }
         int c {set;get;}
 
@@ -150,7 +152,6 @@ namespace cql_teacher_server.CQL.Componentes
                                 {
                                     if (res.GetType() == typeof(Boolean))
                                     {
-                                        System.Diagnostics.Debug.WriteLine(res.ToString());
                                         if ((Boolean)res)
                                         {
                                             object op1 = (set.valor == null) ? null : set.valor.ejecutar(ts, user, ref baseD, mensajes, tsT);
@@ -177,11 +178,29 @@ namespace cql_teacher_server.CQL.Componentes
                                                         InstanciaUserType temp = (InstanciaUserType)op2;
                                                         foreach (Atributo a in temp.lista)
                                                         {
+                                                            
                                                             if (a.nombre.Equals(set.campo))
                                                             {
+
                                                                 Columna co = new Columna(a.nombre, a.tipo, false);
                                                                 Atributo temp2 = checkinfo(co, op1, set.valor, mensajes, db);
                                                                 if (temp2 != null) a.valor = temp2.valor;
+                                                                else return null;
+                                                            }
+                                                        }
+                                                    }
+                                                    else if (op2.GetType() == typeof(Map))
+                                                    {
+                                                        object campo = (set.key == null) ? null : set.key.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                                                        Map temp = (Map)op2;
+                                                        string tipo = temp.id.Split(new[] { ',' }, 2)[1];
+                                                        foreach (KeyValue ky in temp.datos)
+                                                        {
+                                                            if (ky.key.ToString().Equals(campo))
+                                                            {
+                                                                Columna co = new Columna(ky.key.ToString(), tipo, false);
+                                                                Atributo temp2 = checkinfo(co, op1, set.valor, mensajes, db);
+                                                                if (temp2 != null) ky.value = temp2.valor;
                                                                 else return null;
                                                             }
                                                         }
@@ -272,6 +291,22 @@ namespace cql_teacher_server.CQL.Componentes
                                             }
                                         }
                                     }
+                                    else if(op2.GetType() == typeof(Map))
+                                    {
+                                        Map temp = (Map)op2;
+                                        string tipo = temp.id.Split(new [] { ',' },2)[1];
+                                        System.Diagnostics.Debug.WriteLine("CAMPO: " + set.campo);
+                                        foreach(KeyValue ky in temp.datos)
+                                        {
+                                            if (ky.key.Equals(set.campo))
+                                            {
+                                                Columna co = new Columna(ky.key.ToString(), tipo, false);
+                                                Atributo temp2 = checkinfo(co, op1, set.valor, mensajes, db);
+                                                if (temp2 != null) ky.value = temp2.valor;
+                                                else return null;
+                                            }
+                                        }
+                                    }
                                 }
                             }
 
@@ -340,7 +375,7 @@ namespace cql_teacher_server.CQL.Componentes
                 if (!columna.pk)
                 {
                     if (columna.tipo.Equals("string") || columna.tipo.Equals("date") || columna.tipo.Equals("time")) return new Atributo(columna.name, null, columna.tipo);
-                    else if (columna.tipo.Equals("int") || columna.tipo.Equals("double") || columna.tipo.Equals("boolean"))
+                    else if (columna.tipo.Equals("int") || columna.tipo.Equals("double") || columna.tipo.Equals("boolean") || columna.tipo.Contains("lista") || columna.tipo.Contains("map") || columna.tipo.Contains("set"))
                         mensajes.AddLast(mensa.error("No se le puede asignar a un tipo: " + columna.tipo + " un valor null", l, c, "Semantico"));
                     else
                     {
@@ -362,6 +397,13 @@ namespace cql_teacher_server.CQL.Componentes
                     else if (columna.tipo.Equals("boolean") && valor.GetType() == typeof(Boolean)) return new Atributo(columna.name, (Boolean)valor, "boolean");
                     else if (columna.tipo.Equals("date") && valor.GetType() == typeof(DateTime)) return new Atributo(columna.name, (DateTime)valor, "date");
                     else if (columna.tipo.Equals("time") && valor.GetType() == typeof(TimeSpan)) return new Atributo(columna.name, (TimeSpan)valor, "time");
+                    else if (columna.tipo.Contains("map") && valor.GetType() == typeof(Map))
+                    {
+                        string tipo = columna.tipo.TrimStart('m').TrimStart('a').TrimStart('p').TrimStart('<').TrimEnd('>');
+                        Map temp = (Map)valor;
+                        if (tipo.Equals(temp.id)) return new Atributo(columna.name, temp, tipo);
+                        else mensajes.AddLast(mensa.error("No coinciden los tipos en el MAP: " + tipo + " con: " + temp.id, l, c, "Semantico"));
+                    }
                     else if (valor.GetType() == typeof(InstanciaUserType))
                     {
                         InstanciaUserType temp = (InstanciaUserType)valor;
@@ -373,7 +415,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     if (columna.tipo.Equals("string") || columna.tipo.Equals("date") || columna.tipo.Equals("time")) return new Atributo(columna.name, null, columna.tipo);
-                    else if (columna.tipo.Equals("boolean") || columna.tipo.Equals("int") || columna.tipo.Equals("double")) mensajes.AddLast(mensa.error("No se puede asignar a la columna: " + columna.name + " el valor: " + valor, l, c, "Semantico"));
+                    else if (columna.tipo.Equals("boolean") || columna.tipo.Equals("int") || columna.tipo.Equals("double") || columna.tipo.Contains("map") || columna.tipo.Contains("list") || columna.tipo.Contains("set")) mensajes.AddLast(mensa.error("No se puede asignar a la columna: " + columna.name + " el valor: " + valor, l, c, "Semantico"));
                     else return new Atributo(columna.name, new InstanciaUserType(columna.tipo, null), columna.tipo);
                 }
             }

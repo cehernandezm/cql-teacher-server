@@ -70,66 +70,7 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 if (user.Equals("admin"))
                 {
-                    //------------------------------------  SOLO HAY UNA PRIMARIA ------------------------------------------------------------
-                    if (primarias == null)
-                    {
-                        if (!(cantidadDePrimarias(lista) > 1))
-                        {
-                            if (!columnasRepetidas(lista, lista, mensajes))
-                            {
-                                Tabla old = TablaBaseDeDatos.getTabla(db, nombre);
-                                if (old == null)
-                                {
-                                    if (searchTipo(lista, mensajes, db))
-                                    {
-                                        Tabla nueva = new Tabla(nombre, lista, new LinkedList<Data>());
-                                        db.objetos.tablas.AddLast(nueva);
-                                        mensajes.AddLast(mensa.message("Se creo exitosamente la tabla: " + nombre));
-                                        return "";
-                                    }
-                                }
-                                else
-                                {
-                                    if (flag) return "";
-                                    mensajes.AddLast(mensa.error("La tabla: " + nombre + " ya existe en la DB: " + baseD, l, c, "Semantico"));
-                                }
-                            }
-                        }
-                        else mensajes.AddLast(mensa.error("La tabla: " + nombre + " solo puede tener una clave primaria o use llaves compuestas", l, c, "Semantico"));
-                    }
-                    //-------------------------------------- LLAVE PRIMARIA COMPUESTA -------------------------------------------------------
-                    else
-                    {
-                        if (!(cantidadDePrimarias(lista) > 0))
-                        {
-                            if (!(columnasRepetidas(lista, lista, mensajes)))
-                            {
-                                if (!hayCounter(primarias, lista, mensajes))
-                                {
-                                    if (existenColumnas(primarias, lista, mensajes))
-                                    {
-                                        Tabla temp = TablaBaseDeDatos.getTabla(db, nombre);
-                                        if (temp == null)
-                                        {
-                                            if (searchTipo(lista, mensajes, db))
-                                            {
-                                                temp = new Tabla(nombre, lista, new LinkedList<Data>());
-                                                db.objetos.tablas.AddLast(temp);
-                                                mensajes.AddLast(mensa.message("Se creo exitosamente la tabla: " + nombre));
-                                                return "";
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (flag) return "";
-                                            mensajes.AddLast(mensa.error("La tabla: " + nombre + " ya existe en la DB: " + baseD, l, c, "Semantico"));
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        else mensajes.AddLast(mensa.error("La tabla: " + nombre + " solo puede tener primarias compuestas", l, c, "Semantico"));
-                    }
+                    
                 }
                 else
                 {
@@ -333,8 +274,8 @@ namespace cql_teacher_server.CQL.Componentes
             Mensaje mensa = new Mensaje();
             foreach (Columna cc in lista)
             {
-                if (cc.tipo.Equals("string") || cc.tipo.Equals("double") || cc.tipo.Equals("int") || cc.tipo.Equals("boolean") || cc.tipo.Equals("date") || cc.tipo.Equals("time")) { }
-                else if (cc.tipo.Equals("map")) { }
+                if (cc.tipo.Equals("string") || cc.tipo.Equals("counter")  || cc.tipo.Equals("double") || cc.tipo.Equals("int") || cc.tipo.Equals("boolean") || cc.tipo.Equals("date") || cc.tipo.Equals("time")) { }
+                else if (cc.tipo.Contains("map") || cc.tipo.Contains("list") || cc.tipo.Contains("set")) { }
                 else
                 {
                     Boolean existe = TablaBaseDeDatos.getUserType(cc.tipo, db);

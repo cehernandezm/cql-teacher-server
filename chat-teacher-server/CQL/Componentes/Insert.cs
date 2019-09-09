@@ -158,6 +158,7 @@ namespace cql_teacher_server.CQL.Componentes
                         else insercion.AddLast(atributo);
                     }
                     if (co.pk) posiciones.AddLast(i);
+                    if (co.tipo.Equals("counter")) i--;
                     i++;
                 }
                 if (!checkPrimaryKey(posiciones, insercion, mensajes, t.datos, 0))
@@ -312,6 +313,13 @@ namespace cql_teacher_server.CQL.Componentes
                     else if (columna.tipo.Equals("boolean") && valor.GetType() == typeof(Boolean)) return new Atributo(columna.name, (Boolean)valor, "boolean");
                     else if (columna.tipo.Equals("date") && valor.GetType() == typeof(DateTime)) return new Atributo(columna.name, (DateTime)valor, "date");
                     else if (columna.tipo.Equals("time") && valor.GetType() == typeof(TimeSpan)) return new Atributo(columna.name, (TimeSpan)valor, "time");
+                    else if(columna.tipo.Contains("map") && valor.GetType() == typeof(Map))
+                    {
+                        Map temp = (Map)valor;
+                        string tipo = columna.tipo.TrimStart('m').TrimStart('a').TrimStart('p').TrimStart('<').TrimEnd('>');
+                        if (temp.id.Equals(tipo)) return new Atributo(columna.name, temp, tipo);
+                        mensajes.AddLast(mensa.error("No coinciden los tipos de map: " + tipo + " con: " + temp.id, l, c, "Semantico"));
+                    }
                     else if (valor.GetType() == typeof(InstanciaUserType))
                     {
                         InstanciaUserType temp = (InstanciaUserType)valor;
@@ -323,7 +331,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     if (columna.tipo.Equals("string") || columna.tipo.Equals("date") || columna.tipo.Equals("time")) return new Atributo(columna.name, null, columna.tipo);
-                    else if (columna.tipo.Equals("boolean") || columna.tipo.Equals("int") || columna.tipo.Equals("double")) mensajes.AddLast(mensa.error("No se puede asignar a la columna: " + columna.name + " el valor: " + valor, l, c, "Semantico"));
+                    else if (columna.tipo.Equals("boolean") || columna.tipo.Equals("int") || columna.tipo.Equals("double") || columna.tipo.Equals("map") || columna.tipo.Equals("list") || columna.tipo.Equals("set")) mensajes.AddLast(mensa.error("No se puede asignar a la columna: " + columna.name + " el valor: " + valor, l, c, "Semantico"));
                     else return new Atributo(columna.name, new InstanciaUserType(columna.tipo, null), columna.tipo);
                 }
             }

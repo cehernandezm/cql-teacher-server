@@ -33,7 +33,27 @@ namespace cql_teacher_server.Herramientas
             {
                 foreach(Atributo atributo in data.valores)
                 {
-                    resultado += atributo.valor.ToString() + "|";
+                    if(atributo.valor.GetType() == typeof(Map))
+                    {
+                        string temp = "[";
+                        foreach(KeyValue key in ((Map)atributo.valor).datos)
+                        {
+                            temp += key.key + ":" + key.value + ",";
+                        }
+                        temp += "]"; 
+                        resultado +=temp + "|";
+                    }
+                    else if(atributo.valor.GetType() == typeof(InstanciaUserType))
+                    {
+                        string temp = "[";
+                        foreach(Atributo a in ((InstanciaUserType)atributo.valor).lista)
+                        {
+                            temp += a.nombre + ":" + a.valor + ",";
+                        }
+                        temp += "]";
+                        resultado += temp + "|";
+                    }
+                    else resultado += atributo.valor.ToString() + "|";
                 }
                 resultado += "\n";
             }
