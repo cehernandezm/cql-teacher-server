@@ -200,6 +200,7 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal listaSet = new NonTerminal("listaset");
 
             NonTerminal inDelete = new NonTerminal("indelete");
+            NonTerminal tipoDelete = new NonTerminal("tipodelete");
 
             NonTerminal tiposCampos = new NonTerminal("tipocampos");
             NonTerminal inSelect = new NonTerminal("inselect");
@@ -522,8 +523,12 @@ namespace cql_teacher_server.CQL.Gramatica
 
             //--------------------------------------------------------------- DELETE -------------------------------------------------------------------------
             inDelete.Rule = DELETE + FROM + ID
+                          | DELETE + tipoDelete + FROM + ID
                           | DELETE + FROM + ID + WHERE + expresion
+                          | DELETE + tipoDelete + FROM + ID + WHERE + expresion
                           ;
+            tipoDelete.Rule = expresion + "[" + expresion + "]"
+                            ;
 
 
             //---------------------------------------------------------------- SELECT -------------------------------------------------------------------------

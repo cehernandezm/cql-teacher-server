@@ -201,15 +201,25 @@ namespace cql_teacher_server.CQL.Componentes
                     {
                         Boolean flag = false;
                         int i = 0;
+                        
                         foreach (string campo in campos)
                         {
                             if (campo.Equals(columna.name))
                             {
-                                flag = true;
-                                object op1 = (values.ElementAt(i) == null) ? null : values.ElementAt(i).ejecutar(ts, user, ref baseD, mensajes,tsT);
-                                Atributo a = checkinfo(columna, op1, values.ElementAt(i), mensajes, db);
-                                if (a != null) info.AddLast(a);
-                                else return null;
+                                if (columna.tipo.Equals("counter"))
+                                {
+                                    mensajes.AddLast(mensa.error("El tipo counter no se puede asignar un valor",l,c,"Semantico"));
+                                    return null;
+                                }
+                                else
+                                {
+                                    flag = true;
+                                    object op1 = (values.ElementAt(i) == null) ? null : values.ElementAt(i).ejecutar(ts, user, ref baseD, mensajes, tsT);
+                                    Atributo a = checkinfo(columna, op1, values.ElementAt(i), mensajes, db);
+                                    if (a != null) info.AddLast(a);
+                                    else return null;
+                                }
+                                
                             }
                             i++;
                         }
@@ -217,10 +227,19 @@ namespace cql_teacher_server.CQL.Componentes
                         {
                             if (columna.pk)
                             {
-                                Atributo a = checkinfo(columna, null, null, mensajes, db);
-                                if (a != null) info.AddLast(a);
-                                else return null;
-                                pos.AddLast(posicion);
+                                if (columna.tipo.Equals("counter"))
+                                {
+                                    int index = getLastCounter(posicion, t.datos);
+                                    info.AddLast(new Atributo(columna.name, index + 1, "counter"));
+                                }
+                                else
+                                {
+                                    Atributo a = checkinfo(columna, null, null, mensajes, db);
+                                    if (a != null) info.AddLast(a);
+                                    else return null;
+                                    pos.AddLast(posicion);
+                                }
+                                
                             }
                             else
                             {
@@ -228,7 +247,12 @@ namespace cql_teacher_server.CQL.Componentes
                                 if (columna.tipo.Equals("string") || columna.tipo.Equals("date") || columna.tipo.Equals("time")) val = null;
                                 else if (columna.tipo.Equals("double") || columna.tipo.Equals("int")) val = 0;
                                 else if (columna.tipo.Equals("boolean")) val = false;
-                                else if (columna.tipo.Equals("map")) val = null;
+                                else if (columna.tipo.Equals("counter")) val = getLastCounter(posicion, t.datos) + 1;
+                                else if (columna.tipo.Contains("map") || columna.tipo.Contains("list") || columna.tipo.Contains("set"))
+                                {
+                                    mensajes.AddLast(mensa.error("El tipo: " + columna.tipo + " no puede ser null", l, c, "Semantico"));
+                                    return null;
+                                }
                                 else val = new InstanciaUserType(columna.tipo, null);
 
                                 Atributo a = checkinfo(columna, val, 0, mensajes, db);
@@ -291,7 +315,7 @@ namespace cql_teacher_server.CQL.Componentes
                 if (!columna.pk)
                 {
                     if (columna.tipo.Equals("string") || columna.tipo.Equals("date") || columna.tipo.Equals("time")) return new Atributo(columna.name, null, columna.tipo);
-                    else if (columna.tipo.Equals("int") || columna.tipo.Equals("double") || columna.tipo.Equals("boolean"))
+                    else if (columna.tipo.Equals("int") || columna.tipo.Equals("double") || columna.tipo.Equals("boolean") || columna.tipo.Contains("map") || columna.tipo.Contains("list") || columna.tipo.Contains("set"))
                         mensajes.AddLast(mensa.error("No se le puede asignar a un tipo: " + columna.tipo + " un valor null", l, c, "Semantico"));
                     else
                     {
@@ -316,9 +340,28 @@ namespace cql_teacher_server.CQL.Componentes
                     else if(columna.tipo.Contains("map") && valor.GetType() == typeof(Map))
                     {
                         Map temp = (Map)valor;
-                        string tipo = columna.tipo.TrimStart('m').TrimStart('a').TrimStart('p').TrimStart('<').TrimEnd('>');
+                        string tipo = columna.tipo.TrimStart('m').TrimStart('a').TrimStart('p').TrimStart('<');
+                        if (tipo.EndsWith('>')) tipo = tipo.Substring(0, tipo.Length - 1);
                         if (temp.id.Equals(tipo)) return new Atributo(columna.name, temp, tipo);
                         mensajes.AddLast(mensa.error("No coinciden los tipos de map: " + tipo + " con: " + temp.id, l, c, "Semantico"));
+                    }
+                    else if (columna.tipo.Contains("set") && valor.GetType() == typeof(Set))
+                    {
+                        Set temp = (Set)valor;
+
+                        string tipo = columna.tipo.TrimStart('s').TrimStart('e').TrimStart('t').TrimStart('<');
+                        if (tipo.EndsWith('>')) tipo = tipo.Substring(0, tipo.Length - 1);
+                        if (temp.id.Equals(tipo)) return new Atributo(columna.name, temp, tipo);
+                        mensajes.AddLast(mensa.error("No coinciden los tipos de Set: " + tipo + " con: " + temp.id, l, c, "Semantico"));
+                    }
+                    else if (columna.tipo.Contains("list") && valor.GetType() == typeof(List))
+                    {
+                        List temp = (List)valor;
+
+                        string tipo = columna.tipo.TrimStart('l').TrimStart('i').TrimStart('s').TrimStart('t').TrimStart('<');
+                        if (tipo.EndsWith('>')) tipo = tipo.Substring(0, tipo.Length - 1);
+                        if (temp.id.Equals(tipo)) return new Atributo(columna.name, temp, tipo);
+                        mensajes.AddLast(mensa.error("No coinciden los tipos de List: " + tipo + " con: " + temp.id, l, c, "Semantico"));
                     }
                     else if (valor.GetType() == typeof(InstanciaUserType))
                     {
@@ -331,7 +374,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     if (columna.tipo.Equals("string") || columna.tipo.Equals("date") || columna.tipo.Equals("time")) return new Atributo(columna.name, null, columna.tipo);
-                    else if (columna.tipo.Equals("boolean") || columna.tipo.Equals("int") || columna.tipo.Equals("double") || columna.tipo.Equals("map") || columna.tipo.Equals("list") || columna.tipo.Equals("set")) mensajes.AddLast(mensa.error("No se puede asignar a la columna: " + columna.name + " el valor: " + valor, l, c, "Semantico"));
+                    else if (columna.tipo.Equals("boolean") || columna.tipo.Equals("int") || columna.tipo.Equals("double") || columna.tipo.Contains("map") || columna.tipo.Contains("list") || columna.tipo.Contains("set")) mensajes.AddLast(mensa.error("No se puede asignar a la columna: " + columna.name + " el valor: " + valor, l, c, "Semantico"));
                     else return new Atributo(columna.name, new InstanciaUserType(columna.tipo, null), columna.tipo);
                 }
             }

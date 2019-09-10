@@ -43,6 +43,26 @@ namespace cql_teacher_server.Herramientas
                         temp += "]"; 
                         resultado +=temp + "|";
                     }
+                    else if(atributo.valor.GetType() == typeof(Set))
+                    {
+                        string temp = "[";
+                        foreach (object p in ((Set)atributo.valor).datos)
+                        {
+                            temp += p.ToString() + ",";
+                        }
+                        temp += "]";
+                        resultado += temp + "|";
+                    }
+                    else if (atributo.valor.GetType() == typeof(List))
+                    {
+                        string temp = "[";
+                        foreach (object p in ((List)atributo.valor).lista)
+                        {
+                            temp += p.ToString() + ",";
+                        }
+                        temp += "]";
+                        resultado += temp + "|";
+                    }
                     else if(atributo.valor.GetType() == typeof(InstanciaUserType))
                     {
                         string temp = "[";

@@ -213,9 +213,11 @@ namespace cql_teacher_server.CQL.Componentes
             foreach(Data d in lista1)
             {
                 if (cc.tipo.Equals("int") || cc.tipo.Equals("double")) d.valores.AddLast(new Atributo(cc.name, 0, cc.tipo));
-                else if (cc.tipo.Equals("map")) { }
+                else if (cc.tipo.Contains("map")) d.valores.AddLast(new Atributo(cc.name, new Map(cc.tipo, new LinkedList<KeyValue>()), "map"));
+                else if (cc.tipo.Contains("set")) d.valores.AddLast(new Atributo(cc.name, new Set(cc.tipo, new LinkedList<object>()), "set"));
+                else if (cc.tipo.Contains("list")) d.valores.AddLast(new Atributo(cc.name, new List(cc.tipo, new LinkedList<object>()), "list"));
                 else if (cc.tipo.Equals("string") || cc.tipo.Equals("date") || cc.tipo.Equals("time")) d.valores.AddLast(new Atributo(cc.name, null, cc.tipo));
-                else d.valores.AddLast(new Atributo(cc.name, new InstanciaUserType(cc.tipo,null), cc.tipo));
+                else d.valores.AddLast(new Atributo(cc.name, new InstanciaUserType(cc.tipo, null), cc.tipo));
             }
         }
 
@@ -231,7 +233,7 @@ namespace cql_teacher_server.CQL.Componentes
             foreach(Columna cc in lista)
             {
                 if(cc.tipo.Equals("string") || cc.tipo.Equals("double") || cc.tipo.Equals("int") || cc.tipo.Equals("boolean") || cc.tipo.Equals("date") || cc.tipo.Equals("time")) { }
-                else if (cc.tipo.Equals("map")) { }
+                else if (cc.tipo.Contains("map") || cc.tipo.Contains("list") || cc.tipo.Contains("set")) { }
                 else
                 {
                     Boolean existe = TablaBaseDeDatos.getUserType(cc.tipo, db);

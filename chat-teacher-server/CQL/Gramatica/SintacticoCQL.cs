@@ -636,13 +636,52 @@ namespace cql_teacher_server.CQL.Gramatica
                 //----------------------------------------------------- DELETE -------------------------------------------------------------------------------------
                 case "indelete":
                     LinkedList<InstruccionCQL> listaDE = new LinkedList<InstruccionCQL>();
-                    string idDE = hijo.ChildNodes.ElementAt(2).Token.Text;
-                    idDE = idDE.ToLower().TrimStart().TrimEnd();
-                    int lDE = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
-                    int cDE = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
+                    int lDE;
+                    int cDE;
+                    Expresion objeto;
+                    Expresion atributo;
+                    string iDE;
+                    Expresion condicion;
+                    //------------------------------------- DELETE FROM ID
+                    lDE = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
+                    cDE = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
+                    if (hijo.ChildNodes.Count() == 3)
+                    {
+                        iDE = hijo.ChildNodes.ElementAt(2).Token.Text.ToLower().TrimStart().TrimEnd();
+                        objeto = null;
+                        atributo = null;
+                        condicion = null;
+                    }
+                    //---------------------------------- DELETE TIPO FROM ID ---------------------------
+                    else if(hijo.ChildNodes.Count() == 4)
+                    {
+                        iDE = hijo.ChildNodes.ElementAt(3).Token.Text.ToLower().TrimStart().TrimEnd();
+                        objeto = resolver_expresion(hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0));
+                        atributo = resolver_expresion(hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(2));
+                        condicion = null;
 
-                    if (hijo.ChildNodes.Count() == 5) listaDE.AddLast(new Delete(idDE, lDE, cDE, "WHERE", resolver_expresion(hijo.ChildNodes.ElementAt(4))));
-                    else listaDE.AddLast(new Delete(idDE, lDE, cDE, "NORMAL"));
+                    }
+                    //--------------------------------- DELETE FROM ID WHERE EXPRESION ------------------------------
+                    else if(hijo.ChildNodes.Count() == 5)
+                    {
+                        iDE = hijo.ChildNodes.ElementAt(2).Token.Text.ToLower().TrimStart().TrimEnd();
+                        objeto = null;
+                        atributo = null;
+                        condicion = resolver_expresion(hijo.ChildNodes.ElementAt(4));
+                    }
+                    //------------------------------------ DELETE TIPO FROM ID WHERE EXPRESION ---------------------------------
+                    else
+                    {
+                        iDE = hijo.ChildNodes.ElementAt(3).Token.Text.ToLower().TrimStart().TrimEnd();
+                        objeto = resolver_expresion(hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(0));
+                        atributo = resolver_expresion(hijo.ChildNodes.ElementAt(1).ChildNodes.ElementAt(2));
+                        condicion = resolver_expresion(hijo.ChildNodes.ElementAt(5));
+                    }
+
+                    if (condicion == null) listaDE.AddLast(new Delete(iDE, lDE, cDE, "NORMAL", objeto, atributo));
+                    else listaDE.AddLast(new Delete(iDE, lDE, cDE, "WHERE", objeto, atributo,condicion));
+
+
 
                     return listaDE;
 

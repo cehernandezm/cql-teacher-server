@@ -233,6 +233,44 @@ namespace cql_teacher_server.CQL.Componentes
                         return null;
                     }
                 }
+                else if (op1.GetType() == typeof(Set) && op2.GetType() == typeof(Set))
+                {
+                    Mensaje ms = new Mensaje();
+                    Set temp = (Set)op1;
+                    Set temp2 = (Set)op2;
+                    if (temp.id.Equals(temp2.id))
+                    {
+                        Set final = new Set(temp.id, new LinkedList<object>(temp.datos.Union(temp2.datos)));
+                        if (final.buscarRepetidos(mensajes,linea1,columna1) != null)
+                        {
+                            final.order();
+                            return final;
+                        }
+                        return null; 
+                    }
+
+                    else
+                    {
+                        mensajes.AddLast(ms.error("No coinciden los tipos de SET: " + temp.id + " con: " + temp2.id, linea1, columna1, "Semantico"));
+                        return null;
+                    }
+                }
+                else if (op1.GetType() == typeof(List) && op2.GetType() == typeof(List))
+                {
+                    Mensaje ms = new Mensaje();
+                    List temp = (List)op1;
+                    List temp2 = (List)op2;
+                    if (temp.id.Equals(temp2.id))
+                    {
+                        List final = new List(temp.id, new LinkedList<object>(temp.lista.Union(temp2.lista)));
+                        return final;
+                    }
+                    else
+                    {
+                        mensajes.AddLast(ms.error("No coinciden los tipos de LIST: " + temp.id + " con: " + temp2.id, linea1, columna1, "Semantico"));
+                        return null;
+                    }
+                }
                 else
                 {
                     Mensaje mes = new Mensaje();
@@ -247,6 +285,64 @@ namespace cql_teacher_server.CQL.Componentes
                 else if (op1.GetType() == typeof(int) && op2.GetType() == typeof(Double)) return (Double)((int)op1 - (Double)op2);
                 else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(int)) return (Double)((Double)op1 - (int)op2);
                 else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(Double)) return (Double)((Double)op1 - (Double)op2);
+                else if(op1.GetType() == typeof(Map) && op2.GetType() == typeof(Set))
+                {
+                    Map map = (Map)op1;
+                    Set set = (Set)op2;
+                    if(map.datos.Count() > 0)
+                    {
+                        var node = map.datos.First;
+                        while(node != null)
+                        {
+                            var nextNode = node.Next;
+                            KeyValue key = (KeyValue)node.Value;
+                            foreach( object o in set.datos)
+                            {
+                                if (key.key.Equals(o))
+                                {
+                                    map.datos.Remove(node);
+                                    break;
+                                }
+                            }
+                            node = nextNode;
+                        }
+                    }
+                   
+                    return map;
+                }
+                else if (op1.GetType() == typeof(Set) && op2.GetType() == typeof(Set))
+                {
+                    Mensaje ms = new Mensaje();
+                    Set temp = (Set)op1;
+                    Set temp2 = (Set)op2;
+                    if (temp.id.Equals(temp2.id))
+                    {
+                        if(temp.datos.Count() > 0)
+                        {
+                            var node = temp.datos.First;
+                            while(node != null)
+                            {
+                                var next = node.Next;
+                                foreach(object o in temp2.datos)
+                                {
+                                    if (o.Equals(node.Value))
+                                    {
+                                        temp.datos.Remove(node);
+                                        break;
+                                    }
+                                }
+                                node = next;
+                            }
+                        }
+                    }
+                    
+                    else
+                    {
+                        mensajes.AddLast(ms.error("No coinciden los tipos de SET: " + temp.id + " con: " + temp2.id, linea1, columna1, "Semantico"));
+                        return null;
+                    }
+                    return temp;
+                }
                 else
                 {
                     Mensaje mes = new Mensaje();
@@ -864,6 +960,7 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 LinkedList<Expresion> lista = (LinkedList<Expresion>)valor;
                 List list = getList(lista, ts, user, ref baseD, mensajes, tsT);
+
                 if (list != null)
                 {
                     Set set = new Set(list.id, list.lista);
@@ -1186,7 +1283,7 @@ namespace cql_teacher_server.CQL.Componentes
                 {
                     if (tp.Equals("null"))
                     {
-                        if (tipo.Equals("int") || tipo.Equals("double") || tipo.Equals("map") || tipo.Equals("list") || tipo.Equals("boolean")){
+                        if (tipo.Equals("int") || tipo.Equals("double") || tipo.Contains("map") || tipo.Contains("list") || tipo.Contains("set") || tipo.Equals("boolean")){
                             mensajes.AddLast(ms.error("No puede existir un valor null con el tipo: " + tipo, linea1, columna1, "Semantico"));
                             return null;
                         }

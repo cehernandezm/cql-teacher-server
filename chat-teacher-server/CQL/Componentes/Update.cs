@@ -205,6 +205,62 @@ namespace cql_teacher_server.CQL.Componentes
                                                             }
                                                         }
                                                     }
+                                                    else if(op2.GetType() == typeof(List))
+                                                    {
+                                                        List temp = (List)op2;
+                                                        object campo = (set.key == null) ? null : set.key.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                                                        if(campo != null)
+                                                        {
+                                                            if(campo.GetType() == typeof(int))
+                                                            {
+                                                                if((int)campo > -1)
+                                                                {
+                                                                    if((int)campo < temp.lista.Count())
+                                                                    {
+                                                                        if (temp.lista.Count() > 0)
+                                                                        {
+                                                                            var node = temp.lista.First;
+                                                                            int index = 0;
+                                                                            while (node != null)
+                                                                            {
+                                                                                var nodeNext = node.Next;
+                                                                                if(index == (int)campo)
+                                                                                {
+                                                                                    Columna co = new Columna("", temp.id, false);
+                                                                                    Atributo temp2 = checkinfo(co, op1, set.valor, mensajes, db);
+                                                                                    if (temp2 != null) node.Value = temp2.valor;
+                                                                                    else return null;
+                                                                                    break;
+                                                                                }
+                                                                                node = nodeNext;
+                                                                                index++;
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        mensajes.AddLast(mensa.error("El index supera el tamanio de la lista", l, c, "Semantico"));
+                                                                        return null;
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    mensajes.AddLast(mensa.error("El index debe de ser positivo: " + campo, l, c, "Semantico"));
+                                                                    return null;
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                mensajes.AddLast(mensa.error("El index debe de ser de tipo numerico: " + campo,l,c,"Semantico"));
+                                                                return null;
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            mensajes.AddLast(mensa.error("El index no puede ser null", l, c, "Semantico"));
+                                                            return null;
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
@@ -261,29 +317,31 @@ namespace cql_teacher_server.CQL.Componentes
                             object op1 = (set.valor == null) ? null : set.valor.ejecutar(ts, user, ref baseD, mensajes, tsT);
                             if (set.operacion.Equals("NORMAL"))
                             {
-                                
+
                                 if (set.campo.Equals(atributo.nombre))
                                 {
                                     Atributo temp = checkinfo(getColumna(t.columnas, set.campo), op1, set.valor, mensajes, db);
                                     if (temp != null) atributo.valor = temp.valor;
                                     else return null;
                                 }
-                               
+
                             }
                             else
                             {
                                 object op2 = (set.accesoUS == null) ? null : set.accesoUS.ejecutar(ts, user, ref baseD, mensajes, tsT);
-                                
+
                                 if (op2 != null)
                                 {
                                     if (op2.GetType() == typeof(InstanciaUserType))
                                     {
-                                        
+
                                         InstanciaUserType temp = (InstanciaUserType)op2;
                                         foreach (Atributo a in temp.lista)
                                         {
+
                                             if (a.nombre.Equals(set.campo))
                                             {
+
                                                 Columna co = new Columna(a.nombre, a.tipo, false);
                                                 Atributo temp2 = checkinfo(co, op1, set.valor, mensajes, db);
                                                 if (temp2 != null) a.valor = temp2.valor;
@@ -291,20 +349,76 @@ namespace cql_teacher_server.CQL.Componentes
                                             }
                                         }
                                     }
-                                    else if(op2.GetType() == typeof(Map))
+                                    else if (op2.GetType() == typeof(Map))
                                     {
+                                        object campo = (set.key == null) ? null : set.key.ejecutar(ts, user, ref baseD, mensajes, tsT);
                                         Map temp = (Map)op2;
-                                        string tipo = temp.id.Split(new [] { ',' },2)[1];
-                                        System.Diagnostics.Debug.WriteLine("CAMPO: " + set.campo);
-                                        foreach(KeyValue ky in temp.datos)
+                                        string tipo = temp.id.Split(new[] { ',' }, 2)[1];
+                                        foreach (KeyValue ky in temp.datos)
                                         {
-                                            if (ky.key.Equals(set.campo))
+                                            if (ky.key.ToString().Equals(campo))
                                             {
                                                 Columna co = new Columna(ky.key.ToString(), tipo, false);
                                                 Atributo temp2 = checkinfo(co, op1, set.valor, mensajes, db);
                                                 if (temp2 != null) ky.value = temp2.valor;
                                                 else return null;
                                             }
+                                        }
+                                    }
+                                    else if (op2.GetType() == typeof(List))
+                                    {
+                                        List temp = (List)op2;
+                                        object campo = (set.key == null) ? null : set.key.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                                        if (campo != null)
+                                        {
+                                            if (campo.GetType() == typeof(int))
+                                            {
+                                                if ((int)campo > -1)
+                                                {
+                                                    if ((int)campo < temp.lista.Count())
+                                                    {
+                                                        if (temp.lista.Count() > 0)
+                                                        {
+                                                            var node = temp.lista.First;
+                                                            int index = 0;
+                                                            while (node != null)
+                                                            {
+                                                                var nodeNext = node.Next;
+                                                                if (index == (int)campo)
+                                                                {
+                                                                    Columna co = new Columna("", temp.id, false);
+                                                                    Atributo temp2 = checkinfo(co, op1, set.valor, mensajes, db);
+                                                                    if (temp2 != null) node.Value = temp2.valor;
+                                                                    else return null;
+                                                                    break;
+                                                                }
+                                                                node = nodeNext;
+                                                                index++;
+                                                            }
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        mensajes.AddLast(mensa.error("El index supera el tamanio de la lista", l, c, "Semantico"));
+                                                        return null;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    mensajes.AddLast(mensa.error("El index debe de ser positivo: " + campo, l, c, "Semantico"));
+                                                    return null;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                mensajes.AddLast(mensa.error("El index debe de ser de tipo numerico: " + campo, l, c, "Semantico"));
+                                                return null;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            mensajes.AddLast(mensa.error("El index no puede ser null", l, c, "Semantico"));
+                                            return null;
                                         }
                                     }
                                 }
@@ -375,7 +489,7 @@ namespace cql_teacher_server.CQL.Componentes
                 if (!columna.pk)
                 {
                     if (columna.tipo.Equals("string") || columna.tipo.Equals("date") || columna.tipo.Equals("time")) return new Atributo(columna.name, null, columna.tipo);
-                    else if (columna.tipo.Equals("int") || columna.tipo.Equals("double") || columna.tipo.Equals("boolean") || columna.tipo.Contains("lista") || columna.tipo.Contains("map") || columna.tipo.Contains("set"))
+                    else if (columna.tipo.Equals("int") || columna.tipo.Equals("double") || columna.tipo.Equals("boolean") || columna.tipo.Contains("list") || columna.tipo.Contains("map") || columna.tipo.Contains("set"))
                         mensajes.AddLast(mensa.error("No se le puede asignar a un tipo: " + columna.tipo + " un valor null", l, c, "Semantico"));
                     else
                     {
@@ -399,10 +513,27 @@ namespace cql_teacher_server.CQL.Componentes
                     else if (columna.tipo.Equals("time") && valor.GetType() == typeof(TimeSpan)) return new Atributo(columna.name, (TimeSpan)valor, "time");
                     else if (columna.tipo.Contains("map") && valor.GetType() == typeof(Map))
                     {
-                        string tipo = columna.tipo.TrimStart('m').TrimStart('a').TrimStart('p').TrimStart('<').TrimEnd('>');
+                        string tipo = columna.tipo.TrimStart('m').TrimStart('a').TrimStart('p').TrimStart('<');
+                        if (tipo.EndsWith('>')) tipo = tipo.Substring(0, tipo.Length - 1);
                         Map temp = (Map)valor;
                         if (tipo.Equals(temp.id)) return new Atributo(columna.name, temp, tipo);
                         else mensajes.AddLast(mensa.error("No coinciden los tipos en el MAP: " + tipo + " con: " + temp.id, l, c, "Semantico"));
+                    }
+                    else if (columna.tipo.Contains("set") && valor.GetType() == typeof(Set))
+                    {
+                        string tipo = columna.tipo.TrimStart('s').TrimStart('e').TrimStart('t').TrimStart('<');
+                        if (tipo.EndsWith('>')) tipo = tipo.Substring(0, tipo.Length - 1);
+                        Set temp = (Set)valor;
+                        if (tipo.Equals(temp.id)) return new Atributo(columna.name, temp, tipo);
+                        else mensajes.AddLast(mensa.error("No coinciden los tipos en el SET: " + tipo + " con: " + temp.id, l, c, "Semantico"));
+                    }
+                    else if (columna.tipo.Contains("list") && valor.GetType() == typeof(List))
+                    {
+                        string tipo = columna.tipo.TrimStart('l').TrimStart('i').TrimStart('s').TrimStart('t').TrimStart('<');
+                        if (tipo.EndsWith('>')) tipo = tipo.Substring(0, tipo.Length - 1);
+                        List temp = (List)valor;
+                        if (tipo.Equals(temp.id)) return new Atributo(columna.name, temp, tipo);
+                        else mensajes.AddLast(mensa.error("No coinciden los tipos en el LIST: " + tipo + " con: " + temp.id, l, c, "Semantico"));
                     }
                     else if (valor.GetType() == typeof(InstanciaUserType))
                     {
