@@ -129,6 +129,8 @@ namespace cql_teacher_server.CQL.Gramatica
             var CONTAINS = ToTerm("CONTAINS");
             var LIST = ToTerm("LIST");
 
+            var RETURN = ToTerm("RETURN");
+
 
 
 
@@ -227,6 +229,11 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal inRemoveMap = new NonTerminal("inremovemap");
             NonTerminal inClear = new NonTerminal("inclear");
 
+            NonTerminal inFunction = new NonTerminal("infuncion");
+
+            NonTerminal inReturn = new NonTerminal("inreturn");
+            NonTerminal llamadaFuncion = new NonTerminal("llamadafuncion");
+
             #endregion
 
             #region Gramatica
@@ -265,6 +272,8 @@ namespace cql_teacher_server.CQL.Gramatica
                              | inWhile
                              | inDoWhile + ";"
                              | inFor
+                             | inFunction 
+                             | inReturn + ";"
                              ;
             #endregion
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
@@ -324,6 +333,7 @@ namespace cql_teacher_server.CQL.Gramatica
                            | expresion + "." + GET + "(" + expresion + ")"
                            | expresion + "." + CONTAINS + "(" + expresion + ")"
                            | ID + IN + expresion
+                           | llamadaFuncion
                            | CADENA
                            | FECHA
                            | HORA
@@ -335,8 +345,12 @@ namespace cql_teacher_server.CQL.Gramatica
 
                            ;
 
+            llamadaFuncion.Rule = ID + "(" + ")"
+                                | ID + "(" + listValues + ")"
+                                ;
+
             #endregion
-           
+
             //------------------------------------------------------ TIPO DE VARIABLES --------------------------------------------------------------------------
             #region Tipo de variables
             tipoVariable.Rule = STRING
@@ -594,6 +608,17 @@ namespace cql_teacher_server.CQL.Gramatica
 
             inClear.Rule = expresion + "." + CLEAR + "(" + ")";
             #endregion
+
+
+            //------------------------------------------------- FUNCIONES -----------------------------------------------------------------------------------
+            inFunction.Rule = tipoVariable + ID + "(" + ")" + "{" + instrucciones + "}"
+                            | tipoVariable + ID + "(" + declaracion + ")" + "{" + instrucciones + "}"  
+                            ;
+
+            //------------------------------------------------- RETURN --------------------------------------------------------------------------------------
+            inReturn.Rule = RETURN + expresion;
+           
+
             #endregion
 
             #region Preferencias

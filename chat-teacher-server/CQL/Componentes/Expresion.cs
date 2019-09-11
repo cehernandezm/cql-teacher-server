@@ -110,7 +110,7 @@ namespace cql_teacher_server.CQL.Componentes
         }
 
         /* 
-         * Constructor de la clase para valores puntuales o listado de map:
+         * Constructor de la clase para valores puntuales o listado de map
          * CADENA,ENTERO,DECIMAL,FECHA,HORA,BOOLEAN
          * @valor operador izquierdo
          * @operacion tipo de operacion
@@ -143,7 +143,7 @@ namespace cql_teacher_server.CQL.Componentes
         }
 
         /*
-         * Constructor de la clase para asignar valores a un usertype 
+         * Constructor de la clase para asignar valores a un usertype, llamada a funcion
          * @operacion el tipo de operacion que se realizara
          * @linea1 es la linea del id
          * @columna es la columna del id
@@ -1200,6 +1200,48 @@ namespace cql_teacher_server.CQL.Componentes
 
                 }
                 return null;
+            }
+            //---------------------------------------------------- LLAMADA A FUNCIONES --------------------------------------------------------
+            else if (operacion.Equals("llamadaFuncion"))
+            {
+                Mensaje ms = new Mensaje();
+                string identificador = idAs;
+
+                //------------------------------------------------ Ejecutamos los valores para completar el identificador unico------------------
+                foreach(Expresion e in listaUser)
+                {
+                    object res = (e == null) ? null : e.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                    if(res != null)
+                    {
+                        if (res.GetType() == typeof(string)) identificador += "_string";
+                        else if (res.GetType() == typeof(int)) identificador += "_int";
+                        else if (res.GetType() == typeof(Double)) identificador += "_double";
+                        else if (res.GetType() == typeof(Boolean)) identificador += "_boolean";
+                        else if (res.GetType() == typeof(DateTime)) identificador += "_date";
+                        else if (res.GetType() == typeof(TimeSpan)) identificador += "_time";
+                        else if (res.GetType() == typeof(Map)) identificador += "_map";
+                        else if (res.GetType() == typeof(List)) identificador += "_list";
+                        else if (res.GetType() == typeof(Set)) identificador += "_set";
+                        else if (res.GetType() == typeof(InstanciaUserType)) identificador += "_" + ((InstanciaUserType)res).tipo;
+                    }
+                    else
+                    {
+                        mensajes.AddLast(ms.error("No puede pasar parametros null",linea1,columna1,"Semantico"));
+                        return null;
+                    }
+                }
+
+                Funcion f = TablaBaseDeDatos.getFuncion(identificador);
+                if (f != null)
+                {
+                    f.valores = new LinkedList<Expresion>();
+                    return f.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                }       
+                else
+                {
+                    mensajes.AddLast(ms.error("La funcion: " + idAs + " no existe",linea1,columna1,"Semantico"));
+                    return null;
+                }
             }
             //------------------------------------------------- ENTERO -------------------------------------------------------------------------
             else if (operacion.Equals("ENTERO")) return Int32.Parse(valor.ToString());

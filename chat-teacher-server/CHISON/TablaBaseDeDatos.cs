@@ -1,4 +1,5 @@
 ﻿using cql_teacher_server.CHISON.Componentes;
+using cql_teacher_server.CQL.Componentes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace cql_teacher_server.CHISON
 
         public static LinkedList<USO> listaEnUso = new LinkedList<USO>();
 
-        
+        public static LinkedList<Funcion> listaFunciones = new LinkedList<Funcion>();
 
         public static BaseDeDatos getBase(string nombre)
         {
@@ -121,6 +122,15 @@ namespace cql_teacher_server.CHISON
             foreach (User_Types a in o.user_types)
             {
                 if (a.name.Equals(nombre)) return a;
+            }
+            return null;
+        }
+
+        public static Funcion getFuncion(string id)
+        {
+            foreach(Funcion f in listaFunciones)
+            {
+                if (f.identificador.Equals(id)) return f;
             }
             return null;
         }

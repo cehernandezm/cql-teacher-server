@@ -11,13 +11,15 @@ namespace cql_teacher_server.CQL.Componentes
 {
     public class Declaracion : InstruccionCQL
     {
-        string tipo { set; get; }
+         public string tipo { set; get; }
         Expresion valor { set; get; }
 
-        string id { set; get; }
+        public string id { set; get; }
 
         int l { set; get; }
         int c { set; get; }
+
+        public Boolean parametro { set; get; }
 
         /*
          * Constructor de la clase
@@ -34,6 +36,7 @@ namespace cql_teacher_server.CQL.Componentes
             this.id = id;
             this.l = l;
             this.c = c;
+            this.parametro = false;
         }
 
         /*
@@ -50,8 +53,12 @@ namespace cql_teacher_server.CQL.Componentes
 
             object res = ts.getValor(id);
             string existe = (res == null) ? "si" : res.ToString();
-
-            if (existe.Equals("none"))
+            if (parametro)
+            {
+                ts.AddLast(new Simbolo(tipo, id));
+                return "";
+            }
+            else if (existe.Equals("none"))
             {
                 if(valor == null)
                 {

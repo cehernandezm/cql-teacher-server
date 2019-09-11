@@ -21,7 +21,7 @@ namespace cql_teacher_server.CQL.Componentes
 
         string operacion { set; get; }
 
-
+        public TablaDeSimbolos tPadre { set; get; }
 
         /*
          * Constructor de la clase que asigna valores a una id en especifico
@@ -38,6 +38,7 @@ namespace cql_teacher_server.CQL.Componentes
             this.c = c;
             this.a = a;
             this.operacion = operacion;
+            this.tPadre = null;
         }
 
 
@@ -57,6 +58,7 @@ namespace cql_teacher_server.CQL.Componentes
             this.a = b;
             this.atributo = a;
             this.operacion = operacion;
+            this.tPadre = null;
         }
 
 
@@ -73,8 +75,13 @@ namespace cql_teacher_server.CQL.Componentes
         {
 
             Mensaje mensa = new Mensaje();
-            object op1 = (a == null) ? null : a.ejecutar(ts, user, ref baseD, mensajes,tsT);
-            object atri = (atributo == null) ? null : atributo.ejecutar(ts, user, ref baseD, mensajes,tsT);
+            TablaDeSimbolos tablaT;
+            if (tPadre != null) tablaT = tPadre;
+            else tablaT = ts;
+
+
+            object op1 = (a == null) ? null : a.ejecutar(tablaT, user, ref baseD, mensajes,tsT);
+            object atri = (atributo == null) ? null : atributo.ejecutar(tablaT, user, ref baseD, mensajes,tsT);
             //--------------------------------------------- REALIZA UNA ASIGNACION NORMAL---------------------------------------------------------------
             if (operacion.Equals("ASIGNACION"))
             {
@@ -102,7 +109,7 @@ namespace cql_teacher_server.CQL.Componentes
                                 if (a == null)
                                 {
                                     if (tipo.Equals("string") || tipo.Equals("date") || tipo.Equals("time")) at.valor = null;
-                                    else if (!tipo.Equals("int") && !tipo.Equals("boolean") && !tipo.Equals("double") && !tipo.Equals("map") && !tipo.Equals("list") && !tipo.Equals("set"))
+                                    else if (!tipo.Equals("int") && !tipo.Equals("boolean") && !tipo.Equals("double") && !tipo.Contains("map") && !tipo.Contains("list") && !tipo.Contains("set"))
                                     {
                                         InstanciaUserType temp = new InstanciaUserType(tipo, null);
                                         at.valor = temp;
@@ -225,7 +232,7 @@ namespace cql_teacher_server.CQL.Componentes
             if (a == null)
             {
                 if (tipo.Equals("string") || tipo.Equals("date") || tipo.Equals("time")) ts.setValor(id, null);
-                else if (!tipo.Equals("int") && !tipo.Equals("boolean") && !tipo.Equals("double") && !tipo.Equals("map") && !tipo.Equals("list"))
+                else if (!tipo.Equals("int") && !tipo.Equals("boolean") && !tipo.Equals("double") && !tipo.Contains("map") && !tipo.Contains("list") && !tipo.Contains("set"))
                 {
                     InstanciaUserType temp = new InstanciaUserType(tipo, null);
                     ts.setValor(id, temp);

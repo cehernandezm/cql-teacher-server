@@ -47,11 +47,29 @@ namespace cql_teacher_server.CQL.Gramatica
                     TablaDeSimbolos tablaCQL = new TablaDeSimbolos();
                     LinkedList<string> mensajes = new LinkedList<string>();
                     String baseD = TablaBaseDeDatos.getMine(usuario);
+
+                    foreach(InstruccionCQL ins in listaInstrucciones)
+                    {
+                        Mensaje ms = new Mensaje();
+                        if(ins.GetType() == typeof(Funcion))
+                        {
+                            if (!buscarFuncion(((Funcion)ins).identificador))
+                            {
+                                TablaBaseDeDatos.listaFunciones.AddLast((Funcion)ins);
+                            }
+                            else mensajes.AddLast(ms.error("Ya existe la funcion: " + ((Funcion)ins).id, ((Funcion)ins).l, ((Funcion)ins).c,"Semantico"));
+                        }
+                    }
+
                     foreach (InstruccionCQL ins in listaInstrucciones)
                     {
                         Mensaje mensa = new Mensaje();
-                        object res = ins.ejecutar(tablaGlobal, usuario, ref baseD, mensajes,tablaCQL);
-                        if (res != null && ins.GetType() == typeof(Expresion)) System.Diagnostics.Debug.WriteLine(mensa.message("El resultado de la operacion es: " + res.ToString()));
+                        if(ins.GetType() != typeof(Funcion))
+                        {
+                            object res = ins.ejecutar(tablaGlobal, usuario, ref baseD, mensajes, tablaCQL);
+                            if (res != null && ins.GetType() == typeof(Expresion)) System.Diagnostics.Debug.WriteLine(mensa.message("El resultado de la operacion es: " + res.ToString()));
+                        }
+                        
                     }
 
                     foreach (string m in mensajes)
@@ -68,6 +86,8 @@ namespace cql_teacher_server.CQL.Gramatica
             }
 
         }
+
+       
 
         /*
          * Metodo que las primeras dos producciones del arbol de irony
@@ -897,14 +917,58 @@ namespace cql_teacher_server.CQL.Gramatica
 
                     listaCL.AddLast(new Clear(mcl, lcl, ccl));
                     return listaCL;
+                
+                //----------------------------------------------------- FUNCION ---------------------------------------------------------------------------
+
+                case "infuncion":
+                    LinkedList<InstruccionCQL> listFU = new LinkedList<InstruccionCQL>();
+                    string tipoF = hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Text.ToLower().TrimEnd().TrimStart();
+                    int lF = hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
+                    int cF = hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Column;
+
+                    string idF = hijo.ChildNodes.ElementAt(1).Token.Text.ToLower().TrimEnd().TrimStart();
+                    LinkedList<InstruccionCQL> parametros = new LinkedList<InstruccionCQL>();
+                    LinkedList<InstruccionCQL> cuerpoFu = new LinkedList<InstruccionCQL>();
+                    //------------------------------------ Hay parametros ----------------------------------------------------------------------
+                    if (hijo.ChildNodes.Count() == 6)
+                    {
+                        parametros = (LinkedList<InstruccionCQL>)instruccion(hijo.ChildNodes.ElementAt(2));
+                        cuerpoFu = instrucciones(hijo.ChildNodes.ElementAt(4));
+                    }
+                    else cuerpoFu = instrucciones(hijo.ChildNodes.ElementAt(3));
+                    listFU.AddLast(new Funcion(tipoF, idF, parametros, cuerpoFu, lF, cF));
+                    return listFU;
 
 
 
+
+
+
+                //-------------------------------------------------- RETURN -----------------------------------------------------------------------------
+                case "inreturn":
+                    LinkedList<InstruccionCQL> listRe = new LinkedList<InstruccionCQL>();
+                    listRe.AddLast(new Return(resolver_expresion(hijo.ChildNodes.ElementAt(1))));
+                    return listRe;
 
             }
             return null;
 
 
+        }
+
+
+        /*
+        * METODO QUE BUSCA SI EXISTE YA ESA FUNCION O NO
+        * @param {id} funcion a buscar (se pasa su identificador generado)
+        * @return True si la encuentra False si no
+        */
+        public Boolean buscarFuncion(string id)
+        {
+            foreach (Funcion f in TablaBaseDeDatos.listaFunciones)
+            {
+                if (f.identificador.Equals(id)) return true;
+            }
+            return false;
         }
 
         /*
@@ -1373,7 +1437,15 @@ namespace cql_teacher_server.CQL.Gramatica
             else
             {
                 string toke = raiz.ChildNodes.ElementAt(0).Term.Name;
-                if (toke.Equals("expresion")) return resolver_expresion(raiz.ChildNodes.ElementAt(0));
+                if (toke.Equals("llamadafuncion"))
+                {
+                    ParseTreeNode hijo = raiz.ChildNodes.ElementAt(0);
+                    string id = hijo.ChildNodes.ElementAt(0).Token.Text.ToLower().TrimEnd().TrimStart() ;
+                    int l = hijo.ChildNodes.ElementAt(0).Token.Location.Line;
+                    int c = hijo.ChildNodes.ElementAt(0).Token.Location.Column;
+                    return new Expresion("llamadaFuncion",l,c,new LinkedList<Expresion>(),id);
+                }
+                else if (toke.Equals("expresion")) return resolver_expresion(raiz.ChildNodes.ElementAt(0));
                 string valor = raiz.ChildNodes.ElementAt(0).Token.Text;
                 int l1 = raiz.ChildNodes.ElementAt(0).Token.Location.Line;
                 int c1 = raiz.ChildNodes.ElementAt(0).Token.Location.Column;
