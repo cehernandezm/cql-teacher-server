@@ -98,7 +98,6 @@ namespace cql_teacher_server.CQL.Gramatica
 
         public LinkedList<InstruccionCQL> instrucciones(ParseTreeNode raiz)
         {
-            System.Diagnostics.Debug.WriteLine("CODIGO :" + getCode(raiz));
             //------------------ instrucciones instruccion -------------
             if (raiz.ChildNodes.Count == 2)
             {
@@ -152,7 +151,7 @@ namespace cql_teacher_server.CQL.Gramatica
                     //--------------------------------------- CREATE DATABASE ID ------------------------------------------
                     if (hijo.ChildNodes.Count() == 3)
                     {
-                        idB = hijo.ChildNodes.ElementAt(2).ToString().Split(' ')[0];
+                        idB = hijo.ChildNodes.ElementAt(2).Token.Text.ToLower().TrimEnd().TrimStart(); ;
                         lineaB = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
                         columnaB = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
                         flag = false;
@@ -1699,44 +1698,6 @@ namespace cql_teacher_server.CQL.Gramatica
         }
 
 
-        public string getCode(ParseTreeNode raiz)
-        {
-            string code = "";
-            ParseTreeNode hijo;
-            if (raiz.ChildNodes.Count() == 2)
-            {
-                code = getCode(raiz.ChildNodes.ElementAt(0)) + "\n";
-                hijo = raiz.ChildNodes.ElementAt(1);
-            }
-            else hijo = raiz.ChildNodes.ElementAt(0);
-            code += subCode(hijo);
-            return code;
-        }
-
-        public string subCode(ParseTreeNode raiz)
-        {
-            string code = "";
-            foreach(ParseTreeNode hijo in raiz.ChildNodes)
-            {
-                string term = hijo.Term.Name;
-                if (term.Equals("instrucciones")) code += "\n" + getCode(hijo);
-                else code += childrenCode(hijo);
-            }
-            return code;
-        }
-
-        public string childrenCode(ParseTreeNode raiz)
-        {
-            string code = "";
-            if (raiz.ChildNodes.Count() > 0)
-            {
-                foreach(ParseTreeNode hijo in raiz.ChildNodes)
-                {
-                    code += " " + hijo.Token.Text;
-                }
-            }
-            else code += " " + raiz.Token.Text;
-            return code;
-        }
+       
     }
 }

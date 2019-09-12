@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="CQL\Componentes\Ciclos\" />
     <Folder Include="Reportes\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>

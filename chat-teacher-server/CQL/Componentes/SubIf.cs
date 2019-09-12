@@ -110,7 +110,7 @@ namespace cql_teacher_server.CQL.Componentes
                                 object r = i.ejecutar(ambitoLocal, user, ref baseD, mensajes,tablaTemp);
                                 if (r == null) return r;
                                 else if (r.GetType() == typeof(Retorno)) return (Retorno)r;
-                        }
+                            }
                         }
                         return "";
                     }

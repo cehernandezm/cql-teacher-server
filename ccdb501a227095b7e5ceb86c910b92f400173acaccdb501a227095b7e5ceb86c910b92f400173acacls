@@ -1,0 +1,239 @@
+[33mcommit ccdb501a227095b7e5ceb86c910b92f400173aca[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Wed Sep 11 21:07:37 2019 -0600
+
+    Funciones funcionan. Test con fibonacci y torre de hanoi
+
+[33mcommit 49b58769830f608bb027221c5b7baaeead881bb2[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Tue Sep 10 20:44:13 2019 -0600
+
+    Se ejecutan funciones sin parametros (Valida que haya return pero aun no valida que devuelva el mismo tipo)
+
+[33mcommit 93eb3f968fe9522859428f460a9f5db9a0409311[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Mon Sep 9 20:51:48 2019 -0600
+
+    SE TERMINO EL LENGUAJE CQL A EXCEPCION DE BATCH
+
+[33mcommit e7d61395b5c252c84f04980dd20a21b1af0c5886[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Sun Sep 8 20:31:01 2019 -0600
+
+    Se agrego las operaciones para map en INSER,UPDATE, FALTA EN DELETE
+
+[33mcommit 5fc7e4301b080b387bbc3edd7a52bad2ea6b54c2[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Sun Sep 8 16:53:27 2019 -0600
+
+    Se agrego que todo tipo de valor pueda venir en todo tipo de valor
+
+[33mcommit 3ad917cfd4b2df50d1474b6677fa0efd7935b4e3[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Sun Sep 8 16:48:18 2019 -0600
+
+    Se agrego todo tipo de objecto dentro de un MAP
+
+[33mcommit cff66244809b5cbac31e338683cd045ace85b5e2[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Sun Sep 8 16:09:00 2019 -0600
+
+    Se agrego todo tipo de collections dentro de un USER TYPE
+
+[33mcommit 7feb9377246ff7530df6f43c46e378227c7f6863[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Sat Sep 7 19:57:58 2019 -0600
+
+    Se agrego todas las operaciones sobre un set
+
+[33mcommit 62163ec9c9b295916c10a22cb0536f913bb5ea2f[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Sat Sep 7 19:38:38 2019 -0600
+
+    Se agrego y se ejecuta el tipo SET
+
+[33mcommit 991bd437cac449c116e243acff5d4d9db6dc76d6[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Fri Sep 6 19:11:20 2019 -0600
+
+    Se agrego la gramatica de set
+
+[33mcommit 50e1e4e6ce0f8389620d07827c501dc1a011469b[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Fri Sep 6 17:53:42 2019 -0600
+
+    Se agrego todas las operaciones sobre un list
+
+[33mcommit 8d2b72327fb2081a0c6d7d5aedca8e81bfb10bad[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Thu Sep 5 20:43:05 2019 -0600
+
+    List declaracion y asignacion
+
+[33mcommit 8980172050e3442c1f6209686ecd3e93931b318f[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Thu Sep 5 18:55:01 2019 -0600
+
+    Se terminaron las operaciones sobre maps
+
+[33mcommit 2a3b56147b86fced5803a606ec3590248833f280[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Thu Sep 5 10:20:13 2019 -0600
+
+    Se agrego el set a los maps
+
+[33mcommit 3b8c6c2430399bfebb2cabd9534b2ed29fffa7a8[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Wed Sep 4 20:31:33 2019 -0600
+
+    Se agrego la gramatica para SET MAP
+
+[33mcommit b1f9113148145b3a625ee245a1707175d7c06cac[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Wed Sep 4 19:51:44 2019 -0600
+
+    Se arreglo ambiguedad en asignacion de un atributo
+
+[33mcommit 9d4343a3b319d7599a5ab44fd07b9858e29c721b[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Wed Sep 4 19:49:29 2019 -0600
+
+    Se arreglo ambiguedad en asignacion de un atributo
+
+[33mcommit 6eb1810c203e1446a4dd739a6264b7ace4166cab[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Wed Sep 4 10:26:59 2019 -0600
+
+    Se arreglo bug en la comparacion de keys y comparacion de tipos de valores
+
+[33mcommit c6ff3febf3a403ff6ea4ce84c117c8cc5059d328[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Wed Sep 4 10:10:53 2019 -0600
+
+    Se agrego el crear un map desde una lista
+
+[33mcommit 8fd9aeb46f66d97a3948440f6e34041095f60640[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Tue Sep 3 21:08:04 2019 -0600
+
+    Se arreglo bug de ambiguedad lup
+
+[33mcommit bb3060f34619a3c1d98589c0d96fa760e5da88dc[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Mon Sep 2 20:35:39 2019 -0600
+
+    Se crea instancia de map
+
+[33mcommit 1d565a20c314b8265a305529020d8a8c3421a69f[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Mon Sep 2 19:04:38 2019 -0600
+
+    Se agrego y se ejecuta FOR
+
+[33mcommit 6fdda3ad23c52b404ac77a22fa11e8ac2005de70[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Mon Sep 2 18:08:34 2019 -0600
+
+    Se agrego y se ejecuta la instruccion DO WHILE
+
+[33mcommit b6fe01ca40672cd6f30663e307ae131973d40f81[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Sun Sep 1 21:18:21 2019 -0600
+
+    Se agrego la sentencia while
+
+[33mcommit 7144d53155a89171ab3cdc195a0ccd5d0f3a768c[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Sun Sep 1 19:38:31 2019 -0600
+
+    Se arreglo problemas con el switch
+
+[33mcommit a0b402db0746989ee1edecc8dce44be5706eccaa[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Sun Sep 1 19:02:18 2019 -0600
+
+    Se arreglo el update para user type
+
+[33mcommit 7402e2100d68eaf343bd01343dc3665906e1e1a5[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Sun Sep 1 17:05:34 2019 -0600
+
+    Se agregaron las operaciones de agregacion
+
+[33mcommit f29286d8dd658c24e04ec842c33d115830e9f445[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Sat Aug 31 18:39:05 2019 -0600
+
+    Se termino la instruccion SQL
+
+[33mcommit 0f2c42936cca5887090a978f147c05b644d9f89c[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Sat Aug 31 17:37:27 2019 -0600
+
+    Se agrego y se ejecuta order by
+
+[33mcommit c249b43784476341ff5495307fae9505e72db1c5[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Sat Aug 31 15:00:10 2019 -0600
+
+    Se agrego y se ejecuta la instruccion LIMIT
+
+[33mcommit ab67638df61091fe6fda9f5f6543f4db98d7f990[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Sat Aug 31 13:49:59 2019 -0600
+
+    Se arreglo el problema de los campos a mostrar en select, ahora puede venir cualquier tipo de operacion en ella
+
+[33mcommit 3eca2639dad43d35bdbb5cc770bc0f121e950b2c[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Fri Aug 30 21:29:39 2019 -0600
+
+    Se agrego y se ejecuta la consulta select sin where ni otro comodin
+
+[33mcommit 928c84f743f2ea8a845a24105a882cf2f6ed45c7[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Fri Aug 30 19:51:16 2019 -0600
+
+    Se agrego y se ejecuta la instruccion DELETE
+
+[33mcommit 29f8f27dd638063d0b66f09c5c8c7cee0df4625f[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Fri Aug 30 19:22:38 2019 -0600
+
+    Se agrego y se ejecuta update con where
+
+[33mcommit cb299de270b65f206afd6ec2ef896f13ce03a853[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Thu Aug 29 20:40:13 2019 -0600
+
+    Se agrego y se ejecuta la instruccion UPDATE sin WHERE
+
+[33mcommit 19df808d9dc707aa11606beb1d4c304a37f71207[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Thu Aug 29 19:31:00 2019 -0600
+
+    Se agrego la tabla de simbolos para cada tabla. y se corrigio la ambiguedad entre @ID para variables y ID para campos
+
+[33mcommit bacff08b51e9e4a722cbb8a73bd9bc18761cba7d[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Thu Aug 29 16:43:56 2019 -0600
+
+    Se agrego y se ejecuta el insertado especial INSERT INTO LISTACAMPOS VALUES VALUES
+
+[33mcommit bd01f4091b903f335be2bd3036bd0e6076f87a4d[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Wed Aug 28 20:44:27 2019 -0600
+
+    Se corrigio bug de mostrar valor nulo
+
+[33mcommit 4f7f70f5dc41d92297bb3ef55b7b8f2495335c8e[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Wed Aug 28 20:32:23 2019 -0600
+
+    Se agrego y ejecuta la instruccion INSERT VALUES en su forma normal
+
+[33mcommit 2b605cb2fb08c60ca13971690159c979dd67e28c[m
+Author: Carlos <carloshernandez.chsegunda@gmail.com>
+Date:   Wed Aug 28 18:30:36 2019 -0600
+
+    

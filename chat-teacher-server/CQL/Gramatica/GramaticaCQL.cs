@@ -133,6 +133,8 @@ namespace cql_teacher_server.CQL.Gramatica
 
             var LOG = ToTerm("LOG");
 
+            var PROCEDURE = ToTerm("PROCEDURE");
+
 
 
 
@@ -237,6 +239,9 @@ namespace cql_teacher_server.CQL.Gramatica
 
             NonTerminal inLog = new NonTerminal("inlog");
 
+            NonTerminal inProcedure = new NonTerminal("inprocedure");
+            NonTerminal listaParametros = new NonTerminal("listaparametros");
+
             #endregion
 
             #region Gramatica
@@ -278,6 +283,7 @@ namespace cql_teacher_server.CQL.Gramatica
                              | inFunction 
                              | inReturn + ";"
                              | inLog + ";"
+                             | inProcedure
                              ;
             #endregion
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
@@ -624,6 +630,13 @@ namespace cql_teacher_server.CQL.Gramatica
 
 
             inLog.Rule = LOG + "(" + expresion + ")";
+
+            //---------------------------------------------------- PROCEDURE ------------------------------------------------------------------------------
+            inProcedure.Rule = PROCEDURE + ID + listaParametros + "{" + instrucciones + "}";
+
+            listaParametros.Rule = listaParametros + "," + "(" + declaracion + ")"
+                                 | "(" + declaracion + ")"
+                                 ;
 
             #endregion
 
