@@ -56,6 +56,11 @@ namespace cql_teacher_server.CQL.Componentes
             if (parametro)
             {
                 ts.AddLast(new Simbolo(tipo, id));
+                if (tipo.Equals("list")) ts.setValor(id, new List("none", new LinkedList<object>()));
+                else if (tipo.Equals("set")) ts.setValor(id, new Set("none", new LinkedList<object>()));
+                else if (tipo.Equals("map")) ts.setValor(id, new Map("none", new LinkedList<KeyValue>()));
+                else if (tipo.Equals("string") || tipo.Equals("int") || tipo.Equals("double") || tipo.Equals("date") || tipo.Equals("time") || tipo.Equals("boolean")) { }
+                else ts.setValor(id, new InstanciaUserType("none", new LinkedList<Atributo>()));
                 return "";
             }
             else if (existe.Equals("none"))

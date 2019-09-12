@@ -1234,7 +1234,7 @@ namespace cql_teacher_server.CQL.Componentes
                 Funcion f = TablaBaseDeDatos.getFuncion(identificador);
                 if (f != null)
                 {
-                    f.valores = new LinkedList<Expresion>();
+                    f.valores = listaUser;
                     return f.ejecutar(ts, user, ref baseD, mensajes, tsT);
                 }       
                 else

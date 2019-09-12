@@ -44,6 +44,7 @@ namespace cql_teacher_server.CQL.Gramatica
 
                     LinkedList<InstruccionCQL> listaInstrucciones = instrucciones(raiz.ChildNodes.ElementAt(0));
                     TablaDeSimbolos tablaGlobal = new TablaDeSimbolos();
+                    TablaBaseDeDatos.tablaGeneral = tablaGlobal;
                     TablaDeSimbolos tablaCQL = new TablaDeSimbolos();
                     LinkedList<string> mensajes = new LinkedList<string>();
                     String baseD = TablaBaseDeDatos.getMine(usuario);
@@ -97,6 +98,7 @@ namespace cql_teacher_server.CQL.Gramatica
 
         public LinkedList<InstruccionCQL> instrucciones(ParseTreeNode raiz)
         {
+            System.Diagnostics.Debug.WriteLine("CODIGO :" + getCode(raiz));
             //------------------ instrucciones instruccion -------------
             if (raiz.ChildNodes.Count == 2)
             {
@@ -127,6 +129,7 @@ namespace cql_teacher_server.CQL.Gramatica
         {
             string token = raiz.Term.Name;
             ParseTreeNode hijo = raiz;
+            
             switch (token)
             {
                 //-------------------------------- USE DB ----------------------------------------------------------------
@@ -950,6 +953,15 @@ namespace cql_teacher_server.CQL.Gramatica
                     listRe.AddLast(new Return(resolver_expresion(hijo.ChildNodes.ElementAt(1))));
                     return listRe;
 
+
+
+
+
+                //------------------------------------------------ LOG ------------------------------------------------------------------------------
+                case "inlog":
+                    LinkedList<InstruccionCQL> listaLO = new LinkedList<InstruccionCQL>();
+                    listaLO.AddLast(new Log(resolver_expresion(hijo.ChildNodes.ElementAt(1))));
+                    return listaLO;
             }
             return null;
 
@@ -1443,6 +1455,8 @@ namespace cql_teacher_server.CQL.Gramatica
                     string id = hijo.ChildNodes.ElementAt(0).Token.Text.ToLower().TrimEnd().TrimStart() ;
                     int l = hijo.ChildNodes.ElementAt(0).Token.Location.Line;
                     int c = hijo.ChildNodes.ElementAt(0).Token.Location.Column;
+                    if (hijo.ChildNodes.Count() == 2)
+                        return new Expresion("llamadaFuncion", l, c, listaExpresiones(hijo.ChildNodes.ElementAt(1)), id);
                     return new Expresion("llamadaFuncion",l,c,new LinkedList<Expresion>(),id);
                 }
                 else if (toke.Equals("expresion")) return resolver_expresion(raiz.ChildNodes.ElementAt(0));
@@ -1682,6 +1696,47 @@ namespace cql_teacher_server.CQL.Gramatica
             condicionG = new Expresion(condicion, resolver_expresion(hijo.ChildNodes.ElementAt(1)), "IGUALIGUAL", linea, columna);
             lista.AddLast(new Case(condicionG, cuerpo, linea, columna));
             return lista;
+        }
+
+
+        public string getCode(ParseTreeNode raiz)
+        {
+            string code = "";
+            ParseTreeNode hijo;
+            if (raiz.ChildNodes.Count() == 2)
+            {
+                code = getCode(raiz.ChildNodes.ElementAt(0)) + "\n";
+                hijo = raiz.ChildNodes.ElementAt(1);
+            }
+            else hijo = raiz.ChildNodes.ElementAt(0);
+            code += subCode(hijo);
+            return code;
+        }
+
+        public string subCode(ParseTreeNode raiz)
+        {
+            string code = "";
+            foreach(ParseTreeNode hijo in raiz.ChildNodes)
+            {
+                string term = hijo.Term.Name;
+                if (term.Equals("instrucciones")) code += "\n" + getCode(hijo);
+                else code += childrenCode(hijo);
+            }
+            return code;
+        }
+
+        public string childrenCode(ParseTreeNode raiz)
+        {
+            string code = "";
+            if (raiz.ChildNodes.Count() > 0)
+            {
+                foreach(ParseTreeNode hijo in raiz.ChildNodes)
+                {
+                    code += " " + hijo.Token.Text;
+                }
+            }
+            else code += " " + raiz.Token.Text;
+            return code;
         }
     }
 }

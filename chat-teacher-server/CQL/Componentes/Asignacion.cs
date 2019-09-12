@@ -261,7 +261,7 @@ namespace cql_teacher_server.CQL.Componentes
                     {
                         Map temp = (Map)op1;
                         Map valor = (Map)ts.getValor(id);
-                        if (valor.id.Equals(temp.id))
+                        if (valor.id.Equals(temp.id) || valor.id.Equals("none"))
                         {
                             ts.setValor(id, temp);
                             return "";
@@ -276,8 +276,9 @@ namespace cql_teacher_server.CQL.Componentes
                     else if(op1.GetType() == typeof(List) && tipo.Equals("list"))
                     {
                         List temp = (List)op1;
+                        
                         List valor = (List)ts.getValor(id);
-                        if (valor.id.Equals(temp.id))
+                        if (valor.id.Equals(temp.id) || valor.id.Equals("none"))
                         {
                             ts.setValor(id, temp);
                             return "";
@@ -292,7 +293,7 @@ namespace cql_teacher_server.CQL.Componentes
                     {
                         Set original = (Set)ts.getValor(id);
                         Set temp = (Set)op1;
-                        if (original.id.Equals(temp.id))
+                        if (original.id.Equals(temp.id) || original.id.Equals("none"))
                         {
                             object resp = temp.buscarRepetidos(mensajes, l, c);
                             if (resp == null) return null;
@@ -308,7 +309,7 @@ namespace cql_teacher_server.CQL.Componentes
                     else if (op1.GetType() == typeof(InstanciaUserType))
                     {
                         InstanciaUserType temp = (InstanciaUserType)op1;
-                        if (tipo.Equals(temp.tipo.ToLower()))
+                        if (tipo.Equals(temp.tipo.ToLower()) || temp.tipo.Equals("none"))
                         {
                             ts.setValor(id, temp);
                             return "";

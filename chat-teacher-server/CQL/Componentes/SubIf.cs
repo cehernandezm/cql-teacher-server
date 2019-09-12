@@ -59,13 +59,14 @@ namespace cql_teacher_server.CQL.Componentes
          * @baseD string por referencia de que base de datos estamos trabajando
          * @mensajes el output de la ejecucion
          */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes,TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
         {
             flagCondicion = false;
-            object a = (condicion == null) ? null : condicion.ejecutar(ts, user, ref  baseD, mensajes,tsT);
+            object a = (condicion == null) ? null : condicion.ejecutar(ts, user, ref baseD, mensajes, tsT);
 
             Mensaje men = new Mensaje();
-            if(condicion == null)
+            //----------------------------------------------------------- ELSE -----------------------------------------------------------
+            if (condicion == null)
             {
                 TablaDeSimbolos ambitoLocal = new TablaDeSimbolos();
                 foreach (Simbolo s in ts)
@@ -80,9 +81,11 @@ namespace cql_teacher_server.CQL.Componentes
                 foreach (InstruccionCQL i in cuerpo)
                 {
                     object r = i.ejecutar(ambitoLocal, user, ref baseD, mensajes, tablaTemp);
-                    if (r != null) return r;
+                    if (r == null) return r;
+                    else if (r.GetType() == typeof(Retorno)) return r;
                 }
             }
+            //--------------------------------------------------------------------------------- IF ELSE IF 
             else
             {
                 if (a != null)
@@ -106,7 +109,8 @@ namespace cql_teacher_server.CQL.Componentes
                             {
                                 object r = i.ejecutar(ambitoLocal, user, ref baseD, mensajes,tablaTemp);
                                 if (r == null) return r;
-                            }
+                                else if (r.GetType() == typeof(Retorno)) return (Retorno)r;
+                        }
                         }
                         return "";
                     }

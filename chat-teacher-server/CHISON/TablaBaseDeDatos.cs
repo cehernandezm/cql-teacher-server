@@ -1,4 +1,5 @@
 ﻿using cql_teacher_server.CHISON.Componentes;
+using cql_teacher_server.CQL.Arbol;
 using cql_teacher_server.CQL.Componentes;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ namespace cql_teacher_server.CHISON
    
     class TablaBaseDeDatos
     {
+        public static TablaDeSimbolos tablaGeneral= new TablaDeSimbolos();
         public static LinkedList<BaseDeDatos> global = new LinkedList<BaseDeDatos>();
 
         public static LinkedList<Usuario> listaUsuario = new LinkedList<Usuario>();
@@ -130,6 +132,7 @@ namespace cql_teacher_server.CHISON
         {
             foreach(Funcion f in listaFunciones)
             {
+                System.Diagnostics.Debug.WriteLine("f1: " + id + " f2: " + f.identificador);
                 if (f.identificador.Equals(id)) return f;
             }
             return null;

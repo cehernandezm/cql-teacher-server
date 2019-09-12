@@ -1,4 +1,5 @@
-﻿using cql_teacher_server.CQL.Arbol;
+﻿using cql_teacher_server.CHISON;
+using cql_teacher_server.CQL.Arbol;
 using cql_teacher_server.Herramientas;
 using System;
 using System.Collections.Generic;
@@ -51,31 +52,54 @@ namespace cql_teacher_server.CQL.Componentes
         {
             Mensaje ms = new Mensaje();
             TablaDeSimbolos newAmbito = new TablaDeSimbolos();
-            foreach(Simbolo s in ts)
+            foreach(Simbolo s in TablaBaseDeDatos.tablaGeneral)
             {
                 newAmbito.AddLast(s);
             }
 
             if (parametros.Count() == valores.Count())
             {
-                for( int i = 0; i < parametros.Count(); i++)
+                for (int i = 0; i < parametros.Count(); i++)
                 {
-                    Declaracion d =(Declaracion)parametros.ElementAt(i);
+                    Declaracion d = (Declaracion)parametros.ElementAt(i);
                     d.parametro = true;
-                    d.ejecutar(newAmbito, user, ref baseD, mensajes, tsT);
-                    if (d == null) return null;
+                    object rd = d.ejecutar(newAmbito, user, ref baseD, mensajes, tsT);
+                    if (rd == null) return null;
                     Asignacion a = new Asignacion(d.id, l, c, valores.ElementAt(i), "ASIGNACION");
                     a.tPadre = ts;
-                    a.ejecutar(newAmbito, user, ref baseD, mensajes, tsT);
-                    if (a == null) return null;
-                    
+                    object ra = a.ejecutar(newAmbito, user, ref baseD, mensajes, tsT);
+                    if (ra == null) return null;
                 }
 
                 foreach(InstruccionCQL ins in cuerpo)
                 {
                     object r = ins.ejecutar(newAmbito, user, ref baseD, mensajes, tsT);
                     if (r == null) return null;
-                    else if (r.GetType() == typeof(Retorno)) return ((Retorno)r).valor;
+                    else if (r.GetType() == typeof(Retorno))
+                    {
+                        object re = ((Retorno)r).valor;
+                        if (re != null)
+                        {
+
+                            if (re.GetType() == typeof(int) && tipo.Equals("int")) return (int)re;
+                            else if (re.GetType() == typeof(string) && tipo.Equals("string")) return (String)re;
+                            else if (re.GetType() == typeof(double) && tipo.Equals("double")) return (Double)re;
+                            else if (re.GetType() == typeof(DateTime) && tipo.Equals("date")) return (DateTime)re;
+                            else if (re.GetType() == typeof(TimeSpan) && tipo.Equals("time")) return (TimeSpan)re;
+                            else if (re.GetType() == typeof(Map) && tipo.Equals("map")) return (Map)re;
+                            else if (re.GetType() == typeof(List) && tipo.Equals("list")) return (List)re;
+                            else if (re.GetType() == typeof(Set) && tipo.Equals("set")) return (Set)re;
+                            else if (re.GetType() == typeof(InstanciaUserType))
+                            {
+                                InstanciaUserType temp = (InstanciaUserType)re;
+                                if (temp.tipo.Equals(tipo)) return temp;
+                                else mensajes.AddLast(ms.error("No coincide el tipo de USERTYPE", l, c, "Semantico"));
+
+                            }
+                            else mensajes.AddLast(ms.error("No coincide el tipo: " + tipo + " con el valor: " + re, l, c, "Semantico"));
+                            return null;
+                        }
+                    }
                 }
                 mensajes.AddLast(ms.error("La funcion no posee ningun return", l, c, "Semantico"));
                 return null;

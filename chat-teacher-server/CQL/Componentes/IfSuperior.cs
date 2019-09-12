@@ -35,10 +35,9 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 r = i.ejecutar(ts, user, ref baseD, mensajes,tsT);
                 if (r == null) return null;
+                else if (r.GetType() == typeof(Retorno)) return (Retorno)r;
                 SubIf a = (SubIf)i;
                 if (a.flagCondicion || a.flagElse) return r;
-                
-              
             }
             return "";
         }

@@ -131,6 +131,7 @@ namespace cql_teacher_server.CQL.Gramatica
 
             var RETURN = ToTerm("RETURN");
 
+            var LOG = ToTerm("LOG");
 
 
 
@@ -234,6 +235,8 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal inReturn = new NonTerminal("inreturn");
             NonTerminal llamadaFuncion = new NonTerminal("llamadafuncion");
 
+            NonTerminal inLog = new NonTerminal("inlog");
+
             #endregion
 
             #region Gramatica
@@ -274,6 +277,7 @@ namespace cql_teacher_server.CQL.Gramatica
                              | inFor
                              | inFunction 
                              | inReturn + ";"
+                             | inLog + ";"
                              ;
             #endregion
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
@@ -617,7 +621,9 @@ namespace cql_teacher_server.CQL.Gramatica
 
             //------------------------------------------------- RETURN --------------------------------------------------------------------------------------
             inReturn.Rule = RETURN + expresion;
-           
+
+
+            inLog.Rule = LOG + "(" + expresion + ")";
 
             #endregion
 
