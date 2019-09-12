@@ -1258,7 +1258,7 @@ namespace cql_teacher_server.CQL.Componentes
             //----------------------------------------------------- ID --------------------------------------------------------------------------
             else if (operacion.Equals("ID"))
             {
-                object a = ts.getValor(valor.ToString().TrimStart().TrimEnd());
+                object a = ts.getValor(valor.ToString().ToLower().TrimStart().TrimEnd());
                 if (a == null) return null;
                 else if (a.ToString().Equals("none"))
                 {
