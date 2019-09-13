@@ -7,6 +7,7 @@ using cql_teacher_server.Herramientas;
 using System.Globalization;
 using cql_teacher_server.CHISON.Componentes;
 using cql_teacher_server.CHISON;
+using cql_teacher_server.CQL.Componentes.Funcion_Procedure;
 
 namespace cql_teacher_server.CQL.Componentes
 {
@@ -1243,6 +1244,53 @@ namespace cql_teacher_server.CQL.Componentes
                     return null;
                 }
             }
+            //----------------------------------------------------- LLAMADA A PROCEDURES ------------------------------------------------------
+            else if (operacion.Equals("llamadaProcedure"))
+            {
+                Mensaje ms = new Mensaje();
+                string identificador = idAs;
+
+                //------------------------------------------------ Ejecutamos los valores para completar el identificador unico------------------
+                foreach (Expresion e in listaUser)
+                {
+                    object res = (e == null) ? null : e.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                    if (res != null)
+                    {
+                        if (res.GetType() == typeof(string)) identificador += "_string";
+                        else if (res.GetType() == typeof(int)) identificador += "_int";
+                        else if (res.GetType() == typeof(Double)) identificador += "_double";
+                        else if (res.GetType() == typeof(Boolean)) identificador += "_boolean";
+                        else if (res.GetType() == typeof(DateTime)) identificador += "_date";
+                        else if (res.GetType() == typeof(TimeSpan)) identificador += "_time";
+                        else if (res.GetType() == typeof(Map)) identificador += "_map";
+                        else if (res.GetType() == typeof(List)) identificador += "_list";
+                        else if (res.GetType() == typeof(Set)) identificador += "_set";
+                        else if (res.GetType() == typeof(InstanciaUserType)) identificador += "_" + ((InstanciaUserType)res).tipo;
+                    }
+                    else
+                    {
+                        mensajes.AddLast(ms.error("No puede pasar parametros null", linea1, columna1, "Semantico"));
+                        return null;
+                    }
+                }
+                BaseDeDatos bd = TablaBaseDeDatos.getBase(baseD);
+                if (bd != null)
+                {
+                    Procedures procedure = bd.buscarProcedure(identificador);
+                    if (procedure != null)
+                    {
+                        CallProcedure callProcedure = new CallProcedure(procedure.parametro, procedure.cuerpo, linea1, columna1);
+                        callProcedure.valores = listaUser;
+                        callProcedure.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                        return 0;
+                    }
+                    else mensajes.AddLast(ms.error("El procedure: " + idAs + " no existe en esta base de datos: " + baseD, linea1, columna1, "Semantico"));
+                }
+                else mensajes.AddLast(ms.error("No existe la base de datos: " + baseD, linea1, columna1, "Semantico"));
+                
+                return 0;
+            }
+            
             //------------------------------------------------- ENTERO -------------------------------------------------------------------------
             else if (operacion.Equals("ENTERO")) return Int32.Parse(valor.ToString());
             //------------------------------------------------- DOUBLE -------------------------------------------------------------------------

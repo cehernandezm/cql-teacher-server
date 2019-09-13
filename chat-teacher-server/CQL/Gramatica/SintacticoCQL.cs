@@ -2,6 +2,8 @@
 using cql_teacher_server.CHISON.Componentes;
 using cql_teacher_server.CQL.Arbol;
 using cql_teacher_server.CQL.Componentes;
+using cql_teacher_server.CQL.Componentes.Funcion_Procedure;
+using cql_teacher_server.CQL.Componentes.Procedure;
 using cql_teacher_server.Herramientas;
 using Irony.Parsing;
 using System;
@@ -13,7 +15,6 @@ namespace cql_teacher_server.CQL.Gramatica
 {
     public class SintacticoCQL
     {
-        bool flagEx = false;
         /*
          * Metodo que analizar la cadena 
          * @cadena es el string a analizar
@@ -934,7 +935,7 @@ namespace cql_teacher_server.CQL.Gramatica
                     //------------------------------------ Hay parametros ----------------------------------------------------------------------
                     if (hijo.ChildNodes.Count() == 6)
                     {
-                        parametros = (LinkedList<InstruccionCQL>)instruccion(hijo.ChildNodes.ElementAt(2));
+                        parametros = getListaDeclaracion(hijo.ChildNodes.ElementAt(2));
                         cuerpoFu = instrucciones(hijo.ChildNodes.ElementAt(4));
                     }
                     else cuerpoFu = instrucciones(hijo.ChildNodes.ElementAt(3));
@@ -961,6 +962,24 @@ namespace cql_teacher_server.CQL.Gramatica
                     LinkedList<InstruccionCQL> listaLO = new LinkedList<InstruccionCQL>();
                     listaLO.AddLast(new Log(resolver_expresion(hijo.ChildNodes.ElementAt(1))));
                     return listaLO;
+
+
+
+                // -------------------------------------------- PROCEDURES --------------------------------------------------------------------------
+                case "inprocedure":
+                    LinkedList<InstruccionCQL> listaPR = new LinkedList<InstruccionCQL>();
+                    string idP = hijo.ChildNodes.ElementAt(1).Token.Text.ToLower().TrimEnd().TrimStart();
+                    int lPR = hijo.ChildNodes.ElementAt(1).Token.Location.Line;
+                    int cPR = hijo.ChildNodes.ElementAt(1).Token.Location.Column;
+                    LinkedList<InstruccionCQL> cuerpoPR = instrucciones(hijo.ChildNodes.ElementAt(4));
+                    LinkedList<listaParametros> parametroPR = GetListaParametros(hijo.ChildNodes.ElementAt(2));
+                    listaPR.AddLast(new Procedure(idP,parametroPR,cuerpoPR,lPR,cPR,""));
+
+                    return listaPR;
+
+
+
+
             }
             return null;
 
@@ -968,12 +987,49 @@ namespace cql_teacher_server.CQL.Gramatica
         }
 
 
+        private LinkedList<InstruccionCQL> getListaDeclaracion (ParseTreeNode raiz)
+        {
+            LinkedList<InstruccionCQL> lista = new LinkedList<InstruccionCQL>();
+            ParseTreeNode hijo;
+            if (raiz.ChildNodes.Count() == 2)
+            {
+                lista = getListaDeclaracion(raiz.ChildNodes.ElementAt(0));
+                hijo = raiz.ChildNodes.ElementAt(1);
+            }
+            else hijo = raiz.ChildNodes.ElementAt(0);
+            LinkedList<InstruccionCQL> listaD = (LinkedList<InstruccionCQL>)instruccion(hijo);
+            lista = new LinkedList<InstruccionCQL>(lista.Union(listaD));
+            return lista;
+        }
+
+        /*
+         * METODO QUE RECORRE EL SUBARBOL PARA LOS PARAMETROS DE UN PROCEDURE
+         * @param {raiz} sub arbol a analizar
+         * @return una lista de listaParametros
+         */
+
+
+        private LinkedList<listaParametros> GetListaParametros(ParseTreeNode raiz)
+        {
+            LinkedList<listaParametros> lista = new LinkedList<listaParametros>();
+            ParseTreeNode hijo;
+            if (raiz.ChildNodes.Count() == 2)
+            {
+                lista = GetListaParametros(raiz.ChildNodes.ElementAt(0));
+                hijo = raiz.ChildNodes.ElementAt(1);
+            }
+            else hijo = raiz.ChildNodes.ElementAt(0);
+            LinkedList<InstruccionCQL> decla = getListaDeclaracion(hijo);
+            lista.AddLast(new listaParametros(decla));
+            return lista;
+        }
+
         /*
         * METODO QUE BUSCA SI EXISTE YA ESA FUNCION O NO
         * @param {id} funcion a buscar (se pasa su identificador generado)
         * @return True si la encuentra False si no
         */
-        public Boolean buscarFuncion(string id)
+        private Boolean buscarFuncion(string id)
         {
             foreach (Funcion f in TablaBaseDeDatos.listaFunciones)
             {
@@ -1457,6 +1513,15 @@ namespace cql_teacher_server.CQL.Gramatica
                     if (hijo.ChildNodes.Count() == 2)
                         return new Expresion("llamadaFuncion", l, c, listaExpresiones(hijo.ChildNodes.ElementAt(1)), id);
                     return new Expresion("llamadaFuncion",l,c,new LinkedList<Expresion>(),id);
+                }
+                else if (toke.Equals("callprocedure"))
+                {
+                    ParseTreeNode hijo = raiz.ChildNodes.ElementAt(0);
+                    string id = hijo.ChildNodes.ElementAt(1).Token.Text.ToLower().TrimEnd().TrimStart();
+                    int l = hijo.ChildNodes.ElementAt(1).Token.Location.Line;
+                    int c = hijo.ChildNodes.ElementAt(1).Token.Location.Column;
+                    return new Expresion("llamadaProcedure", l, c, listaExpresiones(hijo.ChildNodes.ElementAt(2)), id);
+
                 }
                 else if (toke.Equals("expresion")) return resolver_expresion(raiz.ChildNodes.ElementAt(0));
                 string valor = raiz.ChildNodes.ElementAt(0).Token.Text;

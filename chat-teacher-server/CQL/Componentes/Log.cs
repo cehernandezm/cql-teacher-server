@@ -32,7 +32,7 @@ namespace cql_teacher_server.CQL.Componentes
         {
             Mensaje ms = new Mensaje();
             object r = expresion.ejecutar(ts, user,ref baseD, mensajes, tsT);
-            mensajes.AddLast(ms.message(r.ToString()));
+            if(r != null) mensajes.AddLast(ms.message(r.ToString()));
             return "";
         }
     }

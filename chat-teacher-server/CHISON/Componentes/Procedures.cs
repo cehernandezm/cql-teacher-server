@@ -1,4 +1,7 @@
-﻿using System;
+﻿using cql_teacher_server.CQL.Arbol;
+using cql_teacher_server.CQL.Componentes.Procedure;
+using Irony.Parsing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,11 +14,23 @@ namespace cql_teacher_server.CHISON.Componentes
         public LinkedList<Parametros> parametros { set; get; }
         public string instruccion { set; get; }
 
+        public string identificador { set; get; }
+        public LinkedList<listaParametros> parametro { set; get; }
+        public LinkedList<InstruccionCQL> cuerpo { set; get; }
         public Procedures(string nombre, LinkedList<Parametros> parametros, string instruccion)
         {
             this.nombre = nombre;
             this.parametros = parametros;
             this.instruccion = instruccion;
+        }
+
+        public Procedures(string nombre, string instruccion, string identificador, LinkedList<listaParametros> parametro, LinkedList<InstruccionCQL> cuerpo)
+        {
+            this.nombre = nombre;
+            this.instruccion = instruccion;
+            this.identificador = identificador;
+            this.parametro = parametro;
+            this.cuerpo = cuerpo;
         }
     }
 }

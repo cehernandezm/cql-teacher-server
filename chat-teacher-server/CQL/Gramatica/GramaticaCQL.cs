@@ -135,6 +135,7 @@ namespace cql_teacher_server.CQL.Gramatica
 
             var PROCEDURE = ToTerm("PROCEDURE");
 
+            var CALL = ToTerm("CALL");
 
 
 
@@ -162,6 +163,7 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal tipoVariable2 = new NonTerminal("tipovariable");
 
             NonTerminal declaracion = new NonTerminal("declaracion");
+            NonTerminal parametros = new NonTerminal("declaracion");
             NonTerminal declaracionA = new NonTerminal("declaracionA");
 
             NonTerminal user_type = new NonTerminal("usertype");
@@ -241,6 +243,9 @@ namespace cql_teacher_server.CQL.Gramatica
 
             NonTerminal inProcedure = new NonTerminal("inprocedure");
             NonTerminal listaParametros = new NonTerminal("listaparametros");
+            NonTerminal listaDeclaracion = new NonTerminal("listadeclaracion");
+
+            NonTerminal callProcedure = new NonTerminal("callprocedure");
 
             #endregion
 
@@ -352,7 +357,7 @@ namespace cql_teacher_server.CQL.Gramatica
                            | DECIMALN
                            | ID
                            | NULL
-
+                           | callProcedure
                            ;
 
             llamadaFuncion.Rule = ID + "(" + ")"
@@ -622,11 +627,13 @@ namespace cql_teacher_server.CQL.Gramatica
 
             //------------------------------------------------- FUNCIONES -----------------------------------------------------------------------------------
             inFunction.Rule = tipoVariable + ID + "(" + ")" + "{" + instrucciones + "}"
-                            | tipoVariable + ID + "(" + declaracion + ")" + "{" + instrucciones + "}"  
+                            | tipoVariable + ID + "(" + listaDeclaracion + ")" + "{" + instrucciones + "}"  
                             ;
 
             //------------------------------------------------- RETURN --------------------------------------------------------------------------------------
-            inReturn.Rule = RETURN + expresion;
+            inReturn.Rule = RETURN + expresion
+                          | RETURN + listValues
+                          ;
 
 
             inLog.Rule = LOG + "(" + expresion + ")";
@@ -634,9 +641,16 @@ namespace cql_teacher_server.CQL.Gramatica
             //---------------------------------------------------- PROCEDURE ------------------------------------------------------------------------------
             inProcedure.Rule = PROCEDURE + ID + listaParametros + "{" + instrucciones + "}";
 
-            listaParametros.Rule = listaParametros + "," + "(" + declaracion + ")"
-                                 | "(" + declaracion + ")"
+            listaParametros.Rule = listaParametros + "," + "(" + listaDeclaracion + ")"
+                                 | "(" + listaDeclaracion + ")"
                                  ;
+
+            listaDeclaracion.Rule = listaDeclaracion + "," + parametros
+                                  | parametros
+                                  ;
+            parametros.Rule = tipoVariable + "@" + ID;
+
+            callProcedure.Rule = CALL + ID + "(" + listValues + ")";
 
             #endregion
 
