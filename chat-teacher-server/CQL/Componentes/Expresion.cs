@@ -1281,8 +1281,7 @@ namespace cql_teacher_server.CQL.Componentes
                     {
                         CallProcedure callProcedure = new CallProcedure(procedure.parametro, procedure.cuerpo, linea1, columna1);
                         callProcedure.valores = listaUser;
-                        callProcedure.ejecutar(ts, user, ref baseD, mensajes, tsT);
-                        return 0;
+                        return callProcedure.ejecutar(ts, user, ref baseD, mensajes, tsT); ;
                     }
                     else mensajes.AddLast(ms.error("El procedure: " + idAs + " no existe en esta base de datos: " + baseD, linea1, columna1, "Semantico"));
                 }

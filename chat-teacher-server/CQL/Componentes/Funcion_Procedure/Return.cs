@@ -8,13 +8,13 @@ namespace cql_teacher_server.CQL.Componentes
 {
     public class Return : InstruccionCQL
     {
-        Expresion valor { set; get; }
+        object valor { set; get; }
 
         /*
          * CONSTRUCTOR DE LA CLASE
          * @param {valor} valor para retornar
          */
-        public Return(Expresion valor)
+        public Return(object valor)
         {
             this.valor = valor;
         }
@@ -28,8 +28,25 @@ namespace cql_teacher_server.CQL.Componentes
          */
         public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
         {
-            object res = (valor == null) ? null : valor.ejecutar(ts, user, ref baseD, mensajes, tsT);
-            return new Retorno(res);
+            if( valor != null)
+            {
+                if(valor.GetType() == typeof(Expresion))
+                {
+                    object res = (valor == null) ? null : ((Expresion)valor).ejecutar(ts, user, ref baseD, mensajes, tsT);
+                    return new Retorno(res);
+                }
+                LinkedList<Expresion> listaExpresiones = (LinkedList<Expresion>)valor;
+                LinkedList<object> valoresReturn = new LinkedList<object>();
+                foreach(Expresion e in listaExpresiones)
+                {
+                    object res = (e == null) ? null : e.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                    valoresReturn.AddLast(res);
+                }
+                return new Retorno(valoresReturn);
+                
+            }
+            return new Retorno(null);
+           
         }
     }
 }

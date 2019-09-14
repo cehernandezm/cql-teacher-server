@@ -4,6 +4,7 @@ using cql_teacher_server.CQL.Arbol;
 using cql_teacher_server.CQL.Componentes;
 using cql_teacher_server.CQL.Componentes.Funcion_Procedure;
 using cql_teacher_server.CQL.Componentes.Procedure;
+using cql_teacher_server.CQL.Componentes.Variables;
 using cql_teacher_server.Herramientas;
 using Irony.Parsing;
 using System;
@@ -297,8 +298,7 @@ namespace cql_teacher_server.CQL.Gramatica
                         }
                         return lAs;
                     }
-
-
+                    
                     idAs = hijo.ChildNodes.ElementAt(1).Token.Text;
                     idAs = idAs.ToLower().TrimEnd().TrimStart();
 
@@ -950,7 +950,10 @@ namespace cql_teacher_server.CQL.Gramatica
                 //-------------------------------------------------- RETURN -----------------------------------------------------------------------------
                 case "inreturn":
                     LinkedList<InstruccionCQL> listRe = new LinkedList<InstruccionCQL>();
-                    listRe.AddLast(new Return(resolver_expresion(hijo.ChildNodes.ElementAt(1))));
+                    string termR = hijo.ChildNodes.ElementAt(1).Term.Name;
+                    if (termR.Equals("expresion")) listRe.AddLast(new Return(resolver_expresion(hijo.ChildNodes.ElementAt(1))));
+                    else listRe.AddLast(new Return(listaExpresiones(hijo.ChildNodes.ElementAt(1))));
+
                     return listRe;
 
 
@@ -980,12 +983,44 @@ namespace cql_teacher_server.CQL.Gramatica
 
 
 
+
+                //-------------------------------------------- MULTI ASIGNACION CON LLAMADA A PROCEDURES --------------------------------------------
+                case "inmultiasignacion":
+                    LinkedList<InstruccionCQL> listaAS = new LinkedList<InstruccionCQL>();
+                    LinkedList<string> listaVariables = getListadoVariables(hijo.ChildNodes.ElementAt(0));
+                    int lAS = hijo.ChildNodes.ElementAt(1).Token.Location.Line;
+                    int cAS = hijo.ChildNodes.ElementAt(1).Token.Location.Column;
+                    listaAS.AddLast(new MultiAsignacion(listaVariables, resolver_expresion(hijo.ChildNodes.ElementAt(2)), lAS, cAS));
+                    return listaAS;
+
+
+
+
             }
             return null;
 
 
         }
 
+
+        /*
+        * METODO QUE RECORRE EL SUBARBOL PARA LAS MULTIVARIABLES
+        * @param {raiz} sub arbol a analizar
+        * @return una lista de string
+        */
+        private LinkedList<string> getListadoVariables(ParseTreeNode raiz)
+        {
+            LinkedList<string> lista = new LinkedList<string>();
+            string id;
+            if(raiz.ChildNodes.Count() == 3)
+            {
+                lista = getListadoVariables(raiz.ChildNodes.ElementAt(0));
+                id = raiz.ChildNodes.ElementAt(2).Token.Text.ToLower().TrimEnd().TrimStart();
+            }
+            else id = raiz.ChildNodes.ElementAt(1).Token.Text.ToLower().TrimEnd().TrimStart();
+            lista.AddLast(id);
+            return lista;
+        }
 
         private LinkedList<InstruccionCQL> getListaDeclaracion (ParseTreeNode raiz)
         {

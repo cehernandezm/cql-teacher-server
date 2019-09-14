@@ -249,6 +249,7 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 if (op1 != null)
                 {
+                    
                     if (op1.GetType() == typeof(string) && tipo.Equals("string")) ts.setValor(id, (string)op1);
                     else if (op1.GetType() == typeof(int) && tipo.Equals("int")) ts.setValor(id, (int)op1);
                     else if (op1.GetType() == typeof(int) && tipo.Equals("double")) ts.setValor(id, Convert.ToInt32((Double)op1));
@@ -321,7 +322,12 @@ namespace cql_teacher_server.CQL.Componentes
                         }
 
                     }
-                    
+                    else if(op1.GetType() == typeof(LinkedList<object>))
+                    {
+                        LinkedList<object> listaV = (LinkedList<object>)op1;
+                        if (listaV.Count() == 1)return checkValues(listaV.ElementAt(0), tipo, "", mensajes, ts);
+                        else mensajes.AddLast(mensa.error("La lista de valores es mayor a la lista de variables",l,c,"Semantico"));
+                    }
                     else
                     {
                         mensajes.AddLast(mensa.error("No se le puede asignar a la variable: " + id + " el valor: " + op1, l, c, "Semantico"));

@@ -247,6 +247,10 @@ namespace cql_teacher_server.CQL.Gramatica
 
             NonTerminal callProcedure = new NonTerminal("callprocedure");
 
+            NonTerminal inAsignacionEspecial = new NonTerminal("inasignacionespecial");
+            NonTerminal inMultiAsignacion = new NonTerminal("inmultiasignacion");
+            NonTerminal tempExAsignacion = new NonTerminal("expresion");
+
             #endregion
 
             #region Gramatica
@@ -261,6 +265,7 @@ namespace cql_teacher_server.CQL.Gramatica
             instruccion.Rule = use + ";"
                              | inInsertMap + ";"
                              | inSetMap + ";"
+                             | inMultiAsignacion + ";"
                              | inRemoveMap + ";"
                              | inClear + ";"
                              | createDatabase + ";"
@@ -421,6 +426,7 @@ namespace cql_teacher_server.CQL.Gramatica
             //--------------------------------------------------------- ASIGNACION DE VARIABLES ----------------------------------------------------------------------
             #region asignacion de variables
             asignacion.Rule = "@" + ID + ToTerm("=") + expresion
+                            
                             | "@" + ID + ToTerm("+=") + expresion
                             | "@" + ID + ToTerm("*=") + expresion
                             | "@" + ID + ToTerm("-=") + expresion
@@ -431,6 +437,14 @@ namespace cql_teacher_server.CQL.Gramatica
                             | asignacionA + ToTerm("-=") + expresion
                             | asignacionA + ToTerm("/=") + expresion
                             ;
+
+            inMultiAsignacion.Rule = inAsignacionEspecial + "=" + tempExAsignacion;
+
+            tempExAsignacion.Rule = callProcedure;
+
+            inAsignacionEspecial.Rule = inAsignacionEspecial + "," + "@" + ID
+                                       | "@" + ID ;
+
             #endregion
             //-------------------------------------------------------- asignacion de un atributo ----------------------------------------------------------------------
             #region setear atributos

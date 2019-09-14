@@ -92,7 +92,9 @@ namespace cql_teacher_server.CQL.Componentes.Funcion_Procedure
                             }
                             else
                             {
-                                if (parametros.Count() == 1) return re;
+                                LinkedList<object> temp = new LinkedList<object>();
+                                temp.AddLast(re);
+                                if (parametros.Count() == 1) return temp;
                                 else
                                 {
                                     mensajes.AddLast(ms.error("La cantidad de valores retornados no concuerda con el valor de parametros", l, c, "Semantico"));
