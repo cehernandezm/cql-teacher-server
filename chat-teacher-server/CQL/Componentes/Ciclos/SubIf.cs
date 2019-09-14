@@ -1,4 +1,5 @@
 ﻿using cql_teacher_server.CQL.Arbol;
+using cql_teacher_server.CQL.Componentes.Ciclos;
 using cql_teacher_server.Herramientas;
 using System;
 using System.Collections.Generic;
@@ -105,11 +106,13 @@ namespace cql_teacher_server.CQL.Componentes
                             {
                                 tablaTemp.AddLast(s);
                             }
+                            //------------------------------------------------- INSTRUCCIONES DEL IF -----------------------------------------------
                             foreach (InstruccionCQL i in cuerpo)
                             {
                                 object r = i.ejecutar(ambitoLocal, user, ref baseD, mensajes,tablaTemp);
                                 if (r == null) return r;
                                 else if (r.GetType() == typeof(Retorno)) return (Retorno)r;
+                                else if (i.GetType() == typeof(Continue)) return i;
                             }
                         }
                         return "";

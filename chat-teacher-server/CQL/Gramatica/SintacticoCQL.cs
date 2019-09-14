@@ -2,6 +2,7 @@
 using cql_teacher_server.CHISON.Componentes;
 using cql_teacher_server.CQL.Arbol;
 using cql_teacher_server.CQL.Componentes;
+using cql_teacher_server.CQL.Componentes.Ciclos;
 using cql_teacher_server.CQL.Componentes.Funcion_Procedure;
 using cql_teacher_server.CQL.Componentes.Procedure;
 using cql_teacher_server.CQL.Componentes.Variables;
@@ -807,6 +808,11 @@ namespace cql_teacher_server.CQL.Gramatica
                     return listaBR;
 
 
+                //------------------------------------------------------- CONTINUE --------------------------------------------------------------------------------------
+                case "incontinue":
+                    LinkedList<InstruccionCQL> listaCO = new LinkedList<InstruccionCQL>();
+                    listaCO.AddLast(new Continue());
+                    return listaCO;
 
 
 
@@ -1395,16 +1401,34 @@ namespace cql_teacher_server.CQL.Gramatica
                     //----------------------------------- USERTYPE . ATRIBUTO---------------------------------------------------
                     if (toketemp.Equals("."))
                     {
-                        string sepa = raiz.ChildNodes.ElementAt(2).Term.Name;
+                        string sepa = raiz.ChildNodes.ElementAt(2).Term.Name.ToLower().TrimEnd().TrimStart();
                         int le = raiz.ChildNodes.ElementAt(2).Token.Location.Line;
                         int ce = raiz.ChildNodes.ElementAt(2).Token.Location.Column;
-                        if (sepa.Equals("ID"))
+                        if (sepa.Equals("id"))
                         {
                             string opee = "ACCESOUSER";
                             string idA = raiz.ChildNodes.ElementAt(2).Token.Text;
                             idA = idA.ToLower().TrimEnd().TrimStart();
                             return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), opee, le, ce, idA);
                         }
+                        //--------------------------------- EXPRESION . LENGTH ------------------------------------------------------------------
+                        else if (sepa.Equals("length")) return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), "LENGTH", le, ce);
+                        //--------------------------------- EXPRESION . TOUPPERCASE ------------------------------------------------------------------
+                        else if (sepa.Equals("touppercase")) return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), "TOUPPERCASE", le, ce);
+                        //--------------------------------- EXPRESION . TOLOWERCASE ------------------------------------------------------------------
+                        else if (sepa.Equals("tolowercase")) return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), "TOLOWERCASE", le, ce);
+                        //--------------------------------- EXPRESION . GETYEAR ------------------------------------------------------------------
+                        else if (sepa.Equals("getyear")) return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), "GETYEAR", le, ce);
+                        //--------------------------------- EXPRESION . GETMONTH ------------------------------------------------------------------
+                        else if (sepa.Equals("getmonth")) return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), "GETMONTH", le, ce);
+                        //--------------------------------- EXPRESION . GETDAY ------------------------------------------------------------------
+                        else if (sepa.Equals("getday")) return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), "GETDAY", le, ce);
+                        //--------------------------------- EXPRESION . GETHOUR ------------------------------------------------------------------
+                        else if (sepa.Equals("gethour")) return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), "GETHOUR", le, ce);
+                        //--------------------------------- EXPRESION . GETMINUTS ------------------------------------------------------------------
+                        else if (sepa.Equals("getminuts")) return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), "GETMINUTS", le, ce);
+                        //--------------------------------- EXPRESION . GETSECONDS ------------------------------------------------------------------
+                        else if (sepa.Equals("getseconds")) return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), "GETSECONDS", le, ce);
                         //--------------------------------- EXPRESION . SIZE
                         else return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), "SIZE", le, ce);
                         
@@ -1469,11 +1493,17 @@ namespace cql_teacher_server.CQL.Gramatica
                 //--------------------------------------------- OPERACION TERNARIA ---------------------------------------------------------
                 if (idDiferenciador.Equals("expresion"))
                 {
+                    string signoOperacion = raiz.ChildNodes.ElementAt(1).Token.Text;
                     int lineaT = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
                     int columnaT = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
-                    return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(2)),
+                    //------------------------------ EXPRESION  ? EXPRESION : EXPRESION
+                    if(signoOperacion.Equals("?")) return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(2)),
                         resolver_expresion(raiz.ChildNodes.ElementAt(4)),
                         resolver_expresion(raiz.ChildNodes.ElementAt(0)), "TERNARIO", lineaT, columnaT);
+                    //------------------------------ EXPRESION . SUBSTRING ( EXPRESION , EXPRESION )
+                    else return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)),
+                        resolver_expresion(raiz.ChildNodes.ElementAt(3)),
+                        resolver_expresion(raiz.ChildNodes.ElementAt(4)), "SUBSTRING", lineaT, columnaT);
                 }
                 else if (tipoNew.Equals("listvalues"))
                 {
@@ -1501,16 +1531,19 @@ namespace cql_teacher_server.CQL.Gramatica
                 //--------------------------- EXPRESION . GETVALUE ( EXPRESION )
                 if (termN.Equals("expresion"))
                 {
+
                     string tokenOperacion = raiz.ChildNodes.ElementAt(2).Token.Text;
                     tokenOperacion = tokenOperacion.ToLower().TrimEnd().TrimStart();
                     int lp = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
-                    int cp = raiz.ChildNodes.ElementAt(1).Token.Location.Column;
+                    int cp = raiz.ChildNodes.ElementAt(1).Token.Location.Column; 
                     Expresion mp = resolver_expresion(raiz.ChildNodes.ElementAt(0));
                     Expresion vl = resolver_expresion(raiz.ChildNodes.ElementAt(3));
                     if (tokenOperacion.Equals("get")) return new Expresion(mp, vl, "GETMAP", lp, cp);
                     else if (tokenOperacion.Equals("contains")) return new Expresion(mp, vl, "CONTAINS", lp, cp);
-                   
-                    
+                    else if (tokenOperacion.Equals("startswith")) return new Expresion(mp, vl, "STARTSWITH", lp, cp);
+                    else if (tokenOperacion.Equals("endswith")) return new Expresion(mp, vl, "ENDSWITH", lp, cp);
+
+
 
                 }
                 string token = raiz.ChildNodes.ElementAt(0).Token.Text;
@@ -1710,6 +1743,8 @@ namespace cql_teacher_server.CQL.Gramatica
             else if (valorT.Equals("true") || valorT.Equals("false")) return new Expresion(valor, "BOOLEAN", l1, c1);
             else if (token.Equals("id")) return new Expresion(valor, "IDTABLA", l1, c1);
             else if (token.Equals("id2")) return new Expresion(valor, "ID", l1, c1);
+            else if (token.Equals("today")) return new Expresion("", "TODAY", l1, c1);
+            else if (token.Equals("now")) return new Expresion("", "NOW", l1, c1);
             else return new Expresion(null, "NULL", l1, c1);
         }
 

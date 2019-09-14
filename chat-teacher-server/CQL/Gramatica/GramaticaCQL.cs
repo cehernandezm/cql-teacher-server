@@ -13,8 +13,8 @@ namespace cql_teacher_server.CQL.Gramatica
         {
             #region ER
             StringLiteral CADENA = new StringLiteral("cadena", "\"");
-            var FECHA = new RegexBasedTerminal("fecha", "\\'\\d{4}-(((0)[0-9])|((1)[0-2]))-([0-2][0-9]|(3)[0-1])\\'");
-            var HORA = new RegexBasedTerminal("hora", "\\'(([0-1][0-9])|2[0-3]):([0-2][0-9]):([0-5][0-9])\\'");
+            var FECHA = new RegexBasedTerminal("fecha", "\\'\\d{4}\\-(((0)[0-9])|((1)[0-2]))\\-([0-2][0-9]|(3)[0-1])\\'");
+            var HORA = new RegexBasedTerminal("hora", "\\'(([0-1][0-9])|2[0-3])\\:([0-5][0-9])\\:([0-5][0-9])\\'");
             var DECIMALN = new RegexBasedTerminal("decimal", "[0-9]+\\.[0-9]+");
             var ENTERO = new NumberLiteral("entero");
 
@@ -137,6 +137,25 @@ namespace cql_teacher_server.CQL.Gramatica
 
             var CALL = ToTerm("CALL");
 
+            var LENGTH = ToTerm("LENGTH");
+            var TOUPPERCASE = ToTerm("ToUpperCase");
+            var TOLOWERCASE = ToTerm("ToLowerCase");
+            var STARSTWITH = ToTerm("StartsWith");
+            var ENDSWITH = ToTerm("EndsWith");
+            var SUBSTRING = ToTerm("subString");
+
+            var GETYEAR = ToTerm("getYear");
+            var GETMONTH = ToTerm("getMonth");
+            var GETDAY = ToTerm("getDay");
+            var GETHOUR = ToTerm("GetHour");
+            var GETMINUTS = ToTerm("getMinuts");
+            var GETSECONDS = ToTerm("getSeconds");
+            var TODAY = ToTerm("TODAY");
+            var NOW = ToTerm("NOW");
+
+            var CONTINUE = ToTerm("Continue");
+
+
 
 
 
@@ -251,6 +270,7 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal inMultiAsignacion = new NonTerminal("inmultiasignacion");
             NonTerminal tempExAsignacion = new NonTerminal("expresion");
 
+            NonTerminal inContinue = new NonTerminal("incontinue");
             #endregion
 
             #region Gramatica
@@ -294,6 +314,7 @@ namespace cql_teacher_server.CQL.Gramatica
                              | inReturn + ";"
                              | inLog + ";"
                              | inProcedure
+                             | inContinue + ";"
                              ;
             #endregion
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
@@ -339,7 +360,7 @@ namespace cql_teacher_server.CQL.Gramatica
                            | NEW + MAP + "<" + tipoVariable2 + "," + tipoVariable2 + ">"
                            | NEW + LIST + "<" + tipoVariable2 + ">"
                            | NEW + SET + "<" + tipoVariable2 + ">"
-                           | expresion + "." + ID 
+                           | expresion + "." + ID
                            | "{" + listValues + "}"
                            | "{" + listValues + "}" + AS + ID
                            | "[" + listaMap + "]"
@@ -352,6 +373,20 @@ namespace cql_teacher_server.CQL.Gramatica
                            | expresion + ToTerm("?") + expresion + ToTerm(":") + expresion
                            | expresion + "." + GET + "(" + expresion + ")"
                            | expresion + "." + CONTAINS + "(" + expresion + ")"
+                           | expresion + "." + LENGTH + "(" + ")"
+                           | expresion + "." + TOUPPERCASE + "(" + ")"
+                           | expresion + "." + TOLOWERCASE + "(" + ")"
+                           | expresion + "." + STARSTWITH + "(" + expresion + ")"
+                           | expresion + "." + ENDSWITH + "(" + expresion + ")"
+                           | expresion + "." + SUBSTRING + "(" + expresion + "," + expresion + ")"
+                           | expresion + "." + GETYEAR + "(" + ")"
+                           | expresion + "." + GETMONTH + "(" + ")"
+                           | expresion + "." + GETDAY + "(" + ")"
+                           | expresion + "." + GETHOUR + "(" + ")"
+                           | expresion + "." + GETMINUTS + "(" + ")"
+                           | expresion + "." + GETSECONDS + "(" + ")"
+                           | TODAY + "(" + ")"
+                           | NOW + "(" + ")"
                            | ID + IN + expresion
                            | llamadaFuncion
                            | CADENA
@@ -483,6 +518,8 @@ namespace cql_teacher_server.CQL.Gramatica
             #endregion
             //---------------------------------------------------------------------------------------------------------------------------------------------
             inBreak.Rule = BREAK;
+
+            inContinue.Rule = CONTINUE;
             #region CQL
             //-------------------------------------------------------------- DEFAULT -----------------------------------------------------------------------
             inDefault.Rule = DEFAULT + ":" + "{" + instrucciones + "}";

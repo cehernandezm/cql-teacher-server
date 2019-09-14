@@ -1,4 +1,5 @@
 ﻿using cql_teacher_server.CQL.Arbol;
+using cql_teacher_server.CQL.Componentes.Ciclos;
 using cql_teacher_server.Herramientas;
 using System;
 using System.Collections.Generic;
@@ -61,10 +62,13 @@ namespace cql_teacher_server.CQL.Componentes
                     {
                         nuevoAmbito.AddLast(s);
                     }
+                    //------------------------------------------------------------ INSTRUCCIONES DO WHILE ------------------------------------------
                     foreach (InstruccionCQL i in cuerpo)
                     {
                         object resultado = i.ejecutar(nuevoAmbito, user, ref baseD, mensajes, tsT);
                         if (resultado == null) return null;
+                        else if (resultado.GetType() == typeof(Retorno)) return ((Retorno)resultado);
+                        else if (i.GetType() == typeof(Continue) || resultado.GetType() == typeof(Continue)) break;
                     }
 
 

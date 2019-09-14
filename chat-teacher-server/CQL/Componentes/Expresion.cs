@@ -226,11 +226,11 @@ namespace cql_teacher_server.CQL.Componentes
                     Mensaje ms = new Mensaje();
                     Map temp = (Map)op1;
                     Map temp2 = (Map)op2;
-                    if (temp.id.Equals(temp2.id))return new Map(temp.id, new LinkedList<KeyValue>(temp.datos.Union(temp2.datos)));
-  
+                    if (temp.id.Equals(temp2.id)) return new Map(temp.id, new LinkedList<KeyValue>(temp.datos.Union(temp2.datos)));
+
                     else
                     {
-                        mensajes.AddLast(ms.error("No coinciden los tipos de MAPS: " + temp.id + " con: " + temp2.id,linea1,columna1,"Semantico"));
+                        mensajes.AddLast(ms.error("No coinciden los tipos de MAPS: " + temp.id + " con: " + temp2.id, linea1, columna1, "Semantico"));
                         return null;
                     }
                 }
@@ -242,12 +242,12 @@ namespace cql_teacher_server.CQL.Componentes
                     if (temp.id.Equals(temp2.id))
                     {
                         Set final = new Set(temp.id, new LinkedList<object>(temp.datos.Union(temp2.datos)));
-                        if (final.buscarRepetidos(mensajes,linea1,columna1) != null)
+                        if (final.buscarRepetidos(mensajes, linea1, columna1) != null)
                         {
                             final.order();
                             return final;
                         }
-                        return null; 
+                        return null;
                     }
 
                     else
@@ -286,18 +286,18 @@ namespace cql_teacher_server.CQL.Componentes
                 else if (op1.GetType() == typeof(int) && op2.GetType() == typeof(Double)) return (Double)((int)op1 - (Double)op2);
                 else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(int)) return (Double)((Double)op1 - (int)op2);
                 else if (op1.GetType() == typeof(Double) && op2.GetType() == typeof(Double)) return (Double)((Double)op1 - (Double)op2);
-                else if(op1.GetType() == typeof(Map) && op2.GetType() == typeof(Set))
+                else if (op1.GetType() == typeof(Map) && op2.GetType() == typeof(Set))
                 {
                     Map map = (Map)op1;
                     Set set = (Set)op2;
-                    if(map.datos.Count() > 0)
+                    if (map.datos.Count() > 0)
                     {
                         var node = map.datos.First;
-                        while(node != null)
+                        while (node != null)
                         {
                             var nextNode = node.Next;
                             KeyValue key = (KeyValue)node.Value;
-                            foreach( object o in set.datos)
+                            foreach (object o in set.datos)
                             {
                                 if (key.key.Equals(o))
                                 {
@@ -308,7 +308,7 @@ namespace cql_teacher_server.CQL.Componentes
                             node = nextNode;
                         }
                     }
-                   
+
                     return map;
                 }
                 else if (op1.GetType() == typeof(Set) && op2.GetType() == typeof(Set))
@@ -318,13 +318,13 @@ namespace cql_teacher_server.CQL.Componentes
                     Set temp2 = (Set)op2;
                     if (temp.id.Equals(temp2.id))
                     {
-                        if(temp.datos.Count() > 0)
+                        if (temp.datos.Count() > 0)
                         {
                             var node = temp.datos.First;
-                            while(node != null)
+                            while (node != null)
                             {
                                 var next = node.Next;
-                                foreach(object o in temp2.datos)
+                                foreach (object o in temp2.datos)
                                 {
                                     if (o.Equals(node.Value))
                                     {
@@ -336,7 +336,7 @@ namespace cql_teacher_server.CQL.Componentes
                             }
                         }
                     }
-                    
+
                     else
                     {
                         mensajes.AddLast(ms.error("No coinciden los tipos de SET: " + temp.id + " con: " + temp2.id, linea1, columna1, "Semantico"));
@@ -526,7 +526,7 @@ namespace cql_teacher_server.CQL.Componentes
                         mensajes.AddLast(mes.error("No se puede conocer si es igual   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                         return null;
                     }
-                   
+
                 }
                 else if (op2 != null && op1 == null)
                 {
@@ -556,7 +556,7 @@ namespace cql_teacher_server.CQL.Componentes
                     else if (op1.GetType() == typeof(DateTime) && op2.GetType() == typeof(DateTime)) return (DateTime)op1 != (DateTime)op2;
                     else if (op1.GetType() == typeof(string) && op2.GetType() == typeof(string)) return op1.ToString().Equals(op2.ToString());
                     else if (op1.GetType() == typeof(Boolean) && op2.GetType() == typeof(Boolean)) return (Boolean)op1 != (Boolean)op2;
-                    else if (op1.GetType() == typeof(InstanciaUserType) && op2.GetType() == typeof(InstanciaUserType)) return ! ((InstanciaUserType)op1).lista.Equals(((InstanciaUserType)op2).lista);
+                    else if (op1.GetType() == typeof(InstanciaUserType) && op2.GetType() == typeof(InstanciaUserType)) return !((InstanciaUserType)op1).lista.Equals(((InstanciaUserType)op2).lista);
                     else if (op1.GetType() == typeof(Map) && op2.GetType() == typeof(Map)) return !((Map)op1).datos.Equals(((Map)op2).datos);
                     else if (op1.GetType() == typeof(List) && op2.GetType() == typeof(List)) return !((List)op1).lista.Equals(((List)op2).lista);
                     else if (op1.GetType() == typeof(Set) && op2.GetType() == typeof(Set)) return !((Set)op1).datos.Equals(((Set)op2).datos);
@@ -736,7 +736,7 @@ namespace cql_teacher_server.CQL.Componentes
                     User_Types a = TablaBaseDeDatos.getUserTypeV(tipoA.ToLower(), db);
                     if (a != null)
                     {
-                        LinkedList<Atributo> lista = getAtributos(a, db,mensajes);
+                        LinkedList<Atributo> lista = getAtributos(a, db, mensajes);
                         if (lista != null)
                         {
                             return new InstanciaUserType(tipoA, lista);
@@ -789,7 +789,7 @@ namespace cql_teacher_server.CQL.Componentes
                     {
                         if (a.nombre.Equals(casteo))
                         {
-                            if(a.valor != null)
+                            if (a.valor != null)
                             {
                                 if (a.valor.GetType() == typeof(InstanciaUserType)) return (InstanciaUserType)a.valor;
                             }
@@ -811,12 +811,12 @@ namespace cql_teacher_server.CQL.Componentes
             else if (operacion.Equals("ASIGNACIONUSER"))
             {
                 BaseDeDatos db = TablaBaseDeDatos.getBase(baseD);
-                if(db != null)
+                if (db != null)
                 {
                     User_Types a = TablaBaseDeDatos.getUserTypeV(idAs.ToLower(), db);
-                    if(a != null)
+                    if (a != null)
                     {
-                        LinkedList<Atributo> listaA = getAtributos(a, db,mensajes);
+                        LinkedList<Atributo> listaA = getAtributos(a, db, mensajes);
                         if (listaA != null)
                         {
                             if (listaA.Count() == listaUser.Count())
@@ -835,7 +835,7 @@ namespace cql_teacher_server.CQL.Componentes
                             }
                         }
                         else return null;
-                        
+
                     }
                     else
                     {
@@ -852,9 +852,9 @@ namespace cql_teacher_server.CQL.Componentes
                 }
             }
             //-------------------------------------------------------- INCREMENTO ---------------------------------------------------------------
-            else if(operacion.Equals("INCREMENTO") && op1 != null)
+            else if (operacion.Equals("INCREMENTO") && op1 != null)
             {
-                if(op1.GetType() == typeof(int))
+                if (op1.GetType() == typeof(int))
                 {
                     int copia = (int)op1;
                     ts.setValor(casteo, (int)op1 + 1);
@@ -896,10 +896,10 @@ namespace cql_teacher_server.CQL.Componentes
                 }
             }
             //-------------------------------------------------------- EXP IN EXP ------------------------------------------------------------------
-            else if(operacion.Equals("IN") && op1 != null)
+            else if (operacion.Equals("IN") && op1 != null)
             {
                 Mensaje ms = new Mensaje();
-                object value = tsT.getValor(casteo);            
+                object value = tsT.getValor(casteo);
                 if (!value.Equals("none"))
                 {
                     LinkedList<object> listaValores = new LinkedList<object>();
@@ -912,7 +912,7 @@ namespace cql_teacher_server.CQL.Componentes
                     }
                     return buscarValorIN(listaValores, value);
                 }
-                else mensajes.AddLast(ms.error("No se encuentra la columna: " + casteo,linea1,columna1,"Semantico"));
+                else mensajes.AddLast(ms.error("No se encuentra la columna: " + casteo, linea1, columna1, "Semantico"));
                 return null;
             }
             //------------------------------------------------------ CREAR MAP -------------------------------------------------------------------
@@ -925,7 +925,7 @@ namespace cql_teacher_server.CQL.Componentes
                     Map map = new Map(identificador, new LinkedList<KeyValue>());
                     return map;
                 }
-                else mensajes.AddLast(mensa.error("El tipo de la key para un map tiene que ser primitivo",linea1,columna1,"Semantico"));
+                else mensajes.AddLast(mensa.error("El tipo de la key para un map tiene que ser primitivo", linea1, columna1, "Semantico"));
                 return null;
             }
             //------------------------------------------------------- CREACION DE MAP POR LISTA DE VALORES---------------------------------------
@@ -965,8 +965,8 @@ namespace cql_teacher_server.CQL.Componentes
                 if (list != null)
                 {
                     Set set = new Set(list.id, list.lista);
-                    object valoresRepetidos = set.buscarRepetidos(mensajes,linea1,columna1);
-                    if(valoresRepetidos!= null)
+                    object valoresRepetidos = set.buscarRepetidos(mensajes, linea1, columna1);
+                    if (valoresRepetidos != null)
                     {
                         set.order();
                         return set;
@@ -983,14 +983,14 @@ namespace cql_teacher_server.CQL.Componentes
                     if (op1.GetType() == typeof(Map))
                     {
                         Map temp = (Map)op1;
-                        foreach(KeyValue keyValue in temp.datos)
+                        foreach (KeyValue keyValue in temp.datos)
                         {
-                            if (keyValue.key.Equals(op2)) return keyValue.value; 
+                            if (keyValue.key.Equals(op2)) return keyValue.value;
                         }
                         mensajes.AddLast(ms.error("No se encontro la key: " + op2, linea1, columna1, "Semantico"));
                         return null;
                     }
-                    else if(op1.GetType() == typeof(List))
+                    else if (op1.GetType() == typeof(List))
                     {
                         List temp = (List)op1;
                         if (op2 != null)
@@ -1036,12 +1036,12 @@ namespace cql_teacher_server.CQL.Componentes
             else if (operacion.Equals("SIZE"))
             {
                 Mensaje ms = new Mensaje();
-                if(op1 != null)
+                if (op1 != null)
                 {
                     if (op1.GetType() == typeof(Map)) return ((Map)op1).datos.Count();
                     else if (op1.GetType() == typeof(List)) return ((List)op1).lista.Count();
                     else if (op1.GetType() == typeof(Set)) return ((Set)op1).datos.Count();
-                    else mensajes.AddLast(ms.error("No se puede aplicar Size a un tipo no Collection: " + op1 ,linea1,columna1,"Semantico"));
+                    else mensajes.AddLast(ms.error("No se puede aplicar Size a un tipo no Collection: " + op1, linea1, columna1, "Semantico"));
 
                 }
                 mensajes.AddLast(ms.error("No se puede aplicar SIZE en null", linea1, columna1, "Semantico"));
@@ -1062,10 +1062,10 @@ namespace cql_teacher_server.CQL.Componentes
                         }
                         return false;
                     }
-                    else if(op1.GetType() == typeof(List))
+                    else if (op1.GetType() == typeof(List))
                     {
                         List temp = (List)op1;
-                        foreach(object o in temp.lista)
+                        foreach (object o in temp.lista)
                         {
                             if (o.Equals(op2)) return true;
                         }
@@ -1084,13 +1084,213 @@ namespace cql_teacher_server.CQL.Componentes
                 }
                 else mensajes.AddLast(ms.error("No se puede aplicar GET a un NULL", linea1, columna1, "Semantico"));
             }
+            //-----------------------------------------------------------EXPRESION . LENGTH ------------------------------------------------------
+            else if (operacion.Equals("LENGTH"))
+            {
+                Mensaje ms = new Mensaje();
+                if (op1 != null)
+                {
+                    if (op1.GetType() == typeof(string)) return ((string)op1).Length;
+                    else mensajes.AddLast(ms.error("No se puede aplicar Length a un tipo no String: " + op1, linea1, columna1, "Semantico"));
+
+                }
+                mensajes.AddLast(ms.error("No se puede aplicar Length en null", linea1, columna1, "Semantico"));
+                return null;
+            }
+            //-----------------------------------------------------------EXPRESION . TOUPPERACASE ------------------------------------------------------
+            else if (operacion.Equals("TOUPPERCASE"))
+            {
+                Mensaje ms = new Mensaje();
+                if (op1 != null)
+                {
+                    if (op1.GetType() == typeof(string)) return ((string)op1).ToUpper();
+                    else mensajes.AddLast(ms.error("No se puede aplicar toUpperCase a un tipo no String: " + op1, linea1, columna1, "Semantico"));
+
+                }
+                mensajes.AddLast(ms.error("No se puede aplicar toUpperCase en null", linea1, columna1, "Semantico"));
+                return null;
+            }
+            //-----------------------------------------------------------EXPRESION . TOUPPERACASE ------------------------------------------------------
+            else if (operacion.Equals("TOLOWERCASE"))
+            {
+                Mensaje ms = new Mensaje();
+                if (op1 != null)
+                {
+                    if (op1.GetType() == typeof(string)) return ((string)op1).ToLower();
+                    else mensajes.AddLast(ms.error("No se puede aplicar toLowerCase a un tipo no String: " + op1, linea1, columna1, "Semantico"));
+
+                }
+                mensajes.AddLast(ms.error("No se puede aplicar toLowerCase en null", linea1, columna1, "Semantico"));
+                return null;
+            }
+            //--------------------------------------------------------- EXPRESION . STARTSWITH -----------------------------------------------------------
+            else if (operacion.Equals("STARTSWITH"))
+            {
+                Mensaje ms = new Mensaje();
+                if (op1 != null)
+                {
+                    if (op1.GetType() == typeof(string))
+                    {
+                        if (op2 != null)
+                        {
+                            if (op2.GetType() == typeof(string)) return ((string)op1).StartsWith((string)op2);
+                            else mensajes.AddLast(ms.error("startsWith necesita un string no se reconoce: " + op2, linea1, columna1, "Semantico"));
+                        }
+                        else mensajes.AddLast(ms.error("No se puede conocer si la cadena empieza con un null", linea1, columna1, "Semantico"));
+                    }
+                    else mensajes.AddLast(ms.error("startsWith solo aplica a string no se reconoce: " + op1, linea1, columna1, "Semantico"));
+
+                }
+                else mensajes.AddLast(ms.error("No se puede aplicar startsWith a un null", linea1, columna1, "Semantico"));
+                return null;
+            }
+            //--------------------------------------------------------- EXPRESION . ENDSWITH -----------------------------------------------------------
+            else if (operacion.Equals("ENDSWITH"))
+            {
+                Mensaje ms = new Mensaje();
+                if (op1 != null)
+                {
+                    if (op1.GetType() == typeof(string))
+                    {
+                        if (op2 != null)
+                        {
+                            if (op2.GetType() == typeof(string)) return ((string)op1).EndsWith((string)op2);
+                            else mensajes.AddLast(ms.error("endsWith necesita un string no se reconoce: " + op2, linea1, columna1, "Semantico"));
+                        }
+                        else mensajes.AddLast(ms.error("No se puede conocer si la cadena terminal con un null", linea1, columna1, "Semantico"));
+                    }
+                    else mensajes.AddLast(ms.error("endsWith solo aplica a string no se reconoce: " + op1, linea1, columna1, "Semantico"));
+
+                }
+                else mensajes.AddLast(ms.error("No se puede aplicar endsWith a un null", linea1, columna1, "Semantico"));
+                return null;
+            }
+            //---------------------------------------------------------- EXPRESION . SUBSTRING ( EXPRESION , EXPRESION )
+            else if (operacion.Equals("SUBSTRING"))
+            {
+                Mensaje ms = new Mensaje();
+                if (op1 != null)
+                {
+                    if (op1.GetType() == typeof(string))
+                    {
+                        string cadena = (string)op1;
+                        object fin = (condicion == null) ? null : condicion.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                        if (op2 != null && fin != null)
+                        {
+                            if (op2.GetType() == typeof(int) && fin.GetType() == typeof(int))
+                            {
+                                int posInicio = (int)op2;
+                                int posFinal = (int)fin;
+                                if (posInicio > -1 && posFinal > -1)
+                                {
+                                    if (!(posInicio > posFinal))
+                                    {
+                                        if (posFinal < cadena.Length) return cadena.Substring(posInicio, posFinal);
+                                        else mensajes.AddLast(ms.error("La posicion final no puede ser mayor al tamanio de la cadena", linea1, columna1, "Semantico"));
+                                    }
+                                    else mensajes.AddLast(ms.error("La posicion de inicio no puede ser mayor a la posicion final : " + posInicio + " , " + posFinal, linea1, columna1, "Semantico"));
+                                }
+                                else mensajes.AddLast(ms.error("La posicion de inicio  y fin tiene que ser positiva: ", linea1, columna1, "Semantico"));
+
+                            }
+                            else mensajes.AddLast(ms.error("La posicion de inicio y fin, tienen que ser enteras: " + op2 + ", " + fin, linea1, columna1, "Semantico"));
+                        }
+                        else mensajes.AddLast(ms.error("La posicion de inicio y fin no puede ser null", linea1, columna1, "Semantico"));
+                    }
+                    else mensajes.AddLast(ms.error("No se puede obtener un substring de: " + op1, linea1, columna1, "Semantico"));
+
+                }
+                else mensajes.AddLast(ms.error("No se puede obtener un substring de un null", linea1, columna1, "Semantico"));
+            }
+            //-----------------------------------------------------------EXPRESION . GETYEAR ------------------------------------------------------
+            else if (operacion.Equals("GETYEAR"))
+            {
+                Mensaje ms = new Mensaje();
+                if (op1 != null)
+                {
+                    if (op1.GetType() == typeof(DateTime)) return ((DateTime)op1).Year;
+                    else mensajes.AddLast(ms.error("No se puede aplicar GetYear a un tipo no date: " + op1, linea1, columna1, "Semantico"));
+
+                }
+                mensajes.AddLast(ms.error("No se puede aplicar GetYear en null", linea1, columna1, "Semantico"));
+                return null;
+            }
+            //-----------------------------------------------------------EXPRESION . GETMONTH ------------------------------------------------------
+            else if (operacion.Equals("GETMONTH"))
+            {
+                Mensaje ms = new Mensaje();
+                if (op1 != null)
+                {
+                    if (op1.GetType() == typeof(DateTime)) return ((DateTime)op1).Month;
+                    else mensajes.AddLast(ms.error("No se puede aplicar getMonth a un tipo no date: " + op1, linea1, columna1, "Semantico"));
+
+                }
+                mensajes.AddLast(ms.error("No se puede aplicar getMonth en null", linea1, columna1, "Semantico"));
+                return null;
+            }
+            //-----------------------------------------------------------EXPRESION . GETDAY ------------------------------------------------------
+            else if (operacion.Equals("GETDAY"))
+            {
+                Mensaje ms = new Mensaje();
+                if (op1 != null)
+                {
+                    if (op1.GetType() == typeof(DateTime)) return ((DateTime)op1).Day;
+                    else mensajes.AddLast(ms.error("No se puede aplicar getDay a un tipo no date: " + op1, linea1, columna1, "Semantico"));
+
+                }
+                mensajes.AddLast(ms.error("No se puede aplicar getDay en null", linea1, columna1, "Semantico"));
+                return null;
+            }
+            //-----------------------------------------------------------EXPRESION . GETHOUR ------------------------------------------------------
+            else if (operacion.Equals("GETHOUR"))
+            {
+                Mensaje ms = new Mensaje();
+                if (op1 != null)
+                {
+                    if (op1.GetType() == typeof(TimeSpan)) return ((TimeSpan)op1).Hours;
+                    else mensajes.AddLast(ms.error("No se puede aplicar getHour a un tipo no time: " + op1, linea1, columna1, "Semantico"));
+
+                }
+                mensajes.AddLast(ms.error("No se puede aplicar getHour en null", linea1, columna1, "Semantico"));
+                return null;
+            }
+            //-----------------------------------------------------------EXPRESION . GETMINUTS ------------------------------------------------------
+            else if (operacion.Equals("GETMINUTS"))
+            {
+                Mensaje ms = new Mensaje();
+                if (op1 != null)
+                {
+                    if (op1.GetType() == typeof(TimeSpan)) return ((TimeSpan)op1).Minutes;
+                    else mensajes.AddLast(ms.error("No se puede aplicar getMinuts a un tipo no time: " + op1, linea1, columna1, "Semantico"));
+
+                }
+                mensajes.AddLast(ms.error("No se puede aplicar getMinuts en null", linea1, columna1, "Semantico"));
+                return null;
+            }
+            //-----------------------------------------------------------EXPRESION . GETSECONDS ------------------------------------------------------
+            else if (operacion.Equals("GETSECONDS"))
+            {
+                Mensaje ms = new Mensaje();
+                if (op1 != null)
+                {
+                    if (op1.GetType() == typeof(TimeSpan)) return ((TimeSpan)op1).Seconds;
+                    else mensajes.AddLast(ms.error("No se puede aplicar getSeconds a un tipo no time: " + op1, linea1, columna1, "Semantico"));
+
+                }
+                mensajes.AddLast(ms.error("No se puede aplicar getSeconds en null", linea1, columna1, "Semantico"));
+                return null;
+            }
+            //------------------------------------------------------- TODAY ( ) -----------------------------------------------------------------------
+            else if (operacion.Equals("TODAY")) return DateTime.Today;
+            // -------------------------------------------------------NOW()---------------------------------------------------------------------- -
+            else if (operacion.Equals("NOW")) return (DateTime.Now.TimeOfDay);
             //--------------------------------------------------------- TERNARIO -----------------------------------------------------------------
             else if (operacion.Equals("TERNARIO"))
             {
-                object con = (condicion == null) ? null : condicion.ejecutar(ts, user, ref baseD, mensajes,tsT);
-                if(con != null)
+                object con = (condicion == null) ? null : condicion.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                if (con != null)
                 {
-                    if(con.GetType() == typeof(Boolean))
+                    if (con.GetType() == typeof(Boolean))
                     {
                         if ((Boolean)con) return op1;
                         return op2;
@@ -1114,7 +1314,7 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 Select select = (Select)valor;
                 object res = select.ejecutar(ts, user, ref baseD, mensajes, tsT);
-                if(res != null)
+                if (res != null)
                 {
                     mensajes.RemoveLast();
                     TablaSelect tabla = (TablaSelect)res;
@@ -1132,7 +1332,7 @@ namespace cql_teacher_server.CQL.Componentes
                 {
                     mensajes.RemoveLast();
                     TablaSelect tabla = (TablaSelect)res;
-                    if(tabla.datos.Count() > 0)
+                    if (tabla.datos.Count() > 0)
                     {
                         if (tabla.columnas.ElementAt(0).tipo.Equals("int") || tabla.columnas.ElementAt(0).tipo.Equals("double") || tabla.columnas.ElementAt(0).tipo.Equals("date")) return getMinimun(tabla.datos);
                         else mensajes.AddLast(mensa.error("MIN solo se aplica a valores numericos, no se reconoce el tipo: " + tabla.columnas.ElementAt(0).tipo, linea1, columna1, "Semantico"));
@@ -1209,10 +1409,10 @@ namespace cql_teacher_server.CQL.Componentes
                 string identificador = idAs;
 
                 //------------------------------------------------ Ejecutamos los valores para completar el identificador unico------------------
-                foreach(Expresion e in listaUser)
+                foreach (Expresion e in listaUser)
                 {
                     object res = (e == null) ? null : e.ejecutar(ts, user, ref baseD, mensajes, tsT);
-                    if(res != null)
+                    if (res != null)
                     {
                         if (res.GetType() == typeof(string)) identificador += "_string";
                         else if (res.GetType() == typeof(int)) identificador += "_int";
@@ -1227,7 +1427,7 @@ namespace cql_teacher_server.CQL.Componentes
                     }
                     else
                     {
-                        mensajes.AddLast(ms.error("No puede pasar parametros null",linea1,columna1,"Semantico"));
+                        mensajes.AddLast(ms.error("No puede pasar parametros null", linea1, columna1, "Semantico"));
                         return null;
                     }
                 }
@@ -1237,10 +1437,10 @@ namespace cql_teacher_server.CQL.Componentes
                 {
                     f.valores = listaUser;
                     return f.ejecutar(ts, user, ref baseD, mensajes, tsT);
-                }       
+                }
                 else
                 {
-                    mensajes.AddLast(ms.error("La funcion: " + idAs + " no existe",linea1,columna1,"Semantico"));
+                    mensajes.AddLast(ms.error("La funcion: " + idAs + " no existe", linea1, columna1, "Semantico"));
                     return null;
                 }
             }
@@ -1286,10 +1486,9 @@ namespace cql_teacher_server.CQL.Componentes
                     else mensajes.AddLast(ms.error("El procedure: " + idAs + " no existe en esta base de datos: " + baseD, linea1, columna1, "Semantico"));
                 }
                 else mensajes.AddLast(ms.error("No existe la base de datos: " + baseD, linea1, columna1, "Semantico"));
-                
+
                 return 0;
             }
-            
             //------------------------------------------------- ENTERO -------------------------------------------------------------------------
             else if (operacion.Equals("ENTERO")) return Int32.Parse(valor.ToString());
             //------------------------------------------------- DOUBLE -------------------------------------------------------------------------
@@ -1330,7 +1529,7 @@ namespace cql_teacher_server.CQL.Componentes
                     return null;
                 }
                 else return a;
-                
+
             }
             //----------------------------------------------------- NULL ------------------------------------------------------------------------
             return null;
