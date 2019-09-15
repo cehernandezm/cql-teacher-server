@@ -155,6 +155,11 @@ namespace cql_teacher_server.CQL.Gramatica
 
             var CONTINUE = ToTerm("Continue");
 
+            var CURSOR = ToTerm("CURSOR");
+            var IS = ToTerm("IS");
+            var OPEN = ToTerm("OPEN");
+            var CLOSE = ToTerm("CLOSE");
+            var EACH = ToTerm("EACH");
 
 
 
@@ -271,6 +276,12 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal tempExAsignacion = new NonTerminal("expresion");
 
             NonTerminal inContinue = new NonTerminal("incontinue");
+
+            NonTerminal inCursor = new NonTerminal("incursor");
+            NonTerminal inExpresion = new NonTerminal("expresion");
+            NonTerminal inOperacionCursor = new NonTerminal("inoperacioncursor");
+
+            NonTerminal inForEach = new NonTerminal("inforeach");
             #endregion
 
             #region Gramatica
@@ -315,6 +326,10 @@ namespace cql_teacher_server.CQL.Gramatica
                              | inLog + ";"
                              | inProcedure
                              | inContinue + ";"
+                             | inCursor + ";"
+                             | inExpresion + ";"
+                             | inOperacionCursor  + ";"
+                             | inForEach 
                              ;
             #endregion
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
@@ -399,6 +414,12 @@ namespace cql_teacher_server.CQL.Gramatica
                            | NULL
                            | callProcedure
                            ;
+
+            inExpresion.Rule = ToTerm("@") + ID + INCREMENTO
+                             | ToTerm("@") + ID + DECREMENTO
+                             | llamadaFuncion
+                             | callProcedure
+                             ;
 
             llamadaFuncion.Rule = ID + "(" + ")"
                                 | ID + "(" + listValues + ")"
@@ -516,10 +537,7 @@ namespace cql_teacher_server.CQL.Gramatica
             //------------------------------------------------------------- CASE ---------------------------------------------------------------------------
             inCase.Rule = CASE + expresion + ":" + "{" + instrucciones + "}";
             #endregion
-            //---------------------------------------------------------------------------------------------------------------------------------------------
-            inBreak.Rule = BREAK;
-
-            inContinue.Rule = CONTINUE;
+           
             #region CQL
             //-------------------------------------------------------------- DEFAULT -----------------------------------------------------------------------
             inDefault.Rule = DEFAULT + ":" + "{" + instrucciones + "}";
@@ -640,6 +658,8 @@ namespace cql_teacher_server.CQL.Gramatica
                          | ID + DESC
                          ;
             #endregion
+            
+            #region Ciclos
             //----------------------------------------------- WHILE -----------------------------------------------------------------------------------------
             inWhile.Rule = WHILE + "(" + expresion + ")" + "{" + instrucciones + "}";
 
@@ -651,8 +671,12 @@ namespace cql_teacher_server.CQL.Gramatica
                        | FOR + "(" + asignacion + ";" + expresion + ";" + expresion + ")" + "{" + instrucciones + "}"
                        ;
 
-        
+            //---------------------------------------------------------------------------------------------------------------------------------------------
+            inBreak.Rule = BREAK;
 
+            inContinue.Rule = CONTINUE;
+            #endregion
+            
             #region MAp
             //----------------------------------------------- EXPRESIONES DENTRO DE UN MAP ----------------------------------------------
             listaMap.Rule = listaMap + "," + mapvalue
@@ -675,6 +699,7 @@ namespace cql_teacher_server.CQL.Gramatica
             inClear.Rule = expresion + "." + CLEAR + "(" + ")";
             #endregion
 
+            #region Funciones/Procedures
 
             //------------------------------------------------- FUNCIONES -----------------------------------------------------------------------------------
             inFunction.Rule = tipoVariable + ID + "(" + ")" + "{" + instrucciones + "}"
@@ -702,6 +727,17 @@ namespace cql_teacher_server.CQL.Gramatica
             parametros.Rule = tipoVariable + "@" + ID;
 
             callProcedure.Rule = CALL + ID + "(" + listValues + ")";
+            #endregion
+
+            #region Cursor
+            inCursor.Rule = CURSOR + "@" + ID + IS + inSelect;
+
+            inOperacionCursor.Rule = OPEN + "@" + ID
+                                   | CLOSE + "@" + ID
+                                   ;
+
+            inForEach.Rule = FOR + EACH + "(" + listaDeclaracion + ")" + IN + "@" + ID + "{" + instrucciones + "}";
+            #endregion
 
             #endregion
 

@@ -8,6 +8,7 @@ using System.Globalization;
 using cql_teacher_server.CHISON.Componentes;
 using cql_teacher_server.CHISON;
 using cql_teacher_server.CQL.Componentes.Funcion_Procedure;
+using cql_teacher_server.CQL.Componentes.Cursor;
 
 namespace cql_teacher_server.CQL.Componentes
 {

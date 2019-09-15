@@ -3,6 +3,7 @@ using cql_teacher_server.CHISON.Componentes;
 using cql_teacher_server.CQL.Arbol;
 using cql_teacher_server.CQL.Componentes;
 using cql_teacher_server.CQL.Componentes.Ciclos;
+using cql_teacher_server.CQL.Componentes.Cursor;
 using cql_teacher_server.CQL.Componentes.Funcion_Procedure;
 using cql_teacher_server.CQL.Componentes.Procedure;
 using cql_teacher_server.CQL.Componentes.Variables;
@@ -52,6 +53,7 @@ namespace cql_teacher_server.CQL.Gramatica
                     LinkedList<string> mensajes = new LinkedList<string>();
                     String baseD = TablaBaseDeDatos.getMine(usuario);
 
+                    //---------------------------------------------------- PRIMER RECORRIDO BUSCANDO FUNCIONES ----------------------------------------------
                     foreach(InstruccionCQL ins in listaInstrucciones)
                     {
                         Mensaje ms = new Mensaje();
@@ -65,13 +67,14 @@ namespace cql_teacher_server.CQL.Gramatica
                         }
                     }
 
+                    //----------------------------------------------------- SEGUNDO RECORRIDO EJECUTANDO TODO MENOS FUNCIONES ----------------------------
                     foreach (InstruccionCQL ins in listaInstrucciones)
                     {
                         Mensaje mensa = new Mensaje();
                         if(ins.GetType() != typeof(Funcion))
                         {
                             object res = ins.ejecutar(tablaGlobal, usuario, ref baseD, mensajes, tablaCQL);
-                            if (res != null && ins.GetType() == typeof(Expresion)) System.Diagnostics.Debug.WriteLine(mensa.message("El resultado de la operacion es: " + res.ToString()));
+                           // if (res != null && ins.GetType() == typeof(Expresion)) System.Diagnostics.Debug.WriteLine(mensa.message("El resultado de la operacion es: " + res.ToString()));
                         }
                         
                     }
@@ -1000,6 +1003,46 @@ namespace cql_teacher_server.CQL.Gramatica
                     return listaAS;
 
 
+
+
+
+
+                //------------------------------------------------- declaracion de un cursor -----------------------------------------------------------
+                case "incursor":
+                    LinkedList<InstruccionCQL> listaCU = new LinkedList<InstruccionCQL>();
+                    string idCu = hijo.ChildNodes.ElementAt(2).Token.Text.ToLower().TrimEnd().TrimStart();
+                    int lCu = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
+                    int cCu = hijo.ChildNodes.ElementAt(2).Token.Location.Column;
+                    LinkedList<InstruccionCQL> listaSelect = (LinkedList<InstruccionCQL>)instruccion(hijo.ChildNodes.ElementAt(4));
+                    listaCU.AddLast(new Cursor(idCu, listaSelect.ElementAt(0), lCu, cCu));
+                    return listaCU;
+
+
+
+                //------------------------------------------------ OPERACIONES AL CURSOR --------------------------------------------------------------
+                case "inoperacioncursor":
+                    LinkedList<InstruccionCQL> listaOC = new LinkedList<InstruccionCQL>();
+                    string operacionOC = hijo.ChildNodes.ElementAt(0).Token.Text.ToLower().TrimEnd().TrimStart();
+                    int lOC = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
+                    int cOC = hijo.ChildNodes.ElementAt(2).Token.Location.Line;
+                    string idOC = hijo.ChildNodes.ElementAt(2).Token.Text.ToLower().TrimStart().TrimEnd();
+                    listaOC.AddLast(new OperacionCursor(operacionOC, idOC, lOC, cOC));
+                    return listaOC;
+
+
+
+
+
+                //--------------------------------------------- FOREACH --------------------------------------------------------------------------------
+                case "inforeach":
+                    LinkedList<InstruccionCQL> listaFE = new LinkedList<InstruccionCQL>();
+                    string idFE = hijo.ChildNodes.ElementAt(5).Token.Text.ToLower().TrimEnd().TrimStart();
+                    int lFE = hijo.ChildNodes.ElementAt(5).Token.Location.Line;
+                    int cFE = hijo.ChildNodes.ElementAt(5).Token.Location.Column;
+                    LinkedList<InstruccionCQL> parametrosFE = getListaDeclaracion(hijo.ChildNodes.ElementAt(2));
+                    LinkedList<InstruccionCQL> cuerpoFE = instrucciones(hijo.ChildNodes.ElementAt(7));
+                    listaFE.AddLast(new ForEach(idFE, parametrosFE, cuerpoFE, lFE, cFE));
+                    return listaFE;
 
 
             }
