@@ -63,77 +63,42 @@ namespace cql_teacher_server.CQL.Componentes
        * @mensajes el output de la ejecucion
        */
 
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts, Ambito ambito, TablaDeSimbolos tsT)
         {
             Mensaje mensa = new Mensaje();
-            BaseDeDatos db = TablaBaseDeDatos.getBase(baseD);
+            BaseDeDatos db = TablaBaseDeDatos.getBase(ambito.baseD);
 
             if (db != null)
             {
                 Tabla tabla = TablaBaseDeDatos.getTabla(db, id);
                 if(tabla != null)
                 {
-                    if (user.Equals("admin"))
+                    if (ambito.usuario.Equals("admin"))
                     {
-                        if (operacion.Equals("ADD"))
-                        {
-                            if (!searchColumns(listaAdd, tabla.columnas, mensajes))
-                            {
-                                if (searchTipo(listaAdd, mensajes, db))
-                                {
-                                    foreach (Columna cc in listaAdd)
-                                    {
-                                        tabla.columnas.AddLast(cc);
-                                        agregarColumna(tabla.datos, cc);
-                                        mensajes.AddLast(mensa.message("Se agrego exitosamente la columna: " + cc.name));
-                                    }
-                                    return "";
-                                }
-
-                            }
-                        }
-                        else
-                        {
-                            if (existeColumna(listaDrop, tabla.columnas, mensajes))
-                            {
-                                if (!isPK(listaDrop, tabla.columnas, mensajes))
-                                {
-                                    foreach (string s in listaDrop)
-                                    {
-                                        Columna columna = getColumna(s, tabla.columnas);
-                                        int index = indexColumna(s, tabla.columnas);
-                                        deleteData(index, tabla.datos);
-                                        tabla.columnas.Remove(columna);
-                                        mensajes.AddLast(mensa.message("Columna: " + s + " ha sido eliminada con existo"));
-                                    }
-                                    return "";
-                                }
-
-                            }
-                        }
+                      
                     }
                     else
                     {
-                        Usuario usuario = TablaBaseDeDatos.getUsuario(user);
+                        Usuario usuario = TablaBaseDeDatos.getUsuario(ambito.usuario);
                         if (usuario != null)
                         {
-                            Boolean permiso = TablaBaseDeDatos.getPermiso(usuario, baseD);
+                            Boolean permiso = TablaBaseDeDatos.getPermiso(usuario, ambito.baseD);
                             if (permiso)
                             {
-                                Boolean enUso = TablaBaseDeDatos.getEnUso(baseD, user);
+                                Boolean enUso = TablaBaseDeDatos.getEnUso(ambito.baseD, ambito.usuario);
                                 if (!enUso)
                                 {
                                     if (operacion.Equals("ADD"))
                                     {
-                                        if (!searchColumns(listaAdd, tabla.columnas, mensajes))
+                                        if (!searchColumns(listaAdd, tabla.columnas, ambito.mensajes))
                                         {
-                                            if (searchTipo(listaAdd, mensajes, db))
+                                            if (searchTipo(listaAdd, ambito.mensajes, db))
                                             {
                                                 foreach (Columna cc in listaAdd)
                                                 {
                                                     tabla.columnas.AddLast(cc);
                                                     agregarColumna(tabla.datos, cc);
-                                                    mensajes.AddLast(mensa.message("Se agrego exitosamente la columna: " + cc.name));
+                                                    ambito.mensajes.AddLast(mensa.message("Se agrego exitosamente la columna: " + cc.name));
                                                 }
                                                 return "";
                                             }
@@ -142,9 +107,9 @@ namespace cql_teacher_server.CQL.Componentes
                                     }
                                     else
                                     {
-                                        if (existeColumna(listaDrop, tabla.columnas, mensajes))
+                                        if (existeColumna(listaDrop, tabla.columnas,ambito.mensajes))
                                         {
-                                            if (!isPK(listaDrop, tabla.columnas, mensajes))
+                                            if (!isPK(listaDrop, tabla.columnas, ambito.mensajes))
                                             {
                                                 foreach (string s in listaDrop)
                                                 {
@@ -152,7 +117,7 @@ namespace cql_teacher_server.CQL.Componentes
                                                     int index = indexColumna(s, tabla.columnas);
                                                     deleteData(index, tabla.datos);
                                                     tabla.columnas.Remove(columna);
-                                                    mensajes.AddLast(mensa.message("Columna: " + s + " ha sido eliminada con existo"));
+                                                    ambito.mensajes.AddLast(mensa.message("Columna: " + s + " ha sido eliminada con existo"));
                                                 }
                                                 return "";
                                             }
@@ -160,19 +125,19 @@ namespace cql_teacher_server.CQL.Componentes
                                         }
                                     }
                                 }
-                                else mensajes.AddLast(mensa.error("Otro usuario esta usando la DB:  " + baseD, l, c, "Semantico"));
+                                else ambito.mensajes.AddLast(mensa.error("Otro usuario esta usando la DB:  " + ambito.baseD, l, c, "Semantico"));
 
                             }
-                            else mensajes.AddLast(mensa.error("El usuario: " + user + " no tiene permiso en la DB: " + baseD, l, c, "Semantico"));
+                            else ambito.mensajes.AddLast(mensa.error("El usuario: " + ambito.usuario + " no tiene permiso en la DB: " + ambito.baseD, l, c, "Semantico"));
                         }
-                        else mensajes.AddLast(mensa.error("No existe el usuario: " + user, l, c, "Semantico"));
+                        else ambito.mensajes.AddLast(mensa.error("No existe el usuario: " + ambito.usuario, l, c, "Semantico"));
                     }
                     
                 }
-                else mensajes.AddLast(mensa.error("La tabla: " + id + " no existe en la DB: " +baseD, l, c, "Semantico"));
+                else ambito.mensajes.AddLast(mensa.error("La tabla: " + id + " no existe en la DB: " + ambito.baseD, l, c, "Semantico"));
                 
             }
-            else mensajes.AddLast(mensa.error("No existe la base de datos: " + baseD + " o no se ha usado el comando use", l, c, "Semantico"));
+            else ambito.mensajes.AddLast(mensa.error("No existe la base de datos: " + ambito.baseD + " o no se ha usado el comando use", l, c, "Semantico"));
 
             
             return null;

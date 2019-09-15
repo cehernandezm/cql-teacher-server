@@ -28,11 +28,12 @@ namespace cql_teacher_server.CQL.Componentes
           * @baseD base de datos donde estamos ejecutando todo
           * @mensajes linkedlist con la salida deseada
       */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts, Ambito ambito, TablaDeSimbolos tsT)
         {
             Mensaje ms = new Mensaje();
-            object r = expresion.ejecutar(ts, user,ref baseD, mensajes, tsT);
-            if(r != null) mensajes.AddLast(ms.message(r.ToString()));
+            object r = expresion.ejecutar(ts, ambito, tsT);
+            
+            if(r != null) ambito.mensajes.AddLast(ms.message(r.ToString()));
             return "";
         }
     }

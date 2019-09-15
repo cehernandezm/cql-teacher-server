@@ -60,10 +60,10 @@ namespace cql_teacher_server.CQL.Componentes
          * @baseD string por referencia de que base de datos estamos trabajando
          * @mensajes el output de la ejecucion
          */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts, Ambito ambito, TablaDeSimbolos tsT)
         {
             flagCondicion = false;
-            object a = (condicion == null) ? null : condicion.ejecutar(ts, user, ref baseD, mensajes, tsT);
+            object a = (condicion == null) ? null : condicion.ejecutar(ts,ambito, tsT);
 
             Mensaje men = new Mensaje();
             //----------------------------------------------------------- ELSE -----------------------------------------------------------
@@ -81,7 +81,7 @@ namespace cql_teacher_server.CQL.Componentes
                 }
                 foreach (InstruccionCQL i in cuerpo)
                 {
-                    object r = i.ejecutar(ambitoLocal, user, ref baseD, mensajes, tablaTemp);
+                    object r = i.ejecutar(ambitoLocal,ambito, tablaTemp);
                     if (r == null) return r;
                     else if (r.GetType() == typeof(Retorno)) return r;
                 }
@@ -109,7 +109,7 @@ namespace cql_teacher_server.CQL.Componentes
                             //------------------------------------------------- INSTRUCCIONES DEL IF -----------------------------------------------
                             foreach (InstruccionCQL i in cuerpo)
                             {
-                                object r = i.ejecutar(ambitoLocal, user, ref baseD, mensajes,tablaTemp);
+                                object r = i.ejecutar(ambitoLocal, ambito,tablaTemp);
                                 if (r == null) return r;
                                 else if (r.GetType() == typeof(Retorno)) return (Retorno)r;
                                 else if (i.GetType() == typeof(Continue)) return i;
@@ -117,9 +117,9 @@ namespace cql_teacher_server.CQL.Componentes
                         }
                         return "";
                     }
-                    else mensajes.AddLast(men.error("La condicion tiene que ser de tipo boolean no se reconoce: " + a.ToString(), l, c, "Semantico"));
+                    else ambito.mensajes.AddLast(men.error("La condicion tiene que ser de tipo boolean no se reconoce: " + a.ToString(), l, c, "Semantico"));
                 }
-                else mensajes.AddLast(men.error("No se acepta un null como condicion", l, c, "Semantico"));
+                else ambito.mensajes.AddLast(men.error("No se acepta un null como condicion", l, c, "Semantico"));
             }
             
 

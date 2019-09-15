@@ -46,12 +46,12 @@ namespace cql_teacher_server.CQL.Componentes
           * @baseD string por referencia de que base de datos estamos trabajando
           * @mensajes el output de la ejecucion
         */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts, Ambito ambito, TablaDeSimbolos tsT)
         {
             Mensaje ms = new Mensaje();
-            object mp = (id == null) ? null : id.ejecutar(ts, user, ref baseD, mensajes, tsT);
-            object ky = (key == null) ? null : key.ejecutar(ts, user, ref baseD, mensajes, tsT);
-            object vl = (valor == null) ? null : valor.ejecutar(ts, user, ref baseD, mensajes, tsT);
+            object mp = (id == null) ? null : id.ejecutar(ts, ambito, tsT);
+            object ky = (key == null) ? null : key.ejecutar(ts, ambito, tsT);
+            object vl = (valor == null) ? null : valor.ejecutar(ts, ambito, tsT);
             if (mp != null)
             {
                 if (ky != null)
@@ -61,7 +61,7 @@ namespace cql_teacher_server.CQL.Componentes
                     {
                         Map temp = (Map)mp;
                         string t2 = (temp.id.Split(new[] { ',' } , 2))[1];
-                        string tV = (getTipoValorSecundario(vl, mensajes) == null) ? "null" : (getTipoValorSecundario(vl, mensajes));
+                        string tV = (getTipoValorSecundario(vl, ambito.mensajes) == null) ? "null" : (getTipoValorSecundario(vl, ambito.mensajes));
                         foreach (KeyValue key in temp.datos)
                         {
                             if (key.key.Equals(ky))
@@ -87,13 +87,13 @@ namespace cql_teacher_server.CQL.Componentes
                                     }
                                     else
                                     {
-                                        mensajes.AddLast("El valor es de tipo " + t2 + " no es igual con: " + tV);
+                                        ambito.mensajes.AddLast("El valor es de tipo " + t2 + " no es igual con: " + tV);
                                         return null;
                                     }
                                 }
                             }
                         }
-                        mensajes.AddLast(ms.error("No se encontro la key: " + ky, l, c, "Semantico"));
+                        ambito.mensajes.AddLast(ms.error("No se encontro la key: " + ky, l, c, "Semantico"));
                     }
                     else if(mp.GetType() == typeof(List))
                     {
@@ -105,7 +105,7 @@ namespace cql_teacher_server.CQL.Componentes
                             {
                                 if (index < temp.lista.Count())
                                 {
-                                    string tipoValor = (getTipoValorSecundario(vl, mensajes) == null) ? "null" : getTipoValorSecundario(vl, mensajes);
+                                    string tipoValor = (getTipoValorSecundario(vl, ambito.mensajes) == null) ? "null" : getTipoValorSecundario(vl, ambito.mensajes);
                                     if (tipoValor.Equals(temp.id))
                                     {
 
@@ -127,16 +127,16 @@ namespace cql_teacher_server.CQL.Componentes
                                                 return "";
                                             }
                                         }
-                                        else mensajes.AddLast(ms.error("No se puede asignar null al tipo: " + temp.id,l,c,"Semantico"));
+                                        else ambito.mensajes.AddLast(ms.error("No se puede asignar null al tipo: " + temp.id,l,c,"Semantico"));
                                     }
-                                    else mensajes.AddLast(ms.error("No coinciden los tipos: " + temp.id + " con: " + tipoValor,l,c,"Semantico"));
+                                    else ambito.mensajes.AddLast(ms.error("No coinciden los tipos: " + temp.id + " con: " + tipoValor,l,c,"Semantico"));
                                     
                                 }
-                                else mensajes.AddLast(ms.error("El index es mayor al tamaño de la lista", l, c, "Semantico"));
+                                else ambito.mensajes.AddLast(ms.error("El index es mayor al tamaño de la lista", l, c, "Semantico"));
                             }
-                            else mensajes.AddLast(ms.error("Index tiene que ser mayor a 0 : " + index, l, c, "Semantico"));
+                            else ambito.mensajes.AddLast(ms.error("Index tiene que ser mayor a 0 : " + index, l, c, "Semantico"));
                         }
-                        else mensajes.AddLast(ms.error("Index tiene que ser de tipo numerico: " + ky, l, c, "Semantico"));
+                        else ambito.mensajes.AddLast(ms.error("Index tiene que ser de tipo numerico: " + ky, l, c, "Semantico"));
                     }
                     else if (mp.GetType() == typeof(Set))
                     {
@@ -148,10 +148,10 @@ namespace cql_teacher_server.CQL.Componentes
                             {
                                 if (index < temp.datos.Count())
                                 {
-                                    string tipoValor = (getTipoValorSecundario(vl, mensajes) == null) ? "null" : getTipoValorSecundario(vl, mensajes);
+                                    string tipoValor = (getTipoValorSecundario(vl, ambito.mensajes) == null) ? "null" : getTipoValorSecundario(vl, ambito.mensajes);
                                     if (tipoValor.Equals(temp.id))
                                     {
-                                        object res = temp.buscarRepetidosPorValor(mensajes, l, c, vl);
+                                        object res = temp.buscarRepetidosPorValor(ambito.mensajes, l, c, vl);
                                         if (res == null) return null;
                                         ChangeValueList(temp.datos, index, vl);
                                         temp.order();
@@ -163,7 +163,7 @@ namespace cql_teacher_server.CQL.Componentes
                                         {
                                             if (temp.id.Equals("string") || temp.id.Equals("date") || temp.id.Equals("time"))
                                             {
-                                                object res = temp.buscarRepetidosPorValor(mensajes, l, c, vl);
+                                                object res = temp.buscarRepetidosPorValor(ambito.mensajes, l, c, vl);
                                                 if (res == null) return null;
                                                 ChangeValueList(temp.datos, index, vl);
                                                 temp.order();
@@ -171,31 +171,31 @@ namespace cql_teacher_server.CQL.Componentes
                                             }
                                             else
                                             {
-                                                object res = temp.buscarRepetidosPorValor(mensajes, l, c, new InstanciaUserType(temp.id, null));
+                                                object res = temp.buscarRepetidosPorValor(ambito.mensajes, l, c, new InstanciaUserType(temp.id, null));
                                                 if (res == null) return null;
                                                 ChangeValueList(temp.datos, index, new InstanciaUserType(temp.id, null));
                                                 return "";
                                             }
                                         }
-                                        else mensajes.AddLast(ms.error("No se puede asignar null al tipo: " + temp.id, l, c, "Semantico"));
+                                        else ambito.mensajes.AddLast(ms.error("No se puede asignar null al tipo: " + temp.id, l, c, "Semantico"));
                                     }
-                                    else mensajes.AddLast(ms.error("No coinciden los tipos: " + temp.id + " con: " + tipoValor, l, c, "Semantico"));
+                                    else ambito.mensajes.AddLast(ms.error("No coinciden los tipos: " + temp.id + " con: " + tipoValor, l, c, "Semantico"));
 
                                 }
-                                else mensajes.AddLast(ms.error("El index es mayor al tamaño de la lista", l, c, "Semantico"));
+                                else ambito.mensajes.AddLast(ms.error("El index es mayor al tamaño de la lista", l, c, "Semantico"));
                             }
-                            else mensajes.AddLast(ms.error("Index tiene que ser mayor a 0 : " + index, l, c, "Semantico"));
+                            else ambito.mensajes.AddLast(ms.error("Index tiene que ser mayor a 0 : " + index, l, c, "Semantico"));
                         }
-                        else mensajes.AddLast(ms.error("Index tiene que ser de tipo numerico: " + ky, l, c, "Semantico"));
+                        else ambito.mensajes.AddLast(ms.error("Index tiene que ser de tipo numerico: " + ky, l, c, "Semantico"));
                     }
-                    else mensajes.AddLast(ms.error("No se puede aplicar un SET en un tipo no Collection, no se reconoce: " + mp, l, c, "Semantico"));
+                    else ambito.mensajes.AddLast(ms.error("No se puede aplicar un SET en un tipo no Collection, no se reconoce: " + mp, l, c, "Semantico"));
 
 
 
                 }
-                else mensajes.AddLast(ms.error("La key no puede ser null", l, c, "Semantico"));
+                else ambito.mensajes.AddLast(ms.error("La key no puede ser null", l, c, "Semantico"));
             }
-            else mensajes.AddLast(ms.error("No se puede insertar en un null", l, c, "Semantico"));
+            else ambito.mensajes.AddLast(ms.error("No se puede insertar en un null", l, c, "Semantico"));
 
             return null;
         }

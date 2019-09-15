@@ -29,9 +29,12 @@ namespace cql_teacher_server.CQL.Componentes
             this.c = c;
         }
 
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts, Ambito ambito, TablaDeSimbolos tsT)
         {
             Mensaje mensa = new Mensaje();
+            string user = ambito.usuario;
+            string baseD = ambito.baseD;
+            LinkedList<string> mensajes = ambito.mensajes;
             BaseDeDatos db = TablaBaseDeDatos.getBase(baseD);
             if (db != null)
             {

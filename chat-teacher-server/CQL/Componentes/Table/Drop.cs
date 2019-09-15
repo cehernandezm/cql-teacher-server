@@ -46,17 +46,20 @@ namespace cql_teacher_server.CQL.Componentes
         * @baseD base de datos donde estamos ejecutando todo
         * @mensajes linkedlist con la salida deseada
         */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts, Ambito ambito, TablaDeSimbolos tsT)
         {
             Mensaje mensa = new Mensaje();
             BaseDeDatos db = TablaBaseDeDatos.getBase(id);
-            Usuario us = TablaBaseDeDatos.getUsuario(user);
+            Usuario us = TablaBaseDeDatos.getUsuario(ambito.usuario);
+            string user = ambito.usuario;
+            string baseD = ambito.baseD;
+            LinkedList<string> mensajes = ambito.mensajes;
             if (db != null)
             {
-                if (user.Equals("admin"))
+                if (ambito.usuario.Equals("admin"))
                 {
                     TablaBaseDeDatos.global.Remove(db);
-                    mensajes.AddLast(mensa.message("La base de datos: " + id + " ha sido eliminada con exito"));
+                    ambito.mensajes.AddLast(mensa.message("La base de datos: " + id + " ha sido eliminada con exito"));
                     return "";
                 }
                 else

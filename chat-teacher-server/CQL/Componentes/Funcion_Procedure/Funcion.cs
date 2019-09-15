@@ -48,32 +48,33 @@ namespace cql_teacher_server.CQL.Componentes
          * @baseD base de datos donde estamos ejecutando todo
          * @mensajes linkedlist con la salida deseada
          */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts, Ambito ambito, TablaDeSimbolos tsT)
         {
             Mensaje ms = new Mensaje();
             TablaDeSimbolos newAmbito = new TablaDeSimbolos();
-            foreach(Simbolo s in TablaBaseDeDatos.tablaGeneral)
+            foreach(Simbolo s in ambito.tablaPadre)
             {
                 newAmbito.AddLast(s);
             }
 
             if (parametros.Count() == valores.Count())
             {
+                //-------------------------------------- CREACION Y ASIGNACION DE PARAMETROS -----------------------------------------------------
                 for (int i = 0; i < parametros.Count(); i++)
                 {
                     Declaracion d = (Declaracion)parametros.ElementAt(i);
                     d.parametro = true;
-                    object rd = d.ejecutar(newAmbito, user, ref baseD, mensajes, tsT);
+                    object rd = d.ejecutar(newAmbito, ambito, tsT);
                     if (rd == null) return null;
                     Asignacion a = new Asignacion(d.id, l, c, valores.ElementAt(i), "ASIGNACION");
                     a.tPadre = ts;
-                    object ra = a.ejecutar(newAmbito, user, ref baseD, mensajes, tsT);
+                    object ra = a.ejecutar(newAmbito, ambito, tsT);
                     if (ra == null) return null;
                 }
-
+                //---------------------------------------- INSTRUCCIONES DE LA FUNCION -----------------------------------------------------------
                 foreach(InstruccionCQL ins in cuerpo)
                 {
-                    object r = ins.ejecutar(newAmbito, user, ref baseD, mensajes, tsT);
+                    object r = ins.ejecutar(newAmbito, ambito, tsT);
                     if (r == null) return null;
                     else if (r.GetType() == typeof(Retorno))
                     {
@@ -93,18 +94,18 @@ namespace cql_teacher_server.CQL.Componentes
                             {
                                 InstanciaUserType temp = (InstanciaUserType)re;
                                 if (temp.tipo.Equals(tipo)) return temp;
-                                else mensajes.AddLast(ms.error("No coincide el tipo de USERTYPE", l, c, "Semantico"));
+                                else ambito.mensajes.AddLast(ms.error("No coincide el tipo de USERTYPE", l, c, "Semantico"));
 
                             }
-                            else mensajes.AddLast(ms.error("No coincide el tipo: " + tipo + " con el valor: " + re, l, c, "Semantico"));
+                            else ambito.mensajes.AddLast(ms.error("No coincide el tipo: " + tipo + " con el valor: " + re, l, c, "Semantico"));
                             return null;
                         }
                     }
                 }
-                mensajes.AddLast(ms.error("La funcion no posee ningun return", l, c, "Semantico"));
+                ambito.mensajes.AddLast(ms.error("La funcion no posee ningun return", l, c, "Semantico"));
                 return null;
             }
-            else mensajes.AddLast(ms.error("No coinciden el numero de parametros con el numero de valores", l, c, "Semantico"));
+            else ambito.mensajes.AddLast(ms.error("No coinciden el numero de parametros con el numero de valores", l, c, "Semantico"));
 
             return null;
         }

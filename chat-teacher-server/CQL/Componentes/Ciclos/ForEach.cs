@@ -42,7 +42,7 @@ namespace cql_teacher_server.CQL.Componentes.Ciclos
                  * @baseD base de datos donde estamos ejecutando todo
                  * @mensajes linkedlist con la salida deseada
                  */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts, Ambito ambito, TablaDeSimbolos tsT)
         {
             Mensaje ms = new Mensaje();
             object res = ts.getValor(id);
@@ -73,7 +73,7 @@ namespace cql_teacher_server.CQL.Componentes.Ciclos
                                     {
                                         Declaracion d = (Declaracion)parametros.ElementAt(i);
                                         d.parametro = true;
-                                        object rd = d.ejecutar(newAmbito, user, ref baseD, mensajes, tsT);
+                                        object rd = d.ejecutar(newAmbito, ambito, tsT);
                                         if (rd == null) return null;
                                         Atributo atributo = data.valores.ElementAt(i);
                                         newAmbito.setValor(d.id, atributo.valor);
@@ -81,7 +81,7 @@ namespace cql_teacher_server.CQL.Componentes.Ciclos
                                     //---------------------------------------- EJECUTAR INSTRUCCIONES DENTRO DEL FOREACH -----------------------------------------
                                     foreach(InstruccionCQL i in cuerpo)
                                     {
-                                        object resultado = i.ejecutar(newAmbito, user, ref baseD, mensajes, tsT);
+                                        object resultado = i.ejecutar(newAmbito,ambito, tsT);
                                         if (resultado == null) return null;
                                         else if (resultado.GetType() == typeof(Retorno)) return ((Retorno)resultado);
                                         else if (i.GetType() == typeof(Continue) || resultado.GetType() == typeof(Continue)) break;
@@ -89,15 +89,15 @@ namespace cql_teacher_server.CQL.Componentes.Ciclos
                                 }
                                 return "";
                             }
-                            else mensajes.AddLast(ms.error("No coinciden el tipo de parametros con el tipo de columnas",l,c,"Semantico"));
+                            else ambito.mensajes.AddLast(ms.error("No coinciden el tipo de parametros con el tipo de columnas",l,c,"Semantico"));
                         }
-                        else mensajes.AddLast(ms.error("No coincide la cantidad de parametros con la cantidad de columnas", l, c, "Semantico"));
+                        else ambito.mensajes.AddLast(ms.error("No coincide la cantidad de parametros con la cantidad de columnas", l, c, "Semantico"));
                     }
-                    else mensajes.AddLast(ms.error("El cursor: " + id + " no ha sido abierto",l,c,"Semantico"));
+                    else ambito.mensajes.AddLast(ms.error("El cursor: " + id + " no ha sido abierto",l,c,"Semantico"));
                 }
-                else mensajes.AddLast(ms.error("La variable tiene que ser de tipo Cursor  no se reconoce: " +res,l,c,"Semantico"));
+                else ambito.mensajes.AddLast(ms.error("La variable tiene que ser de tipo Cursor  no se reconoce: " +res,l,c,"Semantico"));
             }
-            else mensajes.AddLast(ms.error("La variable : " + id + " no existe en este ambito",l,c,"Semantico"));
+            else ambito.mensajes.AddLast(ms.error("La variable : " + id + " no existe en este ambito",l,c,"Semantico"));
             return null;
         }
 

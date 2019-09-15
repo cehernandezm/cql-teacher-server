@@ -35,7 +35,7 @@ namespace cql_teacher_server.CQL.Componentes.Cursor
           * @baseD string por referencia de que base de datos estamos trabajando
           * @mensajes el output de la ejecucion
         */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts, Ambito ambito, TablaDeSimbolos tsT)
         {
             Mensaje ms = new Mensaje();
             object existeVariable = ts.getValor(id);
@@ -46,7 +46,7 @@ namespace cql_teacher_server.CQL.Componentes.Cursor
                 ts.setValor(id, typeCursor);
                 return "";
             }
-            else mensajes.AddLast(ms.error("Ya existe la variable: " + id + " en este ambito",l,c,"Semantico" ));
+            else ambito.mensajes.AddLast(ms.error("Ya existe la variable: " + id + " en este ambito",l,c,"Semantico" ));
             return null;
         }
     }

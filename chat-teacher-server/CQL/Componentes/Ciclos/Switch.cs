@@ -32,14 +32,14 @@ namespace cql_teacher_server.CQL.Componentes
         * @baseD string por referencia de que base de datos estamos trabajando
         * @mensajes el output de la ejecucion
         */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts,Ambito ambito, TablaDeSimbolos tsT)
         {
             Boolean ejecutar = false ;
             foreach(Case c in listado)
             {
                 if((c.isDefault && !ejecutar) || (!c.isDefault))
                 {
-                    object res = c.ejecutar(ts, user, ref baseD, mensajes,tsT);
+                    object res = c.ejecutar(ts,ambito,tsT);
                     if (res == null) return null;
                 }
 

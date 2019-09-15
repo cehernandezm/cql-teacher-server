@@ -37,14 +37,14 @@ namespace cql_teacher_server.CQL.Componentes
          * @user usuario que esta ejecutando la accion
          * @baseD es la base actual en este caso sera none
          */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts, Ambito ambito, TablaDeSimbolos tsT)
         {
             BaseDeDatos db = TablaBaseDeDatos.getBase(id);
             //--------------------------- si existe una base de datos pero  no tiene un if not exist --------------------------------------------
             if (db != null && !ifnot)
             {
                 Mensaje mes = new Mensaje();
-                mensajes.AddLast(mes.error(" Ya existe una base de datos llamada " + id, linea,columna,"Semantico"));
+                ambito.mensajes.AddLast(mes.error(" Ya existe una base de datos llamada " + id, linea,columna,"Semantico"));
                 return null;
             }
             if(db == null)
@@ -53,21 +53,20 @@ namespace cql_teacher_server.CQL.Componentes
                 BaseDeDatos newDb = new BaseDeDatos(id,ls);
 
                 
-                Usuario us = TablaBaseDeDatos.getUsuario(user);
-                if(us == null ) System.Diagnostics.Debug.WriteLine("Usuario : " + user);
+                Usuario us = TablaBaseDeDatos.getUsuario(ambito.usuario);
                 if (us != null)
                 {
                     Mensaje mes = new Mensaje();
                     us.bases.AddLast(id);
                     TablaBaseDeDatos.global.AddLast(newDb);
-                    mensajes.AddLast(mes.message("La base de datos " + id + "ha sido creada exitosamente"));
+                    ambito.mensajes.AddLast(mes.message("La base de datos " + id + "ha sido creada exitosamente"));
                     return "";
                 }
                 else return "none";
 
 
             }
-            return "none";
+            return "";
         }
     }
 }

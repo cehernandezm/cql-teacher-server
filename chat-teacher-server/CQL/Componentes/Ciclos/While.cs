@@ -44,10 +44,10 @@ namespace cql_teacher_server.CQL.Componentes
             * @mensajes el output de la ejecucion
             */
 
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts, Ambito ambito, TablaDeSimbolos tsT)
         {
-            object res = (condicion == null) ? null : condicion.ejecutar(ts, user, ref baseD, mensajes, tsT);
-            object condi = verificarCondicion(res, mensajes);
+            object res = (condicion == null) ? null : condicion.ejecutar(ts,ambito, tsT);
+            object condi = verificarCondicion(res, ambito.mensajes);
             if(condi != null)
             {             
                 while ((Boolean)condi)
@@ -60,15 +60,15 @@ namespace cql_teacher_server.CQL.Componentes
                     //--------------------------------------------------- INSTRUCCIONES DENTRO DEL WHILE------------------------------------
                     foreach (InstruccionCQL i in cuerpo)
                     {
-                        object resultado = i.ejecutar(nuevoAmbito, user, ref baseD, mensajes, tsT);
+                        object resultado = i.ejecutar(nuevoAmbito, ambito, tsT);
                         if (resultado == null) return null;
                         else if (resultado.GetType() == typeof(Retorno)) return ((Retorno)resultado);
                         else if (i.GetType() == typeof(Continue) || resultado.GetType() == typeof(Continue)) break;
                     }
 
 
-                    res = (condicion == null) ? null : condicion.ejecutar(nuevoAmbito, user, ref baseD, mensajes, tsT);
-                    condi = verificarCondicion(res, mensajes);
+                    res = (condicion == null) ? null : condicion.ejecutar(nuevoAmbito, ambito, tsT);
+                    condi = verificarCondicion(res, ambito.mensajes);
                     if (condi == null) return null;
                 }
                 return "";

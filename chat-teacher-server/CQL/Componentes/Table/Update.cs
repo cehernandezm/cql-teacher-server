@@ -67,24 +67,19 @@ namespace cql_teacher_server.CQL.Componentes
        * @baseD string por referencia de que base de datos estamos trabajando
        * @mensajes el output de la ejecucion
        */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts,Ambito ambito, TablaDeSimbolos tsT)
         {
             Mensaje mensa = new Mensaje();
+            string user = ambito.usuario;
+            string baseD = ambito.baseD;
+            LinkedList<string> mensajes = ambito.mensajes;
             BaseDeDatos db = TablaBaseDeDatos.getBase(baseD);
             Usuario us = TablaBaseDeDatos.getUsuario(user);
             if (db != null)
             {
                 if (user.Equals("admin"))
                 {
-                    Tabla tabla = TablaBaseDeDatos.getTabla(db, id);
-                    if (tabla != null)
-                    {
-                        object res;
-                        if (operacion.Equals("NORMAL")) res = changeAll(ts, user, ref baseD, mensajes, tabla);
-                        else res = changeSpecific(ts, user, ref baseD, mensajes, tabla);
-                        if (res != null) return "";
-                    }
-                    else mensajes.AddLast(mensa.error("La tabla: " + id + " no existe en la DB: " + baseD, l, c, "Semantico"));
+                    
                 }
                 else
                 {
@@ -100,8 +95,8 @@ namespace cql_teacher_server.CQL.Componentes
                                 if (tabla != null)
                                 {
                                     object res;
-                                    if(operacion.Equals("NORMAL"))  res = changeAll(ts, user, ref baseD, mensajes, tabla);
-                                    else res = changeSpecific(ts, user, ref baseD, mensajes, tabla);
+                                    if(operacion.Equals("NORMAL"))  res = changeAll(ts,ambito, tabla);
+                                    else res = changeSpecific(ts, ambito, tabla);
                                     if (res != null) return "";
                                 }
                                 else mensajes.AddLast(mensa.error("La tabla: " + id + " no existe en la DB: " + baseD, l, c, "Semantico"));
@@ -129,9 +124,11 @@ namespace cql_teacher_server.CQL.Componentes
        * @tsT se encargara de guardar todos los datos en una tabla temporal para la tabla
        * @t tabla actual
      */
-        private object changeSpecific(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, Tabla t)
+        private object changeSpecific(TablaDeSimbolos ts, Ambito ambito, Tabla t)
         {
             Mensaje mensa = new Mensaje();
+            string baseD = ambito.baseD;
+            LinkedList<string> mensajes = ambito.mensajes;
             BaseDeDatos db = TablaBaseDeDatos.getBase(baseD);
             foreach (Data data in t.datos)
             {
@@ -144,7 +141,7 @@ namespace cql_teacher_server.CQL.Componentes
                         foreach (Atributo atributo in data.valores)
                         {
 
-                            object res = (condicion == null) ? null : condicion.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                            object res = (condicion == null) ? null : condicion.ejecutar(ts,ambito, tsT);
 
                             if (condicion != null)
                             {
@@ -154,7 +151,7 @@ namespace cql_teacher_server.CQL.Componentes
                                     {
                                         if ((Boolean)res)
                                         {
-                                            object op1 = (set.valor == null) ? null : set.valor.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                                            object op1 = (set.valor == null) ? null : set.valor.ejecutar(ts,ambito, tsT);
                                             if (set.operacion.Equals("NORMAL"))
                                             {
 
@@ -168,7 +165,7 @@ namespace cql_teacher_server.CQL.Componentes
                                             }
                                             else
                                             {
-                                                object op2 = (set.accesoUS == null) ? null : set.accesoUS.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                                                object op2 = (set.accesoUS == null) ? null : set.accesoUS.ejecutar(ts,ambito, tsT);
 
                                                 if (op2 != null)
                                                 {
@@ -191,7 +188,7 @@ namespace cql_teacher_server.CQL.Componentes
                                                     }
                                                     else if (op2.GetType() == typeof(Map))
                                                     {
-                                                        object campo = (set.key == null) ? null : set.key.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                                                        object campo = (set.key == null) ? null : set.key.ejecutar(ts,ambito, tsT);
                                                         Map temp = (Map)op2;
                                                         string tipo = temp.id.Split(new[] { ',' }, 2)[1];
                                                         foreach (KeyValue ky in temp.datos)
@@ -208,7 +205,7 @@ namespace cql_teacher_server.CQL.Componentes
                                                     else if(op2.GetType() == typeof(List))
                                                     {
                                                         List temp = (List)op2;
-                                                        object campo = (set.key == null) ? null : set.key.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                                                        object campo = (set.key == null) ? null : set.key.ejecutar(ts, ambito, tsT);
                                                         if(campo != null)
                                                         {
                                                             if(campo.GetType() == typeof(int))
@@ -300,9 +297,11 @@ namespace cql_teacher_server.CQL.Componentes
         * @t tabla actual
       */
 
-        private object changeAll(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes,Tabla t)
+        private object changeAll(TablaDeSimbolos ts, Ambito ambito,Tabla t)
         {
             Mensaje mensa = new Mensaje();
+            string baseD = ambito.baseD;
+            LinkedList<string> mensajes = ambito.mensajes;
             BaseDeDatos db = TablaBaseDeDatos.getBase(baseD);
             foreach(Data data in t.datos)
             {
@@ -314,7 +313,7 @@ namespace cql_teacher_server.CQL.Componentes
                     {
                         foreach (Atributo atributo in data.valores)
                         {
-                            object op1 = (set.valor == null) ? null : set.valor.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                            object op1 = (set.valor == null) ? null : set.valor.ejecutar(ts, ambito, tsT);
                             if (set.operacion.Equals("NORMAL"))
                             {
 
@@ -328,7 +327,7 @@ namespace cql_teacher_server.CQL.Componentes
                             }
                             else
                             {
-                                object op2 = (set.accesoUS == null) ? null : set.accesoUS.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                                object op2 = (set.accesoUS == null) ? null : set.accesoUS.ejecutar(ts,ambito, tsT);
 
                                 if (op2 != null)
                                 {
@@ -351,7 +350,7 @@ namespace cql_teacher_server.CQL.Componentes
                                     }
                                     else if (op2.GetType() == typeof(Map))
                                     {
-                                        object campo = (set.key == null) ? null : set.key.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                                        object campo = (set.key == null) ? null : set.key.ejecutar(ts, ambito, tsT);
                                         Map temp = (Map)op2;
                                         string tipo = temp.id.Split(new[] { ',' }, 2)[1];
                                         foreach (KeyValue ky in temp.datos)
@@ -368,7 +367,7 @@ namespace cql_teacher_server.CQL.Componentes
                                     else if (op2.GetType() == typeof(List))
                                     {
                                         List temp = (List)op2;
-                                        object campo = (set.key == null) ? null : set.key.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                                        object campo = (set.key == null) ? null : set.key.ejecutar(ts, ambito, tsT);
                                         if (campo != null)
                                         {
                                             if (campo.GetType() == typeof(int))

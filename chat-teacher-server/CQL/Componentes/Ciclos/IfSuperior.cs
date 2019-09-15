@@ -28,12 +28,12 @@ namespace cql_teacher_server.CQL.Componentes
         * @baseD string por referencia de que base de datos estamos trabajando
         * @mensajes el output de la ejecucion
         */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts,Ambito ambito, TablaDeSimbolos tsT)
         {
             object r;
             foreach(InstruccionCQL i in lista)
             {
-                r = i.ejecutar(ts, user, ref baseD, mensajes,tsT);
+                r = i.ejecutar(ts, ambito,tsT);
                 if (r == null) return null;
                 else if (r.GetType() == typeof(Retorno)) return (Retorno)r;
                 SubIf a = (SubIf)i;

@@ -53,6 +53,9 @@ namespace cql_teacher_server.CQL.Gramatica
                     LinkedList<string> mensajes = new LinkedList<string>();
                     String baseD = TablaBaseDeDatos.getMine(usuario);
 
+                    Ambito ambito = new Ambito(tablaGlobal, mensajes, usuario, baseD);
+
+
                     //---------------------------------------------------- PRIMER RECORRIDO BUSCANDO FUNCIONES ----------------------------------------------
                     foreach(InstruccionCQL ins in listaInstrucciones)
                     {
@@ -73,7 +76,7 @@ namespace cql_teacher_server.CQL.Gramatica
                         Mensaje mensa = new Mensaje();
                         if(ins.GetType() != typeof(Funcion))
                         {
-                            object res = ins.ejecutar(tablaGlobal, usuario, ref baseD, mensajes, tablaCQL);
+                            object res = ins.ejecutar(tablaGlobal,ambito, tablaCQL);
                            // if (res != null && ins.GetType() == typeof(Expresion)) System.Diagnostics.Debug.WriteLine(mensa.message("El resultado de la operacion es: " + res.ToString()));
                         }
                         

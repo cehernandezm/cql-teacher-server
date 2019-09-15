@@ -71,57 +71,48 @@ namespace cql_teacher_server.CQL.Componentes
               * @baseD string por referencia de que base de datos estamos trabajando
               * @mensajes el output de la ejecucion
               */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts, Ambito ambito, TablaDeSimbolos tsT)
         {
             Mensaje mensa = new Mensaje();
-            BaseDeDatos db = TablaBaseDeDatos.getBase(baseD);
-            Usuario us = TablaBaseDeDatos.getUsuario(user);
+            BaseDeDatos db = TablaBaseDeDatos.getBase(ambito.baseD);
+            Usuario us = TablaBaseDeDatos.getUsuario(ambito.usuario);
             if (db != null)
             {
-                if (user.Equals("admin"))
+                if (ambito.usuario.Equals("admin"))
                 {
-                    Tabla tabla = TablaBaseDeDatos.getTabla(db, id);
-                    if (tabla != null)
-                    {
-                        object res;
-                        if (operacion.Equals("NORMAL")) res = deleteALL(mensajes, tabla,ts,user,ref baseD);
-                        else res = deleteSpecific(ts, user, ref baseD, mensajes, tabla);
-                        if (res != null) return res;
-
-                    }
-                    else mensajes.AddLast(mensa.error("La tabla: " + id + " no existe en la DB: " + baseD, l, c, "Semantico"));
+                    
                 }
                 else
                 {
                     if (us != null)
                     {
-                        Boolean permiso = TablaBaseDeDatos.getPermiso(us, baseD);
+                        Boolean permiso = TablaBaseDeDatos.getPermiso(us, ambito.baseD);
                         if (permiso)
                         {
-                            Boolean enUso = TablaBaseDeDatos.getEnUso(baseD, user);
+                            Boolean enUso = TablaBaseDeDatos.getEnUso(ambito.baseD, ambito.usuario);
                             if (!enUso)
                             {
                                 Tabla tabla = TablaBaseDeDatos.getTabla(db, id);
                                 if (tabla != null)
                                 {
                                     object res;
-                                    if (operacion.Equals("NORMAL")) res = deleteALL(mensajes, tabla,ts,user,ref baseD);
-                                    else res = deleteSpecific(ts, user, ref baseD, mensajes, tabla);
+                                    if (operacion.Equals("NORMAL")) res = deleteALL(tabla,ts,ambito);
+                                    else res = deleteSpecific(ts,ambito, tabla);
                                     if (res != null) return res;
                                     
                                 }
-                                else mensajes.AddLast(mensa.error("La tabla: " + id + " no existe en la DB: " + baseD, l, c, "Semantico"));
+                                else ambito.mensajes.AddLast(mensa.error("La tabla: " + id + " no existe en la DB: " + ambito.baseD, l, c, "Semantico"));
                             }
-                            else mensajes.AddLast(mensa.error("La DB: " + baseD + " ya esta siendo utilizada por alguien mas", l, c, "Semantico"));
+                            else ambito.mensajes.AddLast(mensa.error("La DB: " + ambito.baseD + " ya esta siendo utilizada por alguien mas", l, c, "Semantico"));
                         }
-                        else mensajes.AddLast(mensa.error("El usuario " + user + " no tiene permisos sobre esta base de datos", l, c, "Semantico"));
+                        else ambito.mensajes.AddLast(mensa.error("El usuario " + ambito.usuario + " no tiene permisos sobre esta base de datos", l, c, "Semantico"));
                     }
-                    else mensajes.AddLast(mensa.error("El usuario " + user + " no existe", l, c, "Semantico"));
+                    else ambito.mensajes.AddLast(mensa.error("El usuario " + ambito.usuario + " no existe", l, c, "Semantico"));
 
                 }
 
             }
-            else mensajes.AddLast(mensa.error("La base de datos ha eliminar: " + id + " no existe", l, c, "Semantico"));
+            else ambito.mensajes.AddLast(mensa.error("La base de datos ha usar: " + id + " no existe", l, c, "Semantico"));
             return null;
         }
 
@@ -131,7 +122,7 @@ namespace cql_teacher_server.CQL.Componentes
          * @mensajes output
          * @t tabla en la que se esta trabajando
          */
-        public object deleteALL(LinkedList<string> mensajes, Tabla t, TablaDeSimbolos ts, string user, ref string baseD)
+        public object deleteALL( Tabla t, TablaDeSimbolos ts,Ambito ambito)
         {
             Mensaje mensa = new Mensaje();
             //------------------------------------------- SE ELIMINARA DE UNA LISTA O DE UNA MAP O SET 
@@ -141,8 +132,8 @@ namespace cql_teacher_server.CQL.Componentes
                 {
                     TablaDeSimbolos tsT = new TablaDeSimbolos();
                     guardarTemp(data.valores, tsT);
-                    object o = (objeto == null) ? null : objeto.ejecutar(ts, user, ref baseD, mensajes, tsT);
-                    object a = (atributo == null) ? null : atributo.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                    object o = (objeto == null) ? null : objeto.ejecutar(ts, ambito, tsT);
+                    object a = (atributo == null) ? null : atributo.ejecutar(ts, ambito, tsT);
                     if (o != null)
                     {
                         if (o.GetType() == typeof(Map))
@@ -157,7 +148,7 @@ namespace cql_teacher_server.CQL.Componentes
                                     if (((KeyValue)nodem.Value).key.Equals(a))
                                     {
                                         temp.datos.Remove(nodem);
-                                        mensajes.AddLast(mensa.message("Dato de Map eliminado con exito"));
+                                        ambito.mensajes.AddLast(mensa.message("Dato de Map eliminado con exito"));
                                         return "";
                                     }
                                     nodem = nodeNextm;
@@ -194,37 +185,37 @@ namespace cql_teacher_server.CQL.Componentes
                                         }
                                         else
                                         {
-                                            mensajes.AddLast(mensa.error("El index supera el tamanio de la lista", l, c, "Semantico"));
+                                            ambito.mensajes.AddLast(mensa.error("El index supera el tamanio de la lista", l, c, "Semantico"));
                                             return null;
                                         }
                                     }
                                     else
                                     {
-                                        mensajes.AddLast(mensa.error("El index tiene que ser positivo: " + a, l, c, "Semantico"));
+                                        ambito.mensajes.AddLast(mensa.error("El index tiene que ser positivo: " + a, l, c, "Semantico"));
                                         return null;
                                     }
                                 }
                                 else
                                 {
-                                    mensajes.AddLast(mensa.error("El index tiene que ser de tipo int: " + a, l, c, "Semantico"));
+                                    ambito.mensajes.AddLast(mensa.error("El index tiene que ser de tipo int: " + a, l, c, "Semantico"));
                                     return null;
                                 }
                             }
                             else
                             {
-                                mensajes.AddLast(mensa.error("El index no tiene que ser null", l, c, "Semantico"));
+                                ambito.mensajes.AddLast(mensa.error("El index no tiene que ser null", l, c, "Semantico"));
                                 return null;
                             }
                         }
                         else
                         {
-                            mensajes.AddLast(mensa.error("No se reconoce el tipo Collection: " + o + " para Delete", l, c, "Semantico"));
+                            ambito.mensajes.AddLast(mensa.error("No se reconoce el tipo Collection: " + o + " para Delete", l, c, "Semantico"));
                             return null;
                         }
                     }
                     else
                     {
-                        mensajes.AddLast(mensa.error("No se puede eliminar de un objeto null", l, c, "Semantico"));
+                        ambito.mensajes.AddLast(mensa.error("No se puede eliminar de un objeto null", l, c, "Semantico"));
                         return null;
                     }
                 }
@@ -233,14 +224,14 @@ namespace cql_teacher_server.CQL.Componentes
             else
             {
                 t.datos = new LinkedList<Data>();
-                mensajes.AddLast(mensa.message("Se eliminaron todos los datos de la tabla: " + t.nombre));
+                ambito.mensajes.AddLast(mensa.message("Se eliminaron todos los datos de la tabla: " + t.nombre));
             }
            
             return "";
         }
 
 
-        public object deleteSpecific(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes,Tabla t)
+        public object deleteSpecific(TablaDeSimbolos ts, Ambito ambito,Tabla t)
         {
             Mensaje mensa = new Mensaje();
 
@@ -253,7 +244,7 @@ namespace cql_teacher_server.CQL.Componentes
                     Data data = (Data)node.Value;
                     TablaDeSimbolos tsT = new TablaDeSimbolos();
                     guardarTemp(data.valores, tsT);
-                    object res = (condicion == null) ? null : condicion.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                    object res = (condicion == null) ? null : condicion.ejecutar(ts, ambito, tsT);
                     if (condicion != null)
                     {
                         if (res != null)
@@ -265,8 +256,8 @@ namespace cql_teacher_server.CQL.Componentes
                                     //------------------------------------------- SE ELIMINARA DE UNA LISTA O DE UNA MAP O SET 
                                     if(objeto != null)
                                     {
-                                        object o = (objeto == null) ? null : objeto.ejecutar(ts, user, ref baseD, mensajes, tsT);
-                                        object a = (atributo == null) ? null : atributo.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                                        object o = (objeto == null) ? null : objeto.ejecutar(ts,ambito, tsT);
+                                        object a = (atributo == null) ? null : atributo.ejecutar(ts, ambito, tsT);
                                         if(o != null)
                                         {
                                             if(o.GetType() == typeof(Map))
@@ -281,7 +272,7 @@ namespace cql_teacher_server.CQL.Componentes
                                                         if (((KeyValue)nodem.Value).key.Equals(a))
                                                         {
                                                             temp.datos.Remove(nodem);
-                                                            mensajes.AddLast(mensa.message("Dato de Map eliminado con exito"));
+                                                            ambito.mensajes.AddLast(mensa.message("Dato de Map eliminado con exito"));
                                                             return "";
                                                         } 
                                                         nodem = nodeNextm;
@@ -318,51 +309,51 @@ namespace cql_teacher_server.CQL.Componentes
                                                             }
                                                             else
                                                             {
-                                                                mensajes.AddLast(mensa.error("El index supera el tamanio de la lista", l, c, "Semantico"));
+                                                                ambito.mensajes.AddLast(mensa.error("El index supera el tamanio de la lista", l, c, "Semantico"));
                                                                 return null;
                                                             }
                                                         }
                                                         else
                                                         {
-                                                            mensajes.AddLast(mensa.error("El index tiene que ser positivo: " + a, l, c, "Semantico"));
+                                                            ambito.mensajes.AddLast(mensa.error("El index tiene que ser positivo: " + a, l, c, "Semantico"));
                                                             return null;
                                                         }
                                                     }
                                                     else
                                                     {
-                                                        mensajes.AddLast(mensa.error("El index tiene que ser de tipo int: " + a, l, c, "Semantico"));
+                                                        ambito.mensajes.AddLast(mensa.error("El index tiene que ser de tipo int: " + a, l, c, "Semantico"));
                                                         return null;
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    mensajes.AddLast(mensa.error("El index no tiene que ser null",l,c,"Semantico"));
+                                                    ambito.mensajes.AddLast(mensa.error("El index no tiene que ser null",l,c,"Semantico"));
                                                     return null;
                                                 }
                                             }
                                             else
                                             {
-                                                mensajes.AddLast(mensa.error("No se reconoce el tipo Collection: " + o + " para Delete",l,c,"Semantico"));
+                                               ambito.mensajes.AddLast(mensa.error("No se reconoce el tipo Collection: " + o + " para Delete",l,c,"Semantico"));
                                                 return null;
                                             }
                                         }
                                         else
                                         {
-                                            mensajes.AddLast(mensa.error("No se puede eliminar de un objeto null", l, c, "Semantico"));
+                                            ambito.mensajes.AddLast(mensa.error("No se puede eliminar de un objeto null", l, c, "Semantico"));
                                             return null;
                                         }
                                     }
                                     else
                                     {
                                         t.datos.Remove(node);
-                                        mensajes.AddLast(mensa.message("Se elimino el dato con exito"));
+                                        ambito.mensajes.AddLast(mensa.message("Se elimino el dato con exito"));
                                     }
                                     
                                 }
                             }
                             else
                             {
-                                mensajes.AddLast(mensa.error("La condicion tiene que ser de tipo Boolean no se reconoce: " + res, l, c, "Semantico"));
+                                ambito.mensajes.AddLast(mensa.error("La condicion tiene que ser de tipo Boolean no se reconoce: " + res, l, c, "Semantico"));
                                 return null;
                             }
                         }
@@ -370,7 +361,7 @@ namespace cql_teacher_server.CQL.Componentes
                     }
                     else
                     {
-                        mensajes.AddLast(mensa.error("La condicion no puede ser null", l, c, "Semantico"));
+                        ambito.mensajes.AddLast(mensa.error("La condicion no puede ser null", l, c, "Semantico"));
                         return null;
                     }
                     node = nodeNext;

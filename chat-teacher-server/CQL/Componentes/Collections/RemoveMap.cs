@@ -37,11 +37,11 @@ namespace cql_teacher_server.CQL.Componentes
         * @baseD string por referencia de que base de datos estamos trabajando
         * @mensajes el output de la ejecucion
       */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts,Ambito ambito, TablaDeSimbolos tsT)
         {
             Mensaje ms = new Mensaje();
-            object mp = (id == null) ? null : id.ejecutar(ts, user, ref baseD, mensajes, tsT);
-            object ky = (key == null) ? null : key.ejecutar(ts, user, ref baseD, mensajes, tsT);
+            object mp = (id == null) ? null : id.ejecutar(ts, ambito, tsT);
+            object ky = (key == null) ? null : key.ejecutar(ts, ambito, tsT);
             if (mp != null)
             {
                 if (ky != null)
@@ -65,10 +65,10 @@ namespace cql_teacher_server.CQL.Componentes
                         }
                         else
                         {
-                            mensajes.AddLast(ms.error("El map esta vacio, no se puede aplicar REMOVE" , l, c, "Semantico"));
+                            ambito.mensajes.AddLast(ms.error("El map esta vacio, no se puede aplicar REMOVE" , l, c, "Semantico"));
                             return null;
                         }
-                        mensajes.AddLast(ms.error("No se encontro la key: " + ky, l, c, "Semantico"));
+                        ambito.mensajes.AddLast(ms.error("No se encontro la key: " + ky, l, c, "Semantico"));
                     }
                     else if(mp.GetType() == typeof(List))
                     {
@@ -97,11 +97,11 @@ namespace cql_teacher_server.CQL.Componentes
                                         }
                                     }
                                 }
-                                else mensajes.AddLast(ms.error("El index supera el tamaño de la lista",l,c,"Semantico"));
+                                else ambito.mensajes.AddLast(ms.error("El index supera el tamaño de la lista",l,c,"Semantico"));
                             }
-                            else mensajes.AddLast(ms.error("El index debe ser mayor a -1",l,c,"Semantico"));
+                            else ambito.mensajes.AddLast(ms.error("El index debe ser mayor a -1",l,c,"Semantico"));
                         }
-                        else mensajes.AddLast(ms.error("El index debe de ser de tipo int: " + ky,l,c,"Semantico"));
+                        else ambito.mensajes.AddLast(ms.error("El index debe de ser de tipo int: " + ky,l,c,"Semantico"));
                     }
                     else if (mp.GetType() == typeof(Set))
                     {
@@ -130,17 +130,17 @@ namespace cql_teacher_server.CQL.Componentes
                                         }
                                     }
                                 }
-                                else mensajes.AddLast(ms.error("El index supera el tamaño de la lista", l, c, "Semantico"));
+                                else ambito.mensajes.AddLast(ms.error("El index supera el tamaño de la lista", l, c, "Semantico"));
                             }
-                            else mensajes.AddLast(ms.error("El index debe ser mayor a -1", l, c, "Semantico"));
+                            else ambito.mensajes.AddLast(ms.error("El index debe ser mayor a -1", l, c, "Semantico"));
                         }
-                        else mensajes.AddLast(ms.error("El index debe de ser de tipo int: " + ky, l, c, "Semantico"));
+                        else ambito.mensajes.AddLast(ms.error("El index debe de ser de tipo int: " + ky, l, c, "Semantico"));
                     }
-                    else mensajes.AddLast(ms.error("No se puede aplicar un REMOVE en un tipo no Collection, no se reconoce: " + mp, l, c, "Semantico"));
+                    else ambito.mensajes.AddLast(ms.error("No se puede aplicar un REMOVE en un tipo no Collection, no se reconoce: " + mp, l, c, "Semantico"));
                 }
-                else mensajes.AddLast(ms.error("La key no puede ser null", l, c, "Semantico"));
+                else ambito.mensajes.AddLast(ms.error("La key no puede ser null", l, c, "Semantico"));
             }
-            else mensajes.AddLast(ms.error("No se puede REMOVER en un null", l, c, "Semantico"));
+            else ambito.mensajes.AddLast(ms.error("No se puede REMOVER en un null", l, c, "Semantico"));
 
             return null;
         }

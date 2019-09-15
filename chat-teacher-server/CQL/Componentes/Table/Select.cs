@@ -101,9 +101,12 @@ namespace cql_teacher_server.CQL.Componentes
              * @baseD string por referencia de que base de datos estamos trabajando
              * @mensajes el output de la ejecucion
              */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts,Ambito ambito, TablaDeSimbolos tsT)
         {
             Mensaje mensa = new Mensaje();
+            string user = ambito.usuario;
+            string baseD = ambito.baseD;
+            LinkedList<string> mensajes = ambito.mensajes;
             BaseDeDatos db = TablaBaseDeDatos.getBase(baseD);
             Usuario us = TablaBaseDeDatos.getUsuario(user);
             if (db != null)
@@ -127,12 +130,12 @@ namespace cql_teacher_server.CQL.Componentes
                                 {
                                     LinkedList<Columna> cabecera = new LinkedList<Columna>();
                                     if (campos == null) cabecera = new LinkedList<Columna>(cabecera.Union(tabla.columnas));
-                                    else cabecera = getColumnas(tabla, ts, user, ref baseD, mensajes);
+                                    else cabecera = getColumnas(tabla, ts, ambito);
                                     if (cabecera != null)
                                     {
                                         LinkedList<Data> datos = new LinkedList<Data>();
-                                        if (campos == null) datos = getAllData(tabla,ts,user,ref baseD,mensajes,cabecera);
-                                        else datos = getData(tabla,ts,user,ref baseD,mensajes,cabecera);
+                                        if (campos == null) datos = getAllData(tabla,ts,ambito,cabecera);
+                                        else datos = getData(tabla,ts,ambito,cabecera);
                                         if (datos != null)
                                         {
                                             TablaSelect  tablaSelect = new TablaSelect(cabecera, datos);
@@ -161,7 +164,7 @@ namespace cql_teacher_server.CQL.Componentes
                                                 }
                                                 if (operacion.Contains("c"))
                                                 {
-                                                    tablaSelect.datos = limitar(tablaSelect.datos, ts,user,ref baseD,mensajes,tsT);
+                                                    tablaSelect.datos = limitar(tablaSelect.datos, ts,ambito,tsT);
                                                     if(datos == null) return null;
                                                    
                                                 }
@@ -198,11 +201,12 @@ namespace cql_teacher_server.CQL.Componentes
         * @param baseD : nombre de la base de datos se pasa por referencia
         * @param mensajes: output de salida
         */
-        private LinkedList<Data> limitar(LinkedList<Data> datos, TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        private LinkedList<Data> limitar(LinkedList<Data> datos, TablaDeSimbolos ts,Ambito ambito, TablaDeSimbolos tsT)
         {
             LinkedList<Data> limiData = new LinkedList<Data>();
+            LinkedList<string> mensajes = ambito.mensajes;
             Mensaje mensa = new Mensaje();
-            object res = (condicion2 == null) ? null : condicion2.ejecutar(ts, user, ref baseD, mensajes, tsT);
+            object res = (condicion2 == null) ? null : condicion2.ejecutar(ts, ambito, tsT);
             if(res != null)
             {
                 if (res.GetType() == typeof(int))
@@ -249,11 +253,11 @@ namespace cql_teacher_server.CQL.Componentes
          * @param mensajes: output de salida
          */
 
-        private LinkedList<Data> getData(Tabla t, TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, LinkedList<Columna> cabeceras)
+        private LinkedList<Data> getData(Tabla t, TablaDeSimbolos ts, Ambito ambito, LinkedList<Columna> cabeceras)
         {
             Mensaje mensa = new Mensaje();
             LinkedList<Data> listaR = new LinkedList<Data>();
-            
+            LinkedList<string> mensajes = ambito.mensajes;
 
             foreach(Data data in t.datos)
             {
@@ -263,7 +267,7 @@ namespace cql_teacher_server.CQL.Componentes
                 int i = 0;
                 foreach (Expresion e in campos)
                 {
-                    object res = (e == null) ? null : e.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                    object res = (e == null) ? null : e.ejecutar(ts,ambito, tsT);
                     
                     if (operacion.Equals("none"))
                     {
@@ -278,7 +282,7 @@ namespace cql_teacher_server.CQL.Componentes
                     {
                         if (operacion.Contains("a"))
                         {
-                            object condi = (condicion == null) ? null : condicion.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                            object condi = (condicion == null) ? null : condicion.ejecutar(ts, ambito, tsT);
                             if(condi != null)
                             {
                                 if (condi != null)
@@ -341,11 +345,11 @@ namespace cql_teacher_server.CQL.Componentes
          * @param mensajes: output de salida
          */
 
-        private LinkedList<Data> getAllData(Tabla t, TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, LinkedList<Columna> cabeceras)
+        private LinkedList<Data> getAllData(Tabla t, TablaDeSimbolos ts,Ambito ambito, LinkedList<Columna> cabeceras)
         {
             Mensaje mensa = new Mensaje();
             LinkedList<Data> listaR = new LinkedList<Data>();
-
+            LinkedList<string> mensajes = ambito.mensajes;
 
             foreach (Data data in t.datos)
             {
@@ -357,7 +361,7 @@ namespace cql_teacher_server.CQL.Componentes
                 {
                     if (operacion.Contains("a"))
                     {
-                        object condi = (condicion == null) ? null : condicion.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                        object condi = (condicion == null) ? null : condicion.ejecutar(ts, ambito, tsT);
 
                         if (condi != null)
                         {
@@ -424,15 +428,16 @@ namespace cql_teacher_server.CQL.Componentes
          * @param datas: toda la informacion en la base de datos
          */
 
-        private LinkedList<Columna> getColumnas(Tabla t, TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes)
+        private LinkedList<Columna> getColumnas(Tabla t, TablaDeSimbolos ts, Ambito ambito)
         {
             Mensaje mensa = new Mensaje();
             LinkedList<Columna> cabeceras = new LinkedList<Columna>();
+            LinkedList<string> mensajes = ambito.mensajes;
             foreach (Expresion e in campos)
             {
                 TablaDeSimbolos tsT = new TablaDeSimbolos();
                 setColumnas(t.columnas, tsT);
-                object res = (e == null) ? null : e.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                object res = (e == null) ? null : e.ejecutar(ts, ambito, tsT);
                 if (res == null && e != null)
                 {
                     mensajes.RemoveLast();
@@ -449,6 +454,9 @@ namespace cql_teacher_server.CQL.Componentes
                     else if (res.GetType() == typeof(Boolean)) tipo = "boolean";
                     else if (res.GetType() == typeof(DateTime)) tipo = "date";
                     else if (res.GetType() == typeof(TimeSpan)) tipo = "time";
+                    else if (res.GetType() == typeof(Map)) tipo = "map";
+                    else if (res.GetType() == typeof(List)) tipo = "list";
+                    else if (res.GetType() == typeof(Set)) tipo = "set";
                     else if (res.GetType() == typeof(InstanciaUserType)) tipo = ((InstanciaUserType)res).tipo;
 
                     if (columna == null) columna = new Columna("descripcion", tipo, false);

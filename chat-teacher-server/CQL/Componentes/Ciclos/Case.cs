@@ -59,7 +59,7 @@ namespace cql_teacher_server.CQL.Componentes
          * @baseD string por referencia de que base de datos estamos trabajando
          * @mensajes el output de la ejecucion
          */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes,TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts,Ambito ambito,TablaDeSimbolos tsT)
         {
             if(condicion == null)
             {
@@ -70,7 +70,7 @@ namespace cql_teacher_server.CQL.Componentes
                 }
                 foreach (InstruccionCQL i in cuerpo)
                 {
-                    object r = i.ejecutar(ambitoLocal, user, ref baseD, mensajes,tsT);
+                    object r = i.ejecutar(ambitoLocal,ambito,tsT);
                     if (r == null) return r;
                 }
                 return "";
@@ -78,7 +78,7 @@ namespace cql_teacher_server.CQL.Componentes
             else
             {
                 Mensaje mensa = new Mensaje();
-                object a = condicion.ejecutar(ts, user, ref baseD, mensajes,tsT);
+                object a = condicion.ejecutar(ts, ambito,tsT);
                 if(a != null)
                 {
                     if(a.GetType() == typeof(Boolean))
@@ -93,7 +93,7 @@ namespace cql_teacher_server.CQL.Componentes
                             }
                             foreach (InstruccionCQL i in cuerpo)
                             {
-                                object r = i.ejecutar(ambitoLocal, user, ref baseD, mensajes,tsT);
+                                object r = i.ejecutar(ambitoLocal,ambito,tsT);
                                 if (r == null) return r;
                             }
                             return "";
@@ -101,13 +101,13 @@ namespace cql_teacher_server.CQL.Componentes
                     }
                     else
                     {
-                        mensajes.AddLast(mensa.error("La condicion tiene que ser de tipo Bool: " + a.ToString(), l, c, "Semantico"));
+                        ambito.mensajes.AddLast(mensa.error("La condicion tiene que ser de tipo Bool: " + a.ToString(), l, c, "Semantico"));
                         return null;
                     }
                 }
                 else
                 {
-                    mensajes.AddLast(mensa.error("No se aceptan condiciones null ", l, c, "Semantico"));
+                    ambito.mensajes.AddLast(mensa.error("No se aceptan condiciones null ", l, c, "Semantico"));
                     return null;
                 }
                 return "";

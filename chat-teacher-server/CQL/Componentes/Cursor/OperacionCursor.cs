@@ -37,7 +37,7 @@ namespace cql_teacher_server.CQL.Componentes.Cursor
          * @baseD string por referencia de que base de datos estamos trabajando
          * @mensajes el output de la ejecucion
        */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts, Ambito ambito, TablaDeSimbolos tsT)
         {
             object res = ts.getValor(id);
             Mensaje ms = new Mensaje();
@@ -47,10 +47,10 @@ namespace cql_teacher_server.CQL.Componentes.Cursor
                 {
                     if (operacion.Equals("open"))
                     {
-                        object tabla = ((TypeCursor)res).consulta.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                        object tabla = ((TypeCursor)res).consulta.ejecutar(ts, ambito, tsT);
                         if(tabla != null)
                         {
-                            mensajes.RemoveLast();
+                            ambito.mensajes.RemoveLast();
                             if (tabla.GetType() == typeof(TablaSelect)) ((TypeCursor)res).tabla = (TablaSelect)tabla;
                         }
                     }
@@ -58,9 +58,9 @@ namespace cql_teacher_server.CQL.Componentes.Cursor
                     
                     return "";
                 }
-                else mensajes.AddLast(ms.error("La variable tiene que ser de tipo cursor, no se reconoce: " + res,l,c,"Semantico"));
+                else ambito.mensajes.AddLast(ms.error("La variable tiene que ser de tipo cursor, no se reconoce: " + res,l,c,"Semantico"));
             }
-            else mensajes.AddLast(ms.error("No se encuentra la variable: " + id + " en este ambito",l,c,"Semantico"));
+            else ambito.mensajes.AddLast(ms.error("No se encuentra la variable: " + id + " en este ambito",l,c,"Semantico"));
             return null;
         }
     }

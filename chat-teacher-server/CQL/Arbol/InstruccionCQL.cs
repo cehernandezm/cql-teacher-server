@@ -16,7 +16,7 @@ namespace cql_teacher_server.CQL.Arbol
          * @baseD base de datos usando actualmente se pasa por referencia por si en algun lado de la ejecucion cambia
          */
 
-        Object ejecutar(TablaDeSimbolos ts, string user, ref string baseD,LinkedList<string> mensajes, TablaDeSimbolos tsT);
+        Object ejecutar(TablaDeSimbolos ts,Ambito ambito, TablaDeSimbolos tsT);
         
 
 

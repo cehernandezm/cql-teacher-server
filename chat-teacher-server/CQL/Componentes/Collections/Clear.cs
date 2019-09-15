@@ -34,10 +34,10 @@ namespace cql_teacher_server.CQL.Componentes
            * @baseD string por referencia de que base de datos estamos trabajando
            * @mensajes el output de la ejecucion
          */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts,Ambito ambito, TablaDeSimbolos tsT)
         {
             Mensaje ms = new Mensaje();
-            object mp = (id == null) ? null : id.ejecutar(ts, user, ref baseD, mensajes, tsT);
+            object mp = (id == null) ? null : id.ejecutar(ts,ambito, tsT);
             if (mp != null)
             {
 
@@ -59,10 +59,10 @@ namespace cql_teacher_server.CQL.Componentes
                     temp.datos.Clear();
                     return "";
                 }
-                else mensajes.AddLast(ms.error("No se puede aplicar un REMOVE en un tipo no Collection, no se reconoce: " + mp, l, c, "Semantico"));
+                else ambito.mensajes.AddLast(ms.error("No se puede aplicar un REMOVE en un tipo no Collection, no se reconoce: " + mp, l, c, "Semantico"));
 
             }
-            else mensajes.AddLast(ms.error("No se puede insertar en un null", l, c, "Semantico"));
+            else ambito.mensajes.AddLast(ms.error("No se puede insertar en un null", l, c, "Semantico"));
 
             return null;
         }

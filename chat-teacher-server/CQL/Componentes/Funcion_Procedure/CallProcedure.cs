@@ -40,18 +40,19 @@ namespace cql_teacher_server.CQL.Componentes.Funcion_Procedure
         * @baseD base de datos donde estamos ejecutando todo
         * @mensajes linkedlist con la salida deseada
         */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts,Ambito ambito, TablaDeSimbolos tsT)
         {
             Mensaje ms = new Mensaje();
-            TablaDeSimbolos ambito = new TablaDeSimbolos();
-            foreach (Simbolo s in TablaBaseDeDatos.tablaGeneral)
+            TablaDeSimbolos newAmbito = new TablaDeSimbolos();
+            foreach (Simbolo s in ambito.tablaPadre)
             {
-                ambito.AddLast(s);
+                newAmbito.AddLast(s);
             }
 
             if (tamanioTotalParametros() == valores.Count())
             {
                 int index = 0;
+                //-------------------------------------------- CREACION Y ASIGNACION DE PARAMETROS --------------------------------------------------------------
                 for (int i = 0; i < parametros.Count(); i++)
                 {
                     LinkedList<InstruccionCQL> parametro =parametros.ElementAt(i).lista;
@@ -60,20 +61,20 @@ namespace cql_teacher_server.CQL.Componentes.Funcion_Procedure
                     {
                         Declaracion d = (Declaracion)parametro.ElementAt(j);
                         d.parametro = true;
-                        object rd = d.ejecutar(ambito, user, ref baseD, mensajes, tsT);
+                        object rd = d.ejecutar(newAmbito,ambito, tsT);
                         if (rd == null) return null;
                         Asignacion a = new Asignacion(d.id, l, c, valores.ElementAt(index), "ASIGNACION");
                         a.tPadre = ts;
-                        object ra = a.ejecutar(ambito, user, ref baseD, mensajes, tsT);
+                        object ra = a.ejecutar(newAmbito, ambito, tsT);
                         if (ra == null) return null;
                         index++;
                     }
 
                 }
-
+                //--------------------------------------------------- INSTRUCCIONES DEL PROCEDURE ----------------------------------------------
                 foreach (InstruccionCQL ins in cuerpo)
                 {
-                    object r = ins.ejecutar(ambito, user, ref baseD, mensajes, tsT);
+                    object r = ins.ejecutar(newAmbito, ambito, tsT);
                     if (r == null) return null;
                     else if (r.GetType() == typeof(Retorno))
                     {
@@ -86,7 +87,7 @@ namespace cql_teacher_server.CQL.Componentes.Funcion_Procedure
                                 if (temp.Count() == parametros.Count()) return temp;
                                 else
                                 {
-                                    mensajes.AddLast(ms.error("La cantidad de valores retornados no concuerda con el valor de parametros", l, c, "Semantico"));
+                                    ambito.mensajes.AddLast(ms.error("La cantidad de valores retornados no concuerda con el valor de parametros", l, c, "Semantico"));
                                     return null;
                                 }
                             }
@@ -97,7 +98,7 @@ namespace cql_teacher_server.CQL.Componentes.Funcion_Procedure
                                 if (parametros.Count() == 1) return temp;
                                 else
                                 {
-                                    mensajes.AddLast(ms.error("La cantidad de valores retornados no concuerda con el valor de parametros", l, c, "Semantico"));
+                                    ambito.mensajes.AddLast(ms.error("La cantidad de valores retornados no concuerda con el valor de parametros", l, c, "Semantico"));
                                     return null;
                                 }
                             }
@@ -106,7 +107,7 @@ namespace cql_teacher_server.CQL.Componentes.Funcion_Procedure
                     }
                 }
             }
-            else mensajes.AddLast(ms.error("La cantidad de valores no concuerda con la cantidad de parametros", l, c, "Semantico"));
+            else ambito.mensajes.AddLast(ms.error("La cantidad de valores no concuerda con la cantidad de parametros", l, c, "Semantico"));
 
             return null;
         }

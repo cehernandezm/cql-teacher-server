@@ -47,41 +47,41 @@ namespace cql_teacher_server.CQL.Componentes.Funcion_Procedure
          * @baseD base de datos donde estamos ejecutando todo
          * @mensajes linkedlist con la salida deseada
          */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts,Ambito ambito, TablaDeSimbolos tsT)
         {
             Mensaje ms = new Mensaje();
-            BaseDeDatos db = TablaBaseDeDatos.getBase(baseD);
+            BaseDeDatos db = TablaBaseDeDatos.getBase(ambito.baseD);
             if (db != null)
             {
-                if (user.Equals("admin"))
+                if (ambito.usuario.Equals("admin"))
                 {
 
                 }
                 else
                 {
-                    Usuario us = TablaBaseDeDatos.getUsuario(user);
+                    Usuario us = TablaBaseDeDatos.getUsuario(ambito.usuario);
                     if (us != null)
                     {
-                        if (TablaBaseDeDatos.getPermiso(us, baseD))
+                        if (TablaBaseDeDatos.getPermiso(us, ambito.baseD))
                         {
-                            if (!TablaBaseDeDatos.getEnUso(baseD, user))
+                            if (!TablaBaseDeDatos.getEnUso(ambito.baseD, ambito.usuario))
                             {
                                 if (db.buscarProcedure(identificador) == null)
                                 {
                                     db.objetos.procedures.AddLast(new Procedures(id, codigo, identificador, parametros, cuerpo));
                                     return "";
                                 }
-                                else mensajes.AddLast(ms.error("El procedure: " + id + " ya existe en esta DB: " + baseD,l,c,"Semantico"));
+                                else ambito.mensajes.AddLast(ms.error("El procedure: " + id + " ya existe en esta DB: " + ambito.baseD,l,c,"Semantico"));
                             }
-                            else mensajes.AddLast(ms.error("La base de datos: " + baseD + " esta siendo utilizada por otro usuario",l,c,"Semantico"));
+                            else ambito.mensajes.AddLast(ms.error("La base de datos: " + ambito.baseD + " esta siendo utilizada por otro usuario",l,c,"Semantico"));
                         }
-                        else mensajes.AddLast(ms.error("El usuario: " + user + " no tiene permisos sobre la DB: " + baseD, l, c, "Semantico"));
+                        else ambito.mensajes.AddLast(ms.error("El usuario: " + ambito.usuario + " no tiene permisos sobre la DB: " + ambito.baseD, l, c, "Semantico"));
                     }
-                    else mensajes.AddLast(ms.error("No se encuentra el usuario: " + user, l, c, "Semantico"));
+                    else ambito.mensajes.AddLast(ms.error("No se encuentra el usuario: " + ambito.usuario, l, c, "Semantico"));
                 }
                 
             }
-            else mensajes.AddLast(ms.error("No se encuentra la base de datos: " + baseD,l,c,"Semantico"));
+            else ambito.mensajes.AddLast(ms.error("No se encuentra la base de datos: " + ambito.baseD,l,c,"Semantico"));
             return null;
         }
 

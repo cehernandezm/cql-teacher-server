@@ -35,10 +35,11 @@ namespace cql_teacher_server.CQL.Componentes.Variables
        * @baseD base de datos donde estamos ejecutando todo
        * @mensajes linkedlist con la salida deseada
        */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts, Ambito ambito, TablaDeSimbolos tsT)
         {
             Mensaje ms = new Mensaje();
-            object valores = (expresion == null) ? null : expresion.ejecutar(ts, user, ref baseD, mensajes, tsT);
+            object valores = (expresion == null) ? null : expresion.ejecutar(ts,ambito, tsT);
+            LinkedList<string> mensajes = ambito.mensajes;
             if (valores != null)
             {
                 if (valores.GetType() == typeof(LinkedList<object>))

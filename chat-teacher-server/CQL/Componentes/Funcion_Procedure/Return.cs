@@ -26,20 +26,20 @@ namespace cql_teacher_server.CQL.Componentes
          * @baseD base de datos donde estamos ejecutando todo
          * @mensajes linkedlist con la salida deseada
          */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts, Ambito ambito, TablaDeSimbolos tsT)
         {
             if( valor != null)
             {
                 if(valor.GetType() == typeof(Expresion))
                 {
-                    object res = (valor == null) ? null : ((Expresion)valor).ejecutar(ts, user, ref baseD, mensajes, tsT);
+                    object res = (valor == null) ? null : ((Expresion)valor).ejecutar(ts,ambito, tsT);
                     return new Retorno(res);
                 }
                 LinkedList<Expresion> listaExpresiones = (LinkedList<Expresion>)valor;
                 LinkedList<object> valoresReturn = new LinkedList<object>();
                 foreach(Expresion e in listaExpresiones)
                 {
-                    object res = (e == null) ? null : e.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                    object res = (e == null) ? null : e.ejecutar(ts, ambito, tsT);
                     valoresReturn.AddLast(res);
                 }
                 return new Retorno(valoresReturn);

@@ -200,10 +200,11 @@ namespace cql_teacher_server.CQL.Componentes
          * @baseD base de datos en la que se realizara la accion, es pasada por referencia
          */
 
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts, Ambito ambito, TablaDeSimbolos tsT)
         {
-            object op1 = (a == null) ? null : a.ejecutar(ts, user, ref baseD, mensajes,tsT);
-            object op2 = (b == null) ? null : b.ejecutar(ts, user, ref baseD, mensajes,tsT);
+            object op1 = (a == null) ? null : a.ejecutar(ts, ambito,tsT);
+            object op2 = (b == null) ? null : b.ejecutar(ts,ambito,tsT);
+            LinkedList<string> mensajes = ambito.mensajes;
 
             //-------------------------------------------------- TIPO DE OPERACION ------------------------------------------------------------
             //---------------------------------------------------------------------------------------------------------------------------------
@@ -731,17 +732,14 @@ namespace cql_teacher_server.CQL.Componentes
             //-------------------------------------------------------- INSTANCIA -------------------------------------------------------------------
             else if (operacion.Equals("INSTANCIA"))
             {
-                BaseDeDatos db = TablaBaseDeDatos.getBase(baseD);
+                BaseDeDatos db = TablaBaseDeDatos.getBase(ambito.baseD);
                 if (db != null)
                 {
                     User_Types a = TablaBaseDeDatos.getUserTypeV(tipoA.ToLower(), db);
                     if (a != null)
                     {
                         LinkedList<Atributo> lista = getAtributos(a, db, mensajes);
-                        if (lista != null)
-                        {
-                            return new InstanciaUserType(tipoA, lista);
-                        }
+                        if (lista != null) return new InstanciaUserType(tipoA, lista);
                         else return null;
 
                     }
@@ -755,7 +753,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje men = new Mensaje();
-                    mensajes.AddLast(men.error("No se puede acceder a la base de datos: " + baseD + " asegurese de usar el comando USE", linea1, columna1, "Semantico"));
+                    mensajes.AddLast(men.error("No se puede acceder a la base de datos: " + ambito.baseD + " asegurese de usar el comando USE", linea1, columna1, "Semantico"));
                     return null;
                 }
             }
@@ -811,7 +809,7 @@ namespace cql_teacher_server.CQL.Componentes
             //------------------------------------------------------- ASIGNACION DE VALORES A UN USER TYPE ---------------------------------------
             else if (operacion.Equals("ASIGNACIONUSER"))
             {
-                BaseDeDatos db = TablaBaseDeDatos.getBase(baseD);
+                BaseDeDatos db = TablaBaseDeDatos.getBase(ambito.baseD);
                 if (db != null)
                 {
                     User_Types a = TablaBaseDeDatos.getUserTypeV(idAs.ToLower(), db);
@@ -822,7 +820,7 @@ namespace cql_teacher_server.CQL.Componentes
                         {
                             if (listaA.Count() == listaUser.Count())
                             {
-                                LinkedList<Atributo> newLista = compareListas(listaA, listaUser, ts, user, ref baseD, mensajes, tsT);
+                                LinkedList<Atributo> newLista = compareListas(listaA, listaUser, ts,ambito, tsT);
                                 if (newLista == null) return null;
 
                                 InstanciaUserType ius = new InstanciaUserType(idAs.ToLower(), newLista);
@@ -848,7 +846,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje men = new Mensaje();
-                    mensajes.AddLast(men.error("No se puede acceder a la base de datos: " + baseD + " asegurese de usar el comando USE", linea1, columna1, "Semantico"));
+                    mensajes.AddLast(men.error("No se puede acceder a la base de datos: " + ambito.baseD + " asegurese de usar el comando USE", linea1, columna1, "Semantico"));
                     return null;
                 }
             }
@@ -934,7 +932,7 @@ namespace cql_teacher_server.CQL.Componentes
             {
 
                 LinkedList<object> lista = (LinkedList<object>)valor;
-                Map map = getMap(lista, ts, user, ref baseD, mensajes, tsT);
+                Map map = getMap(lista, ts, ambito, tsT);
                 if (map != null) return map;
                 return null;
 
@@ -953,7 +951,7 @@ namespace cql_teacher_server.CQL.Componentes
             else if (operacion.Equals("LISTALIST"))
             {
                 LinkedList<Expresion> lista = (LinkedList<Expresion>)valor;
-                List list = getList(lista, ts, user, ref baseD, mensajes, tsT);
+                List list = getList(lista, ts,ambito, tsT);
                 if (list != null) return list;
                 return null;
             }
@@ -961,7 +959,7 @@ namespace cql_teacher_server.CQL.Componentes
             else if (operacion.Equals("LISTASET"))
             {
                 LinkedList<Expresion> lista = (LinkedList<Expresion>)valor;
-                List list = getList(lista, ts, user, ref baseD, mensajes, tsT);
+                List list = getList(lista, ts,ambito, tsT);
 
                 if (list != null)
                 {
@@ -1175,7 +1173,7 @@ namespace cql_teacher_server.CQL.Componentes
                     if (op1.GetType() == typeof(string))
                     {
                         string cadena = (string)op1;
-                        object fin = (condicion == null) ? null : condicion.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                        object fin = (condicion == null) ? null : condicion.ejecutar(ts,ambito, tsT);
                         if (op2 != null && fin != null)
                         {
                             if (op2.GetType() == typeof(int) && fin.GetType() == typeof(int))
@@ -1288,7 +1286,7 @@ namespace cql_teacher_server.CQL.Componentes
             //--------------------------------------------------------- TERNARIO -----------------------------------------------------------------
             else if (operacion.Equals("TERNARIO"))
             {
-                object con = (condicion == null) ? null : condicion.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                object con = (condicion == null) ? null : condicion.ejecutar(ts,ambito, tsT);
                 if (con != null)
                 {
                     if (con.GetType() == typeof(Boolean))
@@ -1314,7 +1312,7 @@ namespace cql_teacher_server.CQL.Componentes
             else if (operacion.Equals("COUNT"))
             {
                 Select select = (Select)valor;
-                object res = select.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                object res = select.ejecutar(ts,ambito, tsT);
                 if (res != null)
                 {
                     mensajes.RemoveLast();
@@ -1328,7 +1326,7 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 Mensaje mensa = new Mensaje();
                 Select select = (Select)valor;
-                object res = select.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                object res = select.ejecutar(ts,ambito, tsT);
                 if (res != null)
                 {
                     mensajes.RemoveLast();
@@ -1348,7 +1346,7 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 Mensaje mensa = new Mensaje();
                 Select select = (Select)valor;
-                object res = select.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                object res = select.ejecutar(ts,ambito, tsT);
                 if (res != null)
                 {
                     mensajes.RemoveLast();
@@ -1368,7 +1366,7 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 Mensaje mensa = new Mensaje();
                 Select select = (Select)valor;
-                object res = select.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                object res = select.ejecutar(ts, ambito, tsT);
                 if (res != null)
                 {
                     mensajes.RemoveLast();
@@ -1388,7 +1386,7 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 Mensaje mensa = new Mensaje();
                 Select select = (Select)valor;
-                object res = select.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                object res = select.ejecutar(ts, ambito, tsT);
                 if (res != null)
                 {
                     mensajes.RemoveLast();
@@ -1412,7 +1410,7 @@ namespace cql_teacher_server.CQL.Componentes
                 //------------------------------------------------ Ejecutamos los valores para completar el identificador unico------------------
                 foreach (Expresion e in listaUser)
                 {
-                    object res = (e == null) ? null : e.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                    object res = (e == null) ? null : e.ejecutar(ts,ambito, tsT);
                     if (res != null)
                     {
                         if (res.GetType() == typeof(string)) identificador += "_string";
@@ -1437,7 +1435,7 @@ namespace cql_teacher_server.CQL.Componentes
                 if (f != null)
                 {
                     f.valores = listaUser;
-                    return f.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                    return f.ejecutar(ts,ambito, tsT);
                 }
                 else
                 {
@@ -1454,7 +1452,7 @@ namespace cql_teacher_server.CQL.Componentes
                 //------------------------------------------------ Ejecutamos los valores para completar el identificador unico------------------
                 foreach (Expresion e in listaUser)
                 {
-                    object res = (e == null) ? null : e.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                    object res = (e == null) ? null : e.ejecutar(ts, ambito, tsT);
                     if (res != null)
                     {
                         if (res.GetType() == typeof(string)) identificador += "_string";
@@ -1474,7 +1472,7 @@ namespace cql_teacher_server.CQL.Componentes
                         return null;
                     }
                 }
-                BaseDeDatos bd = TablaBaseDeDatos.getBase(baseD);
+                BaseDeDatos bd = TablaBaseDeDatos.getBase(ambito.baseD);
                 if (bd != null)
                 {
                     Procedures procedure = bd.buscarProcedure(identificador);
@@ -1482,11 +1480,11 @@ namespace cql_teacher_server.CQL.Componentes
                     {
                         CallProcedure callProcedure = new CallProcedure(procedure.parametro, procedure.cuerpo, linea1, columna1);
                         callProcedure.valores = listaUser;
-                        return callProcedure.ejecutar(ts, user, ref baseD, mensajes, tsT); ;
+                        return callProcedure.ejecutar(ts, ambito, tsT); ;
                     }
-                    else mensajes.AddLast(ms.error("El procedure: " + idAs + " no existe en esta base de datos: " + baseD, linea1, columna1, "Semantico"));
+                    else mensajes.AddLast(ms.error("El procedure: " + idAs + " no existe en esta base de datos: " + ambito.baseD, linea1, columna1, "Semantico"));
                 }
-                else mensajes.AddLast(ms.error("No existe la base de datos: " + baseD, linea1, columna1, "Semantico"));
+                else mensajes.AddLast(ms.error("No existe la base de datos: " + ambito.baseD, linea1, columna1, "Semantico"));
 
                 return 0;
             }
@@ -1557,15 +1555,15 @@ namespace cql_teacher_server.CQL.Componentes
           * @param {tsT} variables de una tabla CQL
           * @return map o null
           */
-        private List getList(LinkedList<Expresion> lista,TablaDeSimbolos ts, string user, ref string baseD,LinkedList<string> mensajes,TablaDeSimbolos tsT)
+        private List getList(LinkedList<Expresion> lista,TablaDeSimbolos ts, Ambito ambito,TablaDeSimbolos tsT)
         {
             Mensaje ms = new Mensaje();
             string tipo = "none";
             LinkedList<object> valores = new LinkedList<object>();
             foreach(Expresion e in lista)
             {
-                object res = (e == null) ? null : e.ejecutar(ts, user, ref baseD, mensajes, tsT);
-                string tp = (getTipoValorSecundario(res, mensajes) == null) ? "null" : getTipoValorSecundario(res, mensajes);
+                object res = (e == null) ? null : e.ejecutar(ts, ambito, tsT);
+                string tp = (getTipoValorSecundario(res, ambito.mensajes) == null) ? "null" : getTipoValorSecundario(res, ambito.mensajes);
                 if (tipo.Equals("none")) tipo = tp;
                 if (tipo.Equals(tp)) valores.AddLast(res);
                 else
@@ -1573,7 +1571,7 @@ namespace cql_teacher_server.CQL.Componentes
                     if (tp.Equals("null"))
                     {
                         if (tipo.Equals("int") || tipo.Equals("double") || tipo.Contains("map") || tipo.Contains("list") || tipo.Contains("set") || tipo.Equals("boolean")){
-                            mensajes.AddLast(ms.error("No puede existir un valor null con el tipo: " + tipo, linea1, columna1, "Semantico"));
+                            ambito.mensajes.AddLast(ms.error("No puede existir un valor null con el tipo: " + tipo, linea1, columna1, "Semantico"));
                             return null;
                         }
                         else if(tipo.Equals("string") || tipo.Equals("date") || tipo.Equals("time")) valores.AddLast(tp);
@@ -1581,7 +1579,7 @@ namespace cql_teacher_server.CQL.Componentes
                     }
                     else
                     {
-                        mensajes.AddLast(ms.error("No coincide el tipo: " + tipo + " con : " + tp, linea1, columna1, "Semantico"));
+                        ambito.mensajes.AddLast(ms.error("No coincide el tipo: " + tipo + " con : " + tp, linea1, columna1, "Semantico"));
                         return null;
                     }
                     
@@ -1604,7 +1602,7 @@ namespace cql_teacher_server.CQL.Componentes
           * @return map o null
           */
 
-         private Map getMap(LinkedList<object> listado, TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+         private Map getMap(LinkedList<object> listado, TablaDeSimbolos ts,Ambito ambito, TablaDeSimbolos tsT)
         {
             Mensaje ms = new Mensaje();
             if (listado.Count() > 0)
@@ -1612,12 +1610,12 @@ namespace cql_teacher_server.CQL.Componentes
                 Expresion exp1 = (Expresion)((KeyValue)(listado.ElementAt(0))).key;
                 Expresion exp2 = (Expresion)((KeyValue)(listado.ElementAt(0))).value;
 
-                object op1 = (exp1 == null) ? null : exp1.ejecutar(ts, user, ref baseD, mensajes, tsT);
-                object op2 = (exp2 == null) ? null : exp2.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                object op1 = (exp1 == null) ? null : exp1.ejecutar(ts, ambito, tsT);
+                object op2 = (exp2 == null) ? null : exp2.ejecutar(ts,ambito, tsT);
 
 
-                string tipoKey = getTipoValorPrimario(op1, mensajes);
-                string tipoValor = (getTipoValorSecundario(op2, mensajes) == null) ? "null" : getTipoValorSecundario(op2, mensajes);
+                string tipoKey = getTipoValorPrimario(op1, ambito.mensajes);
+                string tipoValor = (getTipoValorSecundario(op2, ambito.mensajes) == null) ? "null" : getTipoValorSecundario(op2, ambito.mensajes);
                 if (tipoKey != null)
                 {
                     LinkedList<KeyValue> temporal = new LinkedList<KeyValue>();
@@ -1625,18 +1623,18 @@ namespace cql_teacher_server.CQL.Componentes
                     {
                         exp1 = (Expresion)((KeyValue)o).key;
                         exp2 = (Expresion)((KeyValue)o).value;
-                        op1 = (exp1 == null) ? null : exp1.ejecutar(ts, user, ref baseD, mensajes, tsT);
-                        op2 = (exp2 == null) ? null : exp2.ejecutar(ts, user, ref baseD, mensajes, tsT);
+                        op1 = (exp1 == null) ? null : exp1.ejecutar(ts, ambito, tsT);
+                        op2 = (exp2 == null) ? null : exp2.ejecutar(ts,ambito, tsT);
                         temporal.AddLast(new KeyValue(op1, op2));
                     }
-                    if (!verificarValoresRepetidos(temporal, mensajes))
+                    if (!verificarValoresRepetidos(temporal, ambito.mensajes))
                     {
-                        if (!verificarTipos(tipoKey, ref tipoValor, mensajes, temporal)) return null;
+                        if (!verificarTipos(tipoKey, ref tipoValor, ambito.mensajes, temporal)) return null;
                         return new Map(tipoKey + "," + tipoValor, temporal);
                     }
                 }
             }
-            else mensajes.AddLast(ms.error("La lista de valores tiene que tener al menos un key : value", linea1, columna1, "Semantico"));
+            else ambito.mensajes.AddLast(ms.error("La lista de valores tiene que tener al menos un key : value", linea1, columna1, "Semantico"));
             return null;
         }
 
@@ -1825,14 +1823,14 @@ namespace cql_teacher_server.CQL.Componentes
          * 
          */
 
-        private LinkedList<Atributo> compareListas(LinkedList<Atributo> a , LinkedList<Expresion> e, TablaDeSimbolos ts, string user,ref string baseD, LinkedList<string> mensaje,TablaDeSimbolos tsT)
+        private LinkedList<Atributo> compareListas(LinkedList<Atributo> a , LinkedList<Expresion> e, TablaDeSimbolos ts,Ambito ambito,TablaDeSimbolos tsT)
         {
             Mensaje ms = new Mensaje();
             LinkedList<Atributo> listaAtributo = new LinkedList<Atributo>();
             for (int i = 0; i < a.Count(); i++)
             {
                 Atributo at = a.ElementAt(i);
-                object operador1 = e.ElementAt(i).ejecutar(ts, user, ref baseD, mensaje,tsT);
+                object operador1 = e.ElementAt(i).ejecutar(ts,ambito,tsT);
                 if (operador1 != null)
                 {
                     if (at.tipo.Equals("string") && (operador1.GetType() == typeof(string))) listaAtributo.AddLast(new Atributo(at.nombre, (string)operador1, "string"));
@@ -1848,7 +1846,7 @@ namespace cql_teacher_server.CQL.Componentes
                         if (actual.id.Equals(temp.id)) listaAtributo.AddLast(new Atributo(at.nombre, temp, "list"));
                         else
                         {
-                            mensaje.AddLast(ms.error("No coinciden los tipos de las listas: " + actual.id + " con: " + temp.id, linea1, columna1, "Semantico"));
+                            ambito.mensajes.AddLast(ms.error("No coinciden los tipos de las listas: " + actual.id + " con: " + temp.id, linea1, columna1, "Semantico"));
                             return null;
                         }
                     }
@@ -1859,7 +1857,7 @@ namespace cql_teacher_server.CQL.Componentes
                         if (actual.id.Equals(temp.id)) listaAtributo.AddLast(new Atributo(at.nombre, temp, "set"));
                         else
                         {
-                            mensaje.AddLast(ms.error("No coinciden los tipos de las Set: " + actual.id + " con: " + temp.id, linea1, columna1, "Semantico"));
+                            ambito.mensajes.AddLast(ms.error("No coinciden los tipos de las Set: " + actual.id + " con: " + temp.id, linea1, columna1, "Semantico"));
                             return null;
                         }
                     }
@@ -1870,7 +1868,7 @@ namespace cql_teacher_server.CQL.Componentes
                         if (actual.id.Equals(temp.id)) listaAtributo.AddLast(new Atributo(at.nombre, temp, "map"));
                         else
                         {
-                            mensaje.AddLast(ms.error("No coinciden los tipos de los MAP: " + actual.id + " con: " + temp.id, linea1, columna1, "Semantico"));
+                            ambito.mensajes.AddLast(ms.error("No coinciden los tipos de los MAP: " + actual.id + " con: " + temp.id, linea1, columna1, "Semantico"));
                             return null;
                         }
                     }
@@ -1881,14 +1879,14 @@ namespace cql_teacher_server.CQL.Componentes
                         else
                         {
                             Mensaje men = new Mensaje();
-                            mensaje.AddLast(men.error("No conincide el tipo: " + at.tipo + " con el Tipo: " + temp.tipo, linea1, columna1, "Semantico"));
+                            ambito.mensajes.AddLast(men.error("No conincide el tipo: " + at.tipo + " con el Tipo: " + temp.tipo, linea1, columna1, "Semantico"));
                             return null;
                         }
                     }
                     else
                     {
                         Mensaje men = new Mensaje();
-                        mensaje.AddLast(men.error("No coincide el tipo: " + at.tipo + " con el valor: " + operador1, linea1, columna1, "Semantico"));
+                        ambito.mensajes.AddLast(men.error("No coincide el tipo: " + at.tipo + " con el valor: " + operador1, linea1, columna1, "Semantico"));
                         return null;
                     }
                 }
@@ -1898,7 +1896,7 @@ namespace cql_teacher_server.CQL.Componentes
                     else if (at.tipo.Contains("map") || at.tipo.Equals("int") || at.tipo.Equals("double") || at.tipo.Contains("list") || at.tipo.Equals("boolean") || at.tipo.Contains("set"))
                     {
                         Mensaje men = new Mensaje();
-                        mensaje.AddLast(men.error("No coincide el tipo: " + at.tipo + " con el valor: null " , linea1, columna1, "Semantico"));
+                        ambito.mensajes.AddLast(men.error("No coincide el tipo: " + at.tipo + " con el valor: null " , linea1, columna1, "Semantico"));
                         return null;
                     }
                     InstanciaUserType temp = new InstanciaUserType(at.tipo, null);

@@ -44,12 +44,12 @@ namespace cql_teacher_server.CQL.Componentes
           * @baseD string por referencia de que base de datos estamos trabajando
           * @mensajes el output de la ejecucion
         */
-        public object ejecutar(TablaDeSimbolos ts, string user, ref string baseD, LinkedList<string> mensajes, TablaDeSimbolos tsT)
+        public object ejecutar(TablaDeSimbolos ts, Ambito ambito, TablaDeSimbolos tsT)
         {
             Mensaje ms = new Mensaje();
-            object mp = (id == null) ? null : id.ejecutar(ts, user, ref baseD, mensajes, tsT);
-            object ky = (key == null) ? null : key.ejecutar(ts, user, ref baseD, mensajes, tsT);
-            object vl = (valor == null) ? null : valor.ejecutar(ts, user, ref baseD, mensajes, tsT);
+            object mp = (id == null) ? null : id.ejecutar(ts, ambito, tsT);
+            object ky = (key == null) ? null : key.ejecutar(ts, ambito, tsT);
+            object vl = (valor == null) ? null : valor.ejecutar(ts, ambito, tsT);
             if (mp != null)
             {
                 if (ky != null)
@@ -59,11 +59,11 @@ namespace cql_teacher_server.CQL.Componentes
                         if (mp.GetType() == typeof(Map))
                         {
                             Map temp = (Map)mp;
-                            string tK = (getTipoValorPrimario(ky, mensajes) == null) ? "null" : (getTipoValorPrimario(ky, mensajes));
-                            string tV = (getTipoValorSecundario(vl, mensajes) == null) ? "null" : (getTipoValorSecundario(vl, mensajes));
+                            string tK = (getTipoValorPrimario(ky, ambito.mensajes) == null) ? "null" : (getTipoValorPrimario(ky, ambito.mensajes));
+                            string tV = (getTipoValorSecundario(vl, ambito.mensajes) == null) ? "null" : (getTipoValorSecundario(vl, ambito.mensajes));
                             if (temp.id.Equals(tK + "," + tV))
                             {
-                                if (!searchKey(temp.datos, ky, mensajes))
+                                if (!searchKey(temp.datos, ky, ambito.mensajes))
                                 {
                                     temp.datos.AddLast(new KeyValue(ky, vl));
                                     return "";
@@ -74,25 +74,25 @@ namespace cql_teacher_server.CQL.Componentes
                                 string tipo2 = (temp.id.Split(new[] { ',' }, 2))[1];
                                 if (!tipo2.Equals("int") && !tipo2.Equals("double") && !tipo2.Equals("boolean") && !tipo2.Equals("map") && !tipo2.Equals("list") && !tipo2.Equals("set"))
                                 {
-                                    if (!searchKey(temp.datos, ky, mensajes))
+                                    if (!searchKey(temp.datos, ky, ambito.mensajes))
                                     {
                                         if (tipo2.Equals("string") || tipo2.Equals("date") || tipo2.Equals("time")) temp.datos.AddLast(new KeyValue(ky, vl));
                                         else temp.datos.AddLast(new KeyValue(ky, new InstanciaUserType(tipo2, null)));
                                         return "";
                                     }
                                 }
-                                else mensajes.AddLast(ms.error("No se puede guardar null el tipo: " + tipo2, l, c, "Semantico"));
+                                else ambito.mensajes.AddLast(ms.error("No se puede guardar null el tipo: " + tipo2, l, c, "Semantico"));
                             }
-                            else mensajes.AddLast(ms.error("No coinciden los tipo: " + temp.id + " con: " + tK + "," + tV, l, c, "Semantico"));
+                            else ambito.mensajes.AddLast(ms.error("No coinciden los tipo: " + temp.id + " con: " + tK + "," + tV, l, c, "Semantico"));
                         }
-                        else mensajes.AddLast(ms.error("No se puede aplicar un insert en un tipo no map, no se reconoce: " + mp, l, c, "Semantico"));
+                        else ambito.mensajes.AddLast(ms.error("No se puede aplicar un insert en un tipo no map, no se reconoce: " + mp, l, c, "Semantico"));
                     }
                     else if (operacion.Equals("LIST"))
                     {
                         if(mp.GetType() == typeof(List))
                         {
                             List temp = (List)mp;
-                            string tV = (getTipoValorSecundario(ky, mensajes) == null) ? "null" : (getTipoValorSecundario(ky, mensajes));
+                            string tV = (getTipoValorSecundario(ky, ambito.mensajes) == null) ? "null" : (getTipoValorSecundario(ky, ambito.mensajes));
                             if (tV.Equals(temp.id))
                             {
                                 temp.lista.AddLast(ky);
@@ -110,17 +110,17 @@ namespace cql_teacher_server.CQL.Componentes
                                     temp.lista.AddLast(new InstanciaUserType(temp.id, null));
                                     return "";
                                 }
-                                else mensajes.AddLast(ms.error("No se puede asignar un valor null a un : " + temp.id, l, c, "Semantico"));
+                                else ambito.mensajes.AddLast(ms.error("No se puede asignar un valor null a un : " + temp.id, l, c, "Semantico"));
                             }
-                            else mensajes.AddLast(ms.error("Los tipos : " + temp.id + " no coincide con: " + tV,l,c,"Semantico"));
+                            else ambito.mensajes.AddLast(ms.error("Los tipos : " + temp.id + " no coincide con: " + tV,l,c,"Semantico"));
                         }
                         else if(mp.GetType() == typeof(Set))
                         {
                             Set temp = (Set)mp;
-                            string tV = (getTipoValorSecundario(ky, mensajes) == null) ? "null" : (getTipoValorSecundario(ky, mensajes));
+                            string tV = (getTipoValorSecundario(ky, ambito.mensajes) == null) ? "null" : (getTipoValorSecundario(ky, ambito.mensajes));
                             if (tV.Equals(temp.id))
                             {
-                                object resp = temp.buscarRepetidosPorValor(mensajes, l, c, ky);
+                                object resp = temp.buscarRepetidosPorValor(ambito.mensajes, l, c, ky);
                                 if (resp == null) return null;
                                 temp.datos.AddLast(ky);
                                 temp.order();
@@ -132,7 +132,7 @@ namespace cql_teacher_server.CQL.Componentes
                                 {
                                     if (temp.id.Equals("string") || temp.id.Equals("date") || temp.id.Equals("time"))
                                     {
-                                        object resp = temp.buscarRepetidosPorValor(mensajes, l, c, ky);
+                                        object resp = temp.buscarRepetidosPorValor(ambito.mensajes, l, c, ky);
                                         if (resp == null) return null;
                                         temp.datos.AddLast(ky);
                                         return "";
@@ -140,17 +140,17 @@ namespace cql_teacher_server.CQL.Componentes
                                     temp.datos.AddLast(new InstanciaUserType(temp.id, null));
                                     return "";
                                 }
-                                else mensajes.AddLast(ms.error("No se puede asignar un valor null a un : " + temp.id, l, c, "Semantico"));
+                                else ambito.mensajes.AddLast(ms.error("No se puede asignar un valor null a un : " + temp.id, l, c, "Semantico"));
                             }
-                            else mensajes.AddLast(ms.error("Los tipos : " + temp.id + " no coincide con: " + tV, l, c, "Semantico"));
+                            else ambito.mensajes.AddLast(ms.error("Los tipos : " + temp.id + " no coincide con: " + tV, l, c, "Semantico"));
                         } 
-                        else mensajes.AddLast(ms.error("No se puede aplicar un insert en un tipo no COLLECTION, no se reconoce: " + mp, l, c, "Semantico"));
+                        else ambito.mensajes.AddLast(ms.error("No se puede aplicar un insert en un tipo no COLLECTION, no se reconoce: " + mp, l, c, "Semantico"));
                     }
                     
                 }
-                else mensajes.AddLast(ms.error("La key no puede ser null", l, c, "Semantico"));
+                else ambito.mensajes.AddLast(ms.error("La key no puede ser null", l, c, "Semantico"));
             }
-            else mensajes.AddLast(ms.error("No se puede insertar en un null", l, c, "Semantico"));
+            else ambito.mensajes.AddLast(ms.error("No se puede insertar en un null", l, c, "Semantico"));
 
             return null;
         }
