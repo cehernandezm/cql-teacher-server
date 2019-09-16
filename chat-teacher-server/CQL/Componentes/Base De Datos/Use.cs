@@ -1,6 +1,7 @@
 ﻿using cql_teacher_server.CHISON;
 using cql_teacher_server.CHISON.Componentes;
 using cql_teacher_server.CQL.Arbol;
+using cql_teacher_server.CQL.Componentes.Try_Catch;
 using cql_teacher_server.Herramientas;
 using System;
 using System.Collections.Generic;
@@ -47,6 +48,7 @@ namespace cql_teacher_server.CQL.Componentes
             if (db == null)
             {
                 ambito.mensajes.AddLast(mensa.error("La base de datos: " + bd + " no existe ", linea, columna, "Semantico"));
+                ambito.listadoExcepciones.AddLast(new Excepcion("bddontexists", "La base de datos: " + bd + " no existe "));
                 return null;
             }
             if (TablaBaseDeDatos.getEnUso(bd, ambito.usuario))

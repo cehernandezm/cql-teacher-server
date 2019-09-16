@@ -1,6 +1,7 @@
 ﻿using cql_teacher_server.CHISON;
 using cql_teacher_server.CHISON.Componentes;
 using cql_teacher_server.CQL.Arbol;
+using cql_teacher_server.CQL.Componentes.Try_Catch;
 using cql_teacher_server.Herramientas;
 using System;
 using System.Collections.Generic;
@@ -55,33 +56,17 @@ namespace cql_teacher_server.CQL.Componentes
                 if (user.Equals("admin"))
                 {
 
-                    Usuario usuario2 = TablaBaseDeDatos.getUsuario(id);
-                    if (usuario2 != null)
-                    {
-                        if (operacion.Equals("GRANT"))
-                        {
-                            usuario2.bases.AddLast(iddb);
-                            mensajes.AddLast(mensa.message("Se le dio permiso al usuario: " + id + " sobre la DB: " + iddb));
-                        }
-                        else
-                        {
-                            usuario2.bases.Remove(iddb);
-                            mensajes.AddLast(mensa.message("Se le quitaron permisos al usuario: " + id + " sobre la DB: " + iddb));
-                        }
-
-                        return "";
-                    }
-                    else mensajes.AddLast(mensa.error("El usuario " + id + " no existe", l, c, "Semantico"));
+                  
                 }
                 else
                 {
                     if (us != null)
                     {
-                        Boolean permiso = TablaBaseDeDatos.getPermiso(us, id);
+                        Boolean permiso = TablaBaseDeDatos.getPermiso(us, iddb);
                         if (permiso)
                         {
                             Usuario usuario2 = TablaBaseDeDatos.getUsuario(id);
-                            if(usuario2 != null)
+                            if (usuario2 != null)
                             {
                                 if (operacion.Equals("GRANT"))
                                 {
@@ -93,10 +78,14 @@ namespace cql_teacher_server.CQL.Componentes
                                     usuario2.bases.Remove(iddb);
                                     mensajes.AddLast(mensa.message("Se le quitaron permisos al usuario: " + id + " sobre la DB: " + iddb));
                                 }
-                                
+
                                 return "";
                             }
-                            else mensajes.AddLast(mensa.error("El usuario " + id + " no existe", l, c, "Semantico"));
+                            else
+                            {
+                                ambito.listadoExcepciones.AddLast(new Excepcion("userdontexists", "El usuario " + id + " no existe"));
+                                mensajes.AddLast(mensa.error("El usuario " + id + " no existe", l, c, "Semantico"));
+                            }
                         }
                         else mensajes.AddLast(mensa.error("El usuario " + user + " no tiene permisos sobre esta base de datos", l, c, "Semantico"));
                     }
@@ -105,7 +94,11 @@ namespace cql_teacher_server.CQL.Componentes
                 }
 
             }
-            else mensajes.AddLast(mensa.error("La base de datos ha eliminar: " + id + " no existe", l, c, "Semantico"));
+            else
+            {
+                ambito.listadoExcepciones.AddLast(new Excepcion("usedbexception", "No existe la base de datos: " + iddb + " o no se ha usado el comando use"));
+                ambito.mensajes.AddLast(mensa.error("No existe la base de datos: " + iddb + " o no se ha usado el comando use", l, c, "Semantico"));
+            }
             return null;
         }
     }

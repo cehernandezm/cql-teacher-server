@@ -2,6 +2,7 @@
 using cql_teacher_server.CHISON.Componentes;
 using cql_teacher_server.CQL.Arbol;
 using cql_teacher_server.CQL.Componentes.Procedure;
+using cql_teacher_server.CQL.Componentes.Try_Catch;
 using cql_teacher_server.Herramientas;
 using System;
 using System.Collections.Generic;
@@ -81,7 +82,12 @@ namespace cql_teacher_server.CQL.Componentes.Funcion_Procedure
                 }
                 
             }
-            else ambito.mensajes.AddLast(ms.error("No se encuentra la base de datos: " + ambito.baseD,l,c,"Semantico"));
+            else
+            {
+                ambito.listadoExcepciones.AddLast(new Excepcion("usedbexception", "No existe la base de datos: " + ambito.baseD + " o no se ha usado el comando use"));
+
+                ambito.mensajes.AddLast(ms.error("La base de datos ha usar: " + id + " no existe", l, c, "Semantico"));
+            }
             return null;
         }
 

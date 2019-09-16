@@ -1,6 +1,7 @@
 ﻿using cql_teacher_server.CHISON;
 using cql_teacher_server.CHISON.Componentes;
 using cql_teacher_server.CQL.Arbol;
+using cql_teacher_server.CQL.Componentes.Try_Catch;
 using cql_teacher_server.Herramientas;
 using System;
 using System.Collections.Generic;
@@ -49,32 +50,65 @@ namespace cql_teacher_server.CQL.Componentes
             BaseDeDatos db = TablaBaseDeDatos.getBase(ambito.baseD);
             if (db != null)
             {
-                Usuario us = TablaBaseDeDatos.getUsuario(ambito.usuario);
-                if(us != null)
+                if (ambito.usuario.Equals("admin"))
                 {
-                    if(TablaBaseDeDatos.getPermiso(us, ambito.baseD))
+                    if (!TablaBaseDeDatos.getUserType(id, db))
                     {
-                        if (!TablaBaseDeDatos.getUserType(id, db))
+                        LinkedList<Attrs> newL = newLista(lista, ambito.mensajes, db);
+                        if (lista.Count() == newL.Count())
                         {
-                            LinkedList<Attrs> newL = newLista(lista, ambito.mensajes, db);
-                            if(lista.Count() == newL.Count())
-                            {
-                                User_Types u = new User_Types(id,newL);
-                                db.objetos.user_types.AddLast(u);
-                            }
-                            
-                            return "";
-
+                            User_Types u = new User_Types(id, newL);
+                            db.objetos.user_types.AddLast(u);
                         }
-                        else
-                        {
-                            if(!flag) ambito.mensajes.AddLast(mensa.error("El USER TYPE : " + id + " ya existe en la base de datos : " + ambito.baseD, linea, columna, "Semantico"));
-                        } 
-                    }
-                    else ambito.mensajes.AddLast(mensa.error("El usuario : " + ambito.usuario + " no tiene permisos sobre la base de datos : " + ambito.baseD, linea, columna, "Semantico"));
 
+                        return "";
+
+                    }
+                    else
+                    {
+                        if (!flag)
+                        {
+                            ambito.listadoExcepciones.AddLast(new Excepcion("typealreadyexists", "El USER TYPE : " + id + " ya existe en la base de datos : " + ambito.baseD));
+                            ambito.mensajes.AddLast(mensa.error("El USER TYPE : " + id + " ya existe en la base de datos : " + ambito.baseD, linea, columna, "Semantico"));
+                        }
+                        else return "";
+                    }
                 }
-                else ambito.mensajes.AddLast(mensa.error("El usuario : " + ambito.usuario + " no existe ", linea, columna, "Semantico"));
+                else
+                {
+                    Usuario us = TablaBaseDeDatos.getUsuario(ambito.usuario);
+                    if (us != null)
+                    {
+                        if (TablaBaseDeDatos.getPermiso(us, ambito.baseD))
+                        {
+                            if (!TablaBaseDeDatos.getUserType(id, db))
+                            {
+                                LinkedList<Attrs> newL = newLista(lista, ambito.mensajes, db);
+                                if (lista.Count() == newL.Count())
+                                {
+                                    User_Types u = new User_Types(id, newL);
+                                    db.objetos.user_types.AddLast(u);
+                                }
+
+                                return "";
+
+                            }
+                            else
+                            {
+                                if (!flag)
+                                {
+                                    ambito.listadoExcepciones.AddLast(new Excepcion("typealreadyexists", "El USER TYPE : " + id + " ya existe en la base de datos : " + ambito.baseD));
+                                    ambito.mensajes.AddLast(mensa.error("El USER TYPE : " + id + " ya existe en la base de datos : " + ambito.baseD, linea, columna, "Semantico"));
+                                }
+                                else return "";
+                            }
+                        }
+                        else ambito.mensajes.AddLast(mensa.error("El usuario : " + ambito.usuario + " no tiene permisos sobre la base de datos : " + ambito.baseD, linea, columna, "Semantico"));
+
+                    }
+                    else ambito.mensajes.AddLast(mensa.error("El usuario : " + ambito.usuario + " no existe ", linea, columna, "Semantico"));
+                }
+                
 
 
             }

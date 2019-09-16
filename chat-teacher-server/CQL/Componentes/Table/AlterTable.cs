@@ -1,6 +1,7 @@
 ﻿using cql_teacher_server.CHISON;
 using cql_teacher_server.CHISON.Componentes;
 using cql_teacher_server.CQL.Arbol;
+using cql_teacher_server.CQL.Componentes.Try_Catch;
 using cql_teacher_server.Herramientas;
 using System;
 using System.Collections.Generic;
@@ -71,11 +72,11 @@ namespace cql_teacher_server.CQL.Componentes
             if (db != null)
             {
                 Tabla tabla = TablaBaseDeDatos.getTabla(db, id);
-                if(tabla != null)
+                if (tabla != null)
                 {
                     if (ambito.usuario.Equals("admin"))
                     {
-                      
+
                     }
                     else
                     {
@@ -107,7 +108,7 @@ namespace cql_teacher_server.CQL.Componentes
                                     }
                                     else
                                     {
-                                        if (existeColumna(listaDrop, tabla.columnas,ambito.mensajes))
+                                        if (existeColumna(listaDrop, tabla.columnas, ambito.mensajes,ambito))
                                         {
                                             if (!isPK(listaDrop, tabla.columnas, ambito.mensajes))
                                             {
@@ -132,12 +133,20 @@ namespace cql_teacher_server.CQL.Componentes
                         }
                         else ambito.mensajes.AddLast(mensa.error("No existe el usuario: " + ambito.usuario, l, c, "Semantico"));
                     }
-                    
+
                 }
-                else ambito.mensajes.AddLast(mensa.error("La tabla: " + id + " no existe en la DB: " + ambito.baseD, l, c, "Semantico"));
-                
+                else
+                {
+                    ambito.listadoExcepciones.AddLast(new Excepcion("tabledontexists", "La tabla: " + id + " no existe en la DB: " + ambito.baseD));
+                    ambito.mensajes.AddLast(mensa.error("La tabla: " + id + " no existe en la DB: " + ambito.baseD, l, c, "Semantico"));
+                }
+
             }
-            else ambito.mensajes.AddLast(mensa.error("No existe la base de datos: " + ambito.baseD + " o no se ha usado el comando use", l, c, "Semantico"));
+            else
+            {
+                ambito.listadoExcepciones.AddLast(new Excepcion("usedbexception", "No existe la base de datos: " + ambito.baseD + " o no se ha usado el comando use"));
+                ambito.mensajes.AddLast(mensa.error("No existe la base de datos: " + ambito.baseD + " o no se ha usado el comando use", l, c, "Semantico"));
+            }
 
             
             return null;
@@ -218,7 +227,7 @@ namespace cql_teacher_server.CQL.Componentes
          * @lista2 columnas ya existentes
          * @mensajes output de mensajes
          */
-        public Boolean existeColumna(LinkedList<string> lista, LinkedList<Columna> lista2, LinkedList<string> mensajes)
+        public Boolean existeColumna(LinkedList<string> lista, LinkedList<Columna> lista2, LinkedList<string> mensajes,Ambito ambito)
         {
             Mensaje mensa = new Mensaje();
             Boolean flag;
@@ -232,6 +241,7 @@ namespace cql_teacher_server.CQL.Componentes
                 }
                 if (!flag)
                 {
+                    ambito.listadoExcepciones.AddLast(new Excepcion("columnexception", "No existe la columna: " + s + " en la tabla: " + id));
                     mensajes.AddLast(mensa.error("No existe la columna: " + s + " en la tabla: " + id, l, c, "Semantico"));
                     return false;
                 }

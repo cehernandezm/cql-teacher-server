@@ -161,7 +161,28 @@ namespace cql_teacher_server.CQL.Gramatica
             var CLOSE = ToTerm("CLOSE");
             var EACH = ToTerm("EACH");
 
-
+            var TRY = ToTerm("TRY");
+            var CATCH = ToTerm("CATCH");
+            var ARITHMETICEXCEPTION = ToTerm("ArithmeticException");
+            var TYPEALREDYEXISTS = ToTerm("TypeAlreadyExists");
+            var THROW = ToTerm("THROW");
+            var MESSAGE = ToTerm("MESSAGE");
+            var BDALREADYEXISTS = ToTerm("BDAlreadyExists");
+            var BDDONTEXISTS = ToTerm("BDDontExists");
+            var USEDBEXCEPTION = ToTerm("useDBException");
+            var TABLEALREADYEXISTS = ToTerm("TableAlreadyExists");
+            var TABLEDONTEXISTS = ToTerm("TableDontExists");
+            var COUNTERTYPEXCEPTION = ToTerm("CounterTypeException");
+            var USERALREADYEXISTS = ToTerm("UserAlreadyExists");
+            var USERDONTEXISTS = ToTerm("UserDontExists");
+            var VALUESEXCEPTION = ToTerm("ValuesException");
+            var COLUMNEXCEPTION = ToTerm("ColumnException");
+            var INDEXOUTEXCEPTION = ToTerm("IndexOutException");
+            var NULLPOINTEREXCEPTION = ToTerm("NullPointerException");
+            var NUMBERRETURNSEXCEPTION = ToTerm("NumberReturnsException");
+            var FUNCTIONALREADYEXISTS = ToTerm("FunctionAlreadyExists");
+            var PROCEDUREALREADYEXISTS = ToTerm("ProcedurealreadyExists");
+            var OBJECTALREADYEXISTS = ToTerm("ObjectAlreadyExists");
 
 
 
@@ -282,6 +303,10 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal inOperacionCursor = new NonTerminal("inoperacioncursor");
 
             NonTerminal inForEach = new NonTerminal("inforeach");
+
+            NonTerminal inTryCatch = new NonTerminal("intrycatch");
+            NonTerminal tiposExcepciones = new NonTerminal("tiposexcepciones");
+            NonTerminal inThrow = new NonTerminal("inthrow");
             #endregion
 
             #region Gramatica
@@ -321,15 +346,17 @@ namespace cql_teacher_server.CQL.Gramatica
                              | inWhile
                              | inDoWhile + ";"
                              | inFor
-                             | inFunction 
+                             | inFunction
                              | inReturn + ";"
                              | inLog + ";"
                              | inProcedure
                              | inContinue + ";"
                              | inCursor + ";"
                              | inExpresion + ";"
-                             | inOperacionCursor  + ";"
-                             | inForEach 
+                             | inOperacionCursor + ";"
+                             | inForEach
+                             | inTryCatch
+                             | inThrow + ";"
                              ;
             #endregion
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
@@ -400,6 +427,7 @@ namespace cql_teacher_server.CQL.Gramatica
                            | expresion + "." + GETHOUR + "(" + ")"
                            | expresion + "." + GETMINUTS + "(" + ")"
                            | expresion + "." + GETSECONDS + "(" + ")"
+                           | expresion + "." + MESSAGE 
                            | TODAY + "(" + ")"
                            | NOW + "(" + ")"
                            | ID + IN + expresion
@@ -449,7 +477,7 @@ namespace cql_teacher_server.CQL.Gramatica
                               | TIME
                               | ID
                               | COUNTER
-                              | MAP + "<" + tipoVariable2 + ToTerm(",") + tipoVariable2 + ">" 
+                              | MAP + "<" + tipoVariable2 + ToTerm(",") + tipoVariable2 + ">"
                               | LIST + "<" + tipoVariable2 + ">"
                               | SET + "<" + tipoVariable2 + ">"
                               ;
@@ -482,7 +510,7 @@ namespace cql_teacher_server.CQL.Gramatica
             //--------------------------------------------------------- ASIGNACION DE VARIABLES ----------------------------------------------------------------------
             #region asignacion de variables
             asignacion.Rule = "@" + ID + ToTerm("=") + expresion
-                            
+
                             | "@" + ID + ToTerm("+=") + expresion
                             | "@" + ID + ToTerm("*=") + expresion
                             | "@" + ID + ToTerm("-=") + expresion
@@ -499,7 +527,7 @@ namespace cql_teacher_server.CQL.Gramatica
             tempExAsignacion.Rule = callProcedure;
 
             inAsignacionEspecial.Rule = inAsignacionEspecial + "," + "@" + ID
-                                       | "@" + ID ;
+                                       | "@" + ID;
 
             #endregion
             //-------------------------------------------------------- asignacion de un atributo ----------------------------------------------------------------------
@@ -537,7 +565,7 @@ namespace cql_teacher_server.CQL.Gramatica
             //------------------------------------------------------------- CASE ---------------------------------------------------------------------------
             inCase.Rule = CASE + expresion + ":" + "{" + instrucciones + "}";
             #endregion
-           
+
             #region CQL
             //-------------------------------------------------------------- DEFAULT -----------------------------------------------------------------------
             inDefault.Rule = DEFAULT + ":" + "{" + instrucciones + "}";
@@ -658,7 +686,7 @@ namespace cql_teacher_server.CQL.Gramatica
                          | ID + DESC
                          ;
             #endregion
-            
+
             #region Ciclos
             //----------------------------------------------- WHILE -----------------------------------------------------------------------------------------
             inWhile.Rule = WHILE + "(" + expresion + ")" + "{" + instrucciones + "}";
@@ -676,7 +704,7 @@ namespace cql_teacher_server.CQL.Gramatica
 
             inContinue.Rule = CONTINUE;
             #endregion
-            
+
             #region MAp
             //----------------------------------------------- EXPRESIONES DENTRO DE UN MAP ----------------------------------------------
             listaMap.Rule = listaMap + "," + mapvalue
@@ -703,7 +731,7 @@ namespace cql_teacher_server.CQL.Gramatica
 
             //------------------------------------------------- FUNCIONES -----------------------------------------------------------------------------------
             inFunction.Rule = tipoVariable + ID + "(" + ")" + "{" + instrucciones + "}"
-                            | tipoVariable + ID + "(" + listaDeclaracion + ")" + "{" + instrucciones + "}"  
+                            | tipoVariable + ID + "(" + listaDeclaracion + ")" + "{" + instrucciones + "}"
                             ;
 
             //------------------------------------------------- RETURN --------------------------------------------------------------------------------------
@@ -739,6 +767,33 @@ namespace cql_teacher_server.CQL.Gramatica
             inForEach.Rule = FOR + EACH + "(" + listaDeclaracion + ")" + IN + "@" + ID + "{" + instrucciones + "}";
             #endregion
 
+            #region Try Catch
+
+            inTryCatch.Rule = TRY + "{" + instrucciones + "}" + CATCH + "(" + tiposExcepciones + "@" + ID + ")" + "{" + instrucciones + "}";
+
+            tiposExcepciones.Rule = ARITHMETICEXCEPTION
+                                  | TYPEALREDYEXISTS
+                                  | BDALREADYEXISTS
+                                  | BDDONTEXISTS
+                                  | USEDBEXCEPTION
+                                  | TABLEALREADYEXISTS
+                                  | TABLEDONTEXISTS
+                                  | COUNTERTYPEXCEPTION
+                                  | USERALREADYEXISTS
+                                  | USERDONTEXISTS
+                                  | VALUESEXCEPTION
+                                  | COLUMNEXCEPTION
+                                  | INDEXOUTEXCEPTION
+                                  | NULLPOINTEREXCEPTION
+                                  | NUMBERRETURNSEXCEPTION
+                                  | FUNCTIONALREADYEXISTS
+                                  | PROCEDUREALREADYEXISTS
+                                  | OBJECTALREADYEXISTS
+                                  ;
+
+            inThrow.Rule = THROW + NEW + tiposExcepciones;
+
+            #endregion
             #endregion
 
             #region Preferencias

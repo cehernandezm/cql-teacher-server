@@ -11,7 +11,6 @@ namespace cql_teacher_server.CHISON
    
     class TablaBaseDeDatos
     {
-        public static TablaDeSimbolos tablaGeneral= new TablaDeSimbolos();
         public static LinkedList<BaseDeDatos> global = new LinkedList<BaseDeDatos>();
 
         public static LinkedList<Usuario> listaUsuario = new LinkedList<Usuario>();

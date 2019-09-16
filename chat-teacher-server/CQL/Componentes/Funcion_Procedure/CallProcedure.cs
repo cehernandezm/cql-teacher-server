@@ -1,6 +1,7 @@
 ﻿using cql_teacher_server.CHISON;
 using cql_teacher_server.CQL.Arbol;
 using cql_teacher_server.CQL.Componentes.Procedure;
+using cql_teacher_server.CQL.Componentes.Try_Catch;
 using cql_teacher_server.Herramientas;
 using System;
 using System.Collections.Generic;
@@ -87,6 +88,7 @@ namespace cql_teacher_server.CQL.Componentes.Funcion_Procedure
                                 if (temp.Count() == parametros.Count()) return temp;
                                 else
                                 {
+                                    ambito.listadoExcepciones.AddLast(new Excepcion("numberreturnsexception", "La cantidad de valores retornados no concuerda con el valor de parametros"));
                                     ambito.mensajes.AddLast(ms.error("La cantidad de valores retornados no concuerda con el valor de parametros", l, c, "Semantico"));
                                     return null;
                                 }
@@ -98,6 +100,8 @@ namespace cql_teacher_server.CQL.Componentes.Funcion_Procedure
                                 if (parametros.Count() == 1) return temp;
                                 else
                                 {
+                                    ambito.listadoExcepciones.AddLast(new Excepcion("numberreturnsexception", "La cantidad de valores retornados no concuerda con el valor de parametros"));
+
                                     ambito.mensajes.AddLast(ms.error("La cantidad de valores retornados no concuerda con el valor de parametros", l, c, "Semantico"));
                                     return null;
                                 }

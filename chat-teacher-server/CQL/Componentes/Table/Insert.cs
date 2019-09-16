@@ -1,6 +1,7 @@
 ﻿using cql_teacher_server.CHISON;
 using cql_teacher_server.CHISON.Componentes;
 using cql_teacher_server.CQL.Arbol;
+using cql_teacher_server.CQL.Componentes.Try_Catch;
 using cql_teacher_server.Herramientas;
 using System;
 using System.Collections.Generic;
@@ -82,15 +83,7 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 if (user.Equals("admin"))
                 {
-                    Tabla tabla = TablaBaseDeDatos.getTabla(db, id);
-                    if (tabla != null)
-                    {
-                        object res;
-                        if (operacion.Equals("NORMAL")) res = guardarNormal(tabla,ts,db,ambito,tsT);
-                        else res = guardadoEspecial(tabla,ts,db,ambito,tsT);
-                        if (res != null) return res;
-                    }
-                    else mensajes.AddLast(mensa.error("La tabla: " + id + " no existe en la DB: " + baseD, l, c, "Semantico"));
+                  
                 }
                 else
                 {
@@ -110,7 +103,11 @@ namespace cql_teacher_server.CQL.Componentes
                                     else res = guardadoEspecial(tabla, ts, db, ambito, tsT);
                                     if (res != null) return res;
                                 }
-                                else mensajes.AddLast(mensa.error("La tabla: " + id + " no existe en la DB: " + baseD, l, c, "Semantico"));
+                                else
+                                {
+                                    ambito.listadoExcepciones.AddLast(new Excepcion("tabledontexists", "La tabla: " + id + " no existe en la DB: " + ambito.baseD));
+                                    ambito.mensajes.AddLast(mensa.error("La tabla: " + id + " no existe en la DB: " + ambito.baseD, l, c, "Semantico"));
+                                }
                             }
                             else mensajes.AddLast(mensa.error("La DB: " + baseD + " ya esta siendo utilizada por alguien mas", l, c, "Semantico"));
                         }
@@ -121,7 +118,12 @@ namespace cql_teacher_server.CQL.Componentes
                 }
 
             }
-            else mensajes.AddLast(mensa.error("La base de datos ha eliminar: " + id + " no existe", l, c, "Semantico"));
+            else
+            {
+                ambito.listadoExcepciones.AddLast(new Excepcion("usedbexception", "No existe la base de datos: " + ambito.baseD + " o no se ha usado el comando use"));
+
+                ambito.mensajes.AddLast(mensa.error("La base de datos ha usar: " + ambito.baseD + " no existe", l, c, "Semantico"));
+            }
             return null;
         }
 
@@ -144,6 +146,12 @@ namespace cql_teacher_server.CQL.Componentes
             LinkedList<string> mensajes = ambito.mensajes;
             int i = 0;
             int cantidad = cantidadCounters(t);
+            if((values.Count() == t.columnas.Count()) && cantidad  > 0)
+            {
+                ambito.listadoExcepciones.AddLast(new Excepcion("countertypeexception", "No se le puede insertar un valor a un tipo Counter"));
+                mensajes.AddLast(mensa.error("No se le puede insertar un valor a un tipo Counter", l, c, "Semantico"));
+                return null;
+            }
             if ((cantidad + values.Count()) == t.columnas.Count())
             {
                 LinkedList<Atributo> insercion = new LinkedList<Atributo>();
@@ -158,8 +166,8 @@ namespace cql_teacher_server.CQL.Componentes
                     }
                     else
                     {
-                        object op1 = (values.ElementAt(i) == null) ? null : values.ElementAt(i).ejecutar(ts, ambito,tsT);
-                        Atributo atributo = checkinfo(co, op1, values.ElementAt(i), mensajes, db);
+                        object op1 = (values.ElementAt(i) == null) ? null : values.ElementAt(i).ejecutar(ts, ambito, tsT);
+                        Atributo atributo = checkinfo(co, op1, values.ElementAt(i), mensajes, db,ambito);
                         if (atributo == null) return null;
                         else insercion.AddLast(atributo);
                     }
@@ -173,10 +181,14 @@ namespace cql_teacher_server.CQL.Componentes
                     mensajes.AddLast(mensa.message("Informacion insertada con exito"));
                     return "";
                 }
-                else mensajes.AddLast(mensa.error("Ya hay un dato que posee esa clave primaria",l,c,"Semantico"));
+                else mensajes.AddLast(mensa.error("Ya hay un dato que posee esa clave primaria", l, c, "Semantico"));
 
             }
-            else mensajes.AddLast(mensa.error("La cantidad de elementos en Values no coincide con la cantidad de Columnas de la tabla: " + t.nombre, l, c, "Semantico"));
+            else
+            {
+                ambito.listadoExcepciones.AddLast(new Excepcion("valuesexception", "La cantidad de elementos en Values no coincide con la cantidad de Columnas de la tabla: " + t.nombre));
+                mensajes.AddLast(mensa.error("La cantidad de elementos en Values no coincide con la cantidad de Columnas de la tabla: " + t.nombre, l, c, "Semantico"));
+            }
 
             return null;
         }
@@ -201,7 +213,7 @@ namespace cql_teacher_server.CQL.Componentes
             LinkedList<string> mensajes = ambito.mensajes;
             if (values.Count() == campos.Count())
             {
-                if (existColumn(t.columnas, campos, mensajes))
+                if (existColumn(t.columnas, campos, mensajes,ambito))
                 {
                     LinkedList<Atributo> info = new LinkedList<Atributo>();
                     LinkedList<int> pos = new LinkedList<int>();
@@ -210,25 +222,26 @@ namespace cql_teacher_server.CQL.Componentes
                     {
                         Boolean flag = false;
                         int i = 0;
-                        
+
                         foreach (string campo in campos)
                         {
                             if (campo.Equals(columna.name))
                             {
                                 if (columna.tipo.Equals("counter"))
                                 {
-                                    mensajes.AddLast(mensa.error("El tipo counter no se puede asignar un valor",l,c,"Semantico"));
+                                    ambito.listadoExcepciones.AddLast(new Excepcion("countertypeexception", "No se le puede insertar un valor a un tipo Counter"));
+                                    mensajes.AddLast(mensa.error("No se le puede insertar un valor a un tipo Counter", l, c, "Semantico"));
                                     return null;
                                 }
                                 else
                                 {
                                     flag = true;
                                     object op1 = (values.ElementAt(i) == null) ? null : values.ElementAt(i).ejecutar(ts, ambito, tsT);
-                                    Atributo a = checkinfo(columna, op1, values.ElementAt(i), mensajes, db);
+                                    Atributo a = checkinfo(columna, op1, values.ElementAt(i), mensajes, db,ambito);
                                     if (a != null) info.AddLast(a);
                                     else return null;
                                 }
-                                
+
                             }
                             i++;
                         }
@@ -243,12 +256,12 @@ namespace cql_teacher_server.CQL.Componentes
                                 }
                                 else
                                 {
-                                    Atributo a = checkinfo(columna, null, null, mensajes, db);
+                                    Atributo a = checkinfo(columna, null, null, mensajes, db,ambito);
                                     if (a != null) info.AddLast(a);
                                     else return null;
                                     pos.AddLast(posicion);
                                 }
-                                
+
                             }
                             else
                             {
@@ -264,7 +277,7 @@ namespace cql_teacher_server.CQL.Componentes
                                 }
                                 else val = new InstanciaUserType(columna.tipo, null);
 
-                                Atributo a = checkinfo(columna, val, 0, mensajes, db);
+                                Atributo a = checkinfo(columna, val, 0, mensajes, db,ambito);
                                 if (a != null) info.AddLast(a);
                                 else return null;
                             }
@@ -283,9 +296,13 @@ namespace cql_teacher_server.CQL.Componentes
                     }
                     else mensajes.AddLast(mensa.error("Ya hay un dato que posee esa clave primaria", l, c, "Semantico"));
                 }
-                
+
             }
-            else mensajes.AddLast(mensa.error("No coinciden la cantidad de campos con la cantidad de valores", l, c, "Semantico"));
+            else
+            {
+                ambito.listadoExcepciones.AddLast(new Excepcion("valuesexception", "No coinciden la cantidad de campos con la cantidad de valores"));
+                mensajes.AddLast(mensa.error("No coinciden la cantidad de campos con la cantidad de valores", l, c, "Semantico"));
+            }
 
 
             return null;
@@ -316,7 +333,7 @@ namespace cql_teacher_server.CQL.Componentes
          * @db BaseDeDatos actual
          */
 
-        private Atributo checkinfo(Columna columna, object valor, object original, LinkedList<string> mensajes, BaseDeDatos db)
+        private Atributo checkinfo(Columna columna, object valor, object original, LinkedList<string> mensajes, BaseDeDatos db,Ambito ambito)
         {
             Mensaje mensa = new Mensaje();
             if (original == null)
@@ -325,7 +342,10 @@ namespace cql_teacher_server.CQL.Componentes
                 {
                     if (columna.tipo.Equals("string") || columna.tipo.Equals("date") || columna.tipo.Equals("time")) return new Atributo(columna.name, null, columna.tipo);
                     else if (columna.tipo.Equals("int") || columna.tipo.Equals("double") || columna.tipo.Equals("boolean") || columna.tipo.Contains("map") || columna.tipo.Contains("list") || columna.tipo.Contains("set"))
+                    {
+                        ambito.listadoExcepciones.AddLast(new Excepcion("valuesexception", "No se le puede asignar a un tipo: " + columna.tipo + " un valor null"));
                         mensajes.AddLast(mensa.error("No se le puede asignar a un tipo: " + columna.tipo + " un valor null", l, c, "Semantico"));
+                    }
                     else
                     {
                         Boolean temp = TablaBaseDeDatos.getUserType(columna.tipo, db);
@@ -333,8 +353,12 @@ namespace cql_teacher_server.CQL.Componentes
                         else mensajes.AddLast(mensa.error("No existe el USER TYPE: " + columna.tipo + " en la DB: " + db.nombre, l, c, "Semantico"));
                     }
                 }
-                else mensajes.AddLast(mensa.error("La columna: " + columna.name + " es clave primaria no puede asignarsele un valor null", l, c, "Semantico"));
+                else
+                {
+                    ambito.listadoExcepciones.AddLast(new Excepcion("valuesexception", "La columna: " + columna.name + " es clave primaria no puede asignarsele un valor null"));
 
+                    mensajes.AddLast(mensa.error("La columna: " + columna.name + " es clave primaria no puede asignarsele un valor null", l, c, "Semantico"));
+                }
             }
             else
             {
@@ -346,7 +370,8 @@ namespace cql_teacher_server.CQL.Componentes
                     else if (columna.tipo.Equals("boolean") && valor.GetType() == typeof(Boolean)) return new Atributo(columna.name, (Boolean)valor, "boolean");
                     else if (columna.tipo.Equals("date") && valor.GetType() == typeof(DateTime)) return new Atributo(columna.name, (DateTime)valor, "date");
                     else if (columna.tipo.Equals("time") && valor.GetType() == typeof(TimeSpan)) return new Atributo(columna.name, (TimeSpan)valor, "time");
-                    else if(columna.tipo.Contains("map") && valor.GetType() == typeof(Map))
+                    else if (columna.tipo.Equals("counter") && valor.GetType() == typeof(int)) return new Atributo(columna.name, (int)valor, "int");
+                    else if (columna.tipo.Contains("map") && valor.GetType() == typeof(Map))
                     {
                         Map temp = (Map)valor;
                         string tipo = columna.tipo.TrimStart('m').TrimStart('a').TrimStart('p').TrimStart('<');
@@ -378,12 +403,21 @@ namespace cql_teacher_server.CQL.Componentes
                         if (columna.tipo.Equals(temp.tipo)) return new Atributo(columna.name, (InstanciaUserType)valor, columna.tipo);
                         else mensajes.AddLast(mensa.error("No se le puede asignar a la columna: " + columna.name + " un tipo: " + temp.tipo, l, c, "Semantico"));
                     }
-                    else mensajes.AddLast(mensa.error("No se puede asignar a la columna: " + columna.name + " el valor: " + valor, l, c, "Semantico"));
+                    else
+                    {
+                        ambito.listadoExcepciones.AddLast(new Excepcion("valuesexception", "No se puede asignar a la columna: " + columna.name + " el valor: " + valor));
+                        mensajes.AddLast(mensa.error("No se puede asignar a la columna: " + columna.name + " el valor: " + valor, l, c, "Semantico"));
+                    }
                 }
                 else
                 {
                     if (columna.tipo.Equals("string") || columna.tipo.Equals("date") || columna.tipo.Equals("time")) return new Atributo(columna.name, null, columna.tipo);
-                    else if (columna.tipo.Equals("boolean") || columna.tipo.Equals("int") || columna.tipo.Equals("double") || columna.tipo.Contains("map") || columna.tipo.Contains("list") || columna.tipo.Contains("set")) mensajes.AddLast(mensa.error("No se puede asignar a la columna: " + columna.name + " el valor: " + valor, l, c, "Semantico"));
+                    else if (columna.tipo.Equals("boolean") || columna.tipo.Equals("int") || columna.tipo.Equals("double") || columna.tipo.Contains("map") || columna.tipo.Contains("list") || columna.tipo.Contains("set"))
+                    {
+                        ambito.listadoExcepciones.AddLast(new Excepcion("valuesexception", "No se puede asignar a la columna: " + columna.name + " el valor: " + valor + valor));
+
+                        mensajes.AddLast(mensa.error("No se puede asignar a la columna: " + columna.name + " el valor: " + valor, l, c, "Semantico"));
+                    }
                     else return new Atributo(columna.name, new InstanciaUserType(columna.tipo, null), columna.tipo);
                 }
             }
@@ -445,7 +479,7 @@ namespace cql_teacher_server.CQL.Componentes
          * @campos es el nombre de los campos que ingreso el usuario
          * @mensajes output
          */
-        private Boolean existColumn(LinkedList<Columna> columnas,LinkedList<string> campos,LinkedList<string> mensajes)
+        private Boolean existColumn(LinkedList<Columna> columnas,LinkedList<string> campos,LinkedList<string> mensajes,Ambito ambito)
         {
             Mensaje mensa = new Mensaje();
             foreach(string s in campos)
@@ -457,6 +491,7 @@ namespace cql_teacher_server.CQL.Componentes
                 }
                 if (!flag)
                 {
+                    ambito.listadoExcepciones.AddLast(new Excepcion("columnexception", "La columna: " + s + " no existe en esta tabla " + id));
                     mensajes.AddLast(mensa.error("La columna: " + s + " no existe en esta tabla " + id, l, c, "Semantico"));
                     return false;
                 }

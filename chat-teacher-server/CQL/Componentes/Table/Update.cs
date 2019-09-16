@@ -1,6 +1,7 @@
 ﻿using cql_teacher_server.CHISON;
 using cql_teacher_server.CHISON.Componentes;
 using cql_teacher_server.CQL.Arbol;
+using cql_teacher_server.CQL.Componentes.Try_Catch;
 using cql_teacher_server.Herramientas;
 using System;
 using System.Collections.Generic;
@@ -99,7 +100,11 @@ namespace cql_teacher_server.CQL.Componentes
                                     else res = changeSpecific(ts, ambito, tabla);
                                     if (res != null) return "";
                                 }
-                                else mensajes.AddLast(mensa.error("La tabla: " + id + " no existe en la DB: " + baseD, l, c, "Semantico"));
+                                else
+                                {
+                                    ambito.listadoExcepciones.AddLast(new Excepcion("tabledontexists", "La tabla: " + id + " no existe en la DB: " + ambito.baseD));
+                                    ambito.mensajes.AddLast(mensa.error("La tabla: " + id + " no existe en la DB: " + ambito.baseD, l, c, "Semantico"));
+                                }
                             }
                             else mensajes.AddLast(mensa.error("La DB: " + baseD + " ya esta siendo utilizada por alguien mas", l, c, "Semantico"));
                         }
@@ -110,7 +115,12 @@ namespace cql_teacher_server.CQL.Componentes
                 }
 
             }
-            else mensajes.AddLast(mensa.error("La base de datos ha eliminar: " + id + " no existe", l, c, "Semantico"));
+            else
+            {
+                ambito.listadoExcepciones.AddLast(new Excepcion("usedbexception", "No existe la base de datos: " + ambito.baseD + " o no se ha usado el comando use"));
+
+                ambito.mensajes.AddLast(mensa.error("La base de datos ha usar: " + ambito.baseD + " no existe", l, c, "Semantico"));
+            }
             return null;
         }
 
@@ -134,7 +144,7 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 TablaDeSimbolos tsT = new TablaDeSimbolos();
                 guardarTemp(data.valores, tsT);
-                if (checkColumns(t.columnas, mensajes))
+                if (checkColumns(t.columnas, mensajes,ambito))
                 {
                     foreach (SetCQL set in asignacion)
                     {
@@ -157,7 +167,7 @@ namespace cql_teacher_server.CQL.Componentes
 
                                                 if (set.campo.Equals(atributo.nombre))
                                                 {
-                                                    Atributo temp = checkinfo(getColumna(t.columnas, set.campo), op1, set.valor, mensajes, db);
+                                                    Atributo temp = checkinfo(getColumna(t.columnas, set.campo), op1, set.valor, mensajes, db,ambito);
                                                     if (temp != null) atributo.valor = temp.valor;
                                                     else return null;
                                                 }
@@ -180,7 +190,7 @@ namespace cql_teacher_server.CQL.Componentes
                                                             {
 
                                                                 Columna co = new Columna(a.nombre, a.tipo, false);
-                                                                Atributo temp2 = checkinfo(co, op1, set.valor, mensajes, db);
+                                                                Atributo temp2 = checkinfo(co, op1, set.valor, mensajes, db,ambito);
                                                                 if (temp2 != null) a.valor = temp2.valor;
                                                                 else return null;
                                                             }
@@ -196,7 +206,7 @@ namespace cql_teacher_server.CQL.Componentes
                                                             if (ky.key.ToString().Equals(campo))
                                                             {
                                                                 Columna co = new Columna(ky.key.ToString(), tipo, false);
-                                                                Atributo temp2 = checkinfo(co, op1, set.valor, mensajes, db);
+                                                                Atributo temp2 = checkinfo(co, op1, set.valor, mensajes, db,ambito);
                                                                 if (temp2 != null) ky.value = temp2.valor;
                                                                 else return null;
                                                             }
@@ -224,7 +234,7 @@ namespace cql_teacher_server.CQL.Componentes
                                                                                 if(index == (int)campo)
                                                                                 {
                                                                                     Columna co = new Columna("", temp.id, false);
-                                                                                    Atributo temp2 = checkinfo(co, op1, set.valor, mensajes, db);
+                                                                                    Atributo temp2 = checkinfo(co, op1, set.valor, mensajes, db,ambito);
                                                                                     if (temp2 != null) node.Value = temp2.valor;
                                                                                     else return null;
                                                                                     break;
@@ -236,12 +246,14 @@ namespace cql_teacher_server.CQL.Componentes
                                                                     }
                                                                     else
                                                                     {
+                                                                        ambito.listadoExcepciones.AddLast(new Excepcion("indexoutexception", "El index es mayor al tamaño de la lista"));
                                                                         mensajes.AddLast(mensa.error("El index supera el tamanio de la lista", l, c, "Semantico"));
                                                                         return null;
                                                                     }
                                                                 }
                                                                 else
                                                                 {
+                                                                    ambito.listadoExcepciones.AddLast(new Excepcion("indexoutexception", "Index tiene que ser mayor a 0 "));
                                                                     mensajes.AddLast(mensa.error("El index debe de ser positivo: " + campo, l, c, "Semantico"));
                                                                     return null;
                                                                 }
@@ -307,7 +319,7 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 TablaDeSimbolos tsT = new TablaDeSimbolos();
                 guardarTemp(data.valores, tsT);
-                if (checkColumns(t.columnas, mensajes))
+                if (checkColumns(t.columnas, mensajes,ambito))
                 {
                     foreach (SetCQL set in asignacion)
                     {
@@ -319,7 +331,7 @@ namespace cql_teacher_server.CQL.Componentes
 
                                 if (set.campo.Equals(atributo.nombre))
                                 {
-                                    Atributo temp = checkinfo(getColumna(t.columnas, set.campo), op1, set.valor, mensajes, db);
+                                    Atributo temp = checkinfo(getColumna(t.columnas, set.campo), op1, set.valor, mensajes, db,ambito);
                                     if (temp != null) atributo.valor = temp.valor;
                                     else return null;
                                 }
@@ -342,7 +354,7 @@ namespace cql_teacher_server.CQL.Componentes
                                             {
 
                                                 Columna co = new Columna(a.nombre, a.tipo, false);
-                                                Atributo temp2 = checkinfo(co, op1, set.valor, mensajes, db);
+                                                Atributo temp2 = checkinfo(co, op1, set.valor, mensajes, db,ambito);
                                                 if (temp2 != null) a.valor = temp2.valor;
                                                 else return null;
                                             }
@@ -358,11 +370,12 @@ namespace cql_teacher_server.CQL.Componentes
                                             if (ky.key.ToString().Equals(campo))
                                             {
                                                 Columna co = new Columna(ky.key.ToString(), tipo, false);
-                                                Atributo temp2 = checkinfo(co, op1, set.valor, mensajes, db);
+                                                Atributo temp2 = checkinfo(co, op1, set.valor, mensajes, db,ambito);
                                                 if (temp2 != null) ky.value = temp2.valor;
                                                 else return null;
                                             }
                                         }
+                                        ambito.listadoExcepciones.AddLast(new Excepcion("indexoutexception", "No se encontro la key" ));
                                     }
                                     else if (op2.GetType() == typeof(List))
                                     {
@@ -386,7 +399,7 @@ namespace cql_teacher_server.CQL.Componentes
                                                                 if (index == (int)campo)
                                                                 {
                                                                     Columna co = new Columna("", temp.id, false);
-                                                                    Atributo temp2 = checkinfo(co, op1, set.valor, mensajes, db);
+                                                                    Atributo temp2 = checkinfo(co, op1, set.valor, mensajes, db,ambito);
                                                                     if (temp2 != null) node.Value = temp2.valor;
                                                                     else return null;
                                                                     break;
@@ -398,12 +411,14 @@ namespace cql_teacher_server.CQL.Componentes
                                                     }
                                                     else
                                                     {
+                                                        ambito.listadoExcepciones.AddLast(new Excepcion("indexoutexception", "El index es mayor al tamaño de la lista"));
                                                         mensajes.AddLast(mensa.error("El index supera el tamanio de la lista", l, c, "Semantico"));
                                                         return null;
                                                     }
                                                 }
                                                 else
                                                 {
+                                                    ambito.mensajes.AddLast(mensa.error("Index tiene que ser mayor a 0  ", l, c, "Semantico"));
                                                     mensajes.AddLast(mensa.error("El index debe de ser positivo: " + campo, l, c, "Semantico"));
                                                     return null;
                                                 }
@@ -452,7 +467,7 @@ namespace cql_teacher_server.CQL.Componentes
          * @columnas son las columnas de la tabla
          * @mensajes output
          */
-        private Boolean checkColumns(LinkedList<Columna> columnas,LinkedList<string> mensajes)
+        private Boolean checkColumns(LinkedList<Columna> columnas,LinkedList<string> mensajes, Ambito ambito)
         {
             Mensaje mensa = new Mensaje();
             foreach(SetCQL setcql in asignacion)
@@ -464,6 +479,7 @@ namespace cql_teacher_server.CQL.Componentes
                 }
                 if (!flag && setcql.accesoUS == null)
                 {
+                    ambito.listadoExcepciones.AddLast(new Excepcion("columnexception", "No se encontro la columna: " + setcql.campo));
                     mensajes.AddLast(mensa.error("No se encontro la columna: " + setcql.campo, setcql.l, setcql.c, "Semantico"));
                     return false;
                 }
@@ -480,7 +496,7 @@ namespace cql_teacher_server.CQL.Componentes
           * @db BaseDeDatos actual
           */
 
-        private Atributo checkinfo(Columna columna, object valor, object original, LinkedList<string> mensajes, BaseDeDatos db)
+        private Atributo checkinfo(Columna columna, object valor, object original, LinkedList<string> mensajes, BaseDeDatos db, Ambito ambito)
         {
             Mensaje mensa = new Mensaje();
             if (original == null)
@@ -539,6 +555,12 @@ namespace cql_teacher_server.CQL.Componentes
                         InstanciaUserType temp = (InstanciaUserType)valor;
                         if (columna.tipo.Equals(temp.tipo)) return new Atributo(columna.name, (InstanciaUserType)valor, columna.tipo);
                         else mensajes.AddLast(mensa.error("No se le puede asignar a la columna: " + columna.name + " un tipo: " + temp.tipo, l, c, "Semantico"));
+                    }
+                    else if (columna.tipo.Equals("counter"))
+                    {
+                        ambito.listadoExcepciones.AddLast(new Excepcion("countertypeexception", "No se puede actualizar un valor counter"));
+                        mensajes.AddLast(mensa.error("No se puede actualizar un valor counter",l,c,"Semantico"));
+                        return null;
                     }
                     else mensajes.AddLast(mensa.error("No se puede asignar a la columna: " + columna.name + " el valor: " + valor, l, c, "Semantico"));
                 }

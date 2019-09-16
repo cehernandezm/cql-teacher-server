@@ -64,7 +64,7 @@ namespace cql_teacher_server.CQL.Componentes.Ciclos
                                 foreach(Data data in tabla.tabla.datos)
                                 {
                                     TablaDeSimbolos newAmbito = new TablaDeSimbolos();
-                                    foreach (Simbolo s in TablaBaseDeDatos.tablaGeneral)
+                                    foreach (Simbolo s in ambito.tablaPadre)
                                     {
                                         newAmbito.AddLast(s);
                                     }

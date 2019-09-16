@@ -1,6 +1,7 @@
 ﻿using cql_teacher_server.CHISON;
 using cql_teacher_server.CHISON.Componentes;
 using cql_teacher_server.CQL.Arbol;
+using cql_teacher_server.CQL.Componentes.Try_Catch;
 using cql_teacher_server.Herramientas;
 using System;
 using System.Collections.Generic;
@@ -55,7 +56,11 @@ namespace cql_teacher_server.CQL.Componentes
                     mensajes.AddLast(mensa.message("El usuario: " + id + " se creo exitosamente"));
                     return "";
                 }
-                else mensajes.AddLast(mensa.error("El usuario: " + id + " ya existe", l, c, "Semantico"));
+                else
+                {
+                    ambito.listadoExcepciones.AddLast(new Excepcion("useralreadyexists", "El usuario: " + id + " ya existe"));
+                    mensajes.AddLast(mensa.error("El usuario: " + id + " ya existe", l, c, "Semantico"));
+                }
             }
             else mensajes.AddLast(mensa.error("Solo un admin puede crear usuarios, el usuario: " + user + " no es admin", l, c, "Semantico"));
 

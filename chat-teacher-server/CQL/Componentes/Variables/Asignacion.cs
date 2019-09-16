@@ -6,6 +6,7 @@ using cql_teacher_server.CHISON;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using cql_teacher_server.CQL.Componentes.Try_Catch;
 
 namespace cql_teacher_server.CQL.Componentes
 {
@@ -102,120 +103,126 @@ namespace cql_teacher_server.CQL.Componentes
                     if(atri.GetType() == typeof(InstanciaUserType))
                     {
                         InstanciaUserType tempa = (InstanciaUserType)atri;
-                        foreach (Atributo at in tempa.lista)
+                        if(tempa.lista != null)
                         {
-                            if (at.nombre.Equals(id))
+                            foreach (Atributo at in tempa.lista)
                             {
-                                string tipo = at.tipo.ToLower();
-                                if (a == null)
+                                if (at.nombre.Equals(id))
                                 {
-                                    if (tipo.Equals("string") || tipo.Equals("date") || tipo.Equals("time")) at.valor = null;
-                                    else if (!tipo.Equals("int") && !tipo.Equals("boolean") && !tipo.Equals("double") && !tipo.Contains("map") && !tipo.Contains("list") && !tipo.Contains("set"))
+                                    string tipo = at.tipo.ToLower();
+                                    if (a == null)
                                     {
-                                        InstanciaUserType temp = new InstanciaUserType(tipo, null);
-                                        at.valor = temp;
-                                    }
-                                    else
-                                    {
-                                        mensajes.AddLast(mensa.error("No se le puede asignar al atributo: " + at.nombre + " el valor: null", l, c, "Semantico"));
-                                        return null;
-
-                                    }
-                                    return "";
-                                }
-                                else
-                                {
-                                    if (op1 != null)
-                                    {
-
-                                        if (op1.GetType() == typeof(string) && tipo.Equals("string")) at.valor = (string)op1;
-                                        else if (op1.GetType() == typeof(int) && tipo.Equals("int")) at.valor = (int)op1;
-                                        else if (op1.GetType() == typeof(int) && tipo.Equals("double")) at.valor = Convert.ToInt32((Double)op1);
-                                        else if (op1.GetType() == typeof(Double) && tipo.Equals("double")) at.valor = (Double)op1;
-                                        else if (op1.GetType() == typeof(Double) && tipo.Equals("int")) at.valor = Convert.ToDouble((int)op1);
-                                        else if (op1.GetType() == typeof(Boolean) && tipo.Equals("boolean")) at.valor = (Boolean)op1;
-                                        else if (op1.GetType() == typeof(DateTime) && tipo.Equals("date")) at.valor = (DateTime)op1;
-                                        else if (op1.GetType() == typeof(TimeSpan) && tipo.Equals("time")) at.valor = (TimeSpan)op1;
-                                        else if (op1.GetType() == typeof(Map) && tipo.Equals("map"))
+                                        if (tipo.Equals("string") || tipo.Equals("date") || tipo.Equals("time")) at.valor = null;
+                                        else if (!tipo.Equals("int") && !tipo.Equals("boolean") && !tipo.Equals("double") && !tipo.Contains("map") && !tipo.Contains("list") && !tipo.Contains("set"))
                                         {
-                                            Map temp = (Map)op1;
-                                            Map valor = (Map)at.valor;
-                                            if (valor.id.Equals(temp.id))
-                                            {
-                                                at.valor = temp;
-                                                return "";
-                                            }
-                                            else
-                                            {
-                                                mensajes.AddLast(mensa.error("No coincide los tipos: " + valor.id + " con: " + temp.id, l, c, "Semantico"));
-                                                return null;
-                                            }
-
+                                            InstanciaUserType temp = new InstanciaUserType(tipo, null);
+                                            at.valor = temp;
                                         }
-                                        else if (op1.GetType() == typeof(List) && tipo.Equals("list"))
-                                        {
-                                            List temp = (List)op1;
-                                            List valor = (List)at.valor;
-                                            if (valor.id.Equals(temp.id))
-                                            {
-                                                at.valor = temp;
-                                                return "";
-                                            }
-                                            else
-                                            {
-                                                mensajes.AddLast(mensa.error("No coincide los tipos: " + valor.id + " con: " + temp.id, l, c, "Semantico"));
-                                                return null;
-                                            }
-                                        }
-                                        else if (tipo.Equals("set") && op1.GetType() == typeof(Set))
-                                        {
-                                            Set original = (Set)at.valor;
-                                            Set temp = (Set)op1;
-                                            if (original.id.Equals(temp.id))
-                                            {
-                                                object resp = temp.buscarRepetidos(mensajes, l, c);
-                                                if (resp == null) return null;
-                                                temp.order();
-                                                ts.setValor(id, temp);
-                                            }
-                                            else
-                                            {
-                                                mensajes.AddLast(mensa.error("No coincide los tipos: " + original.id + " con: " + temp.id, l, c, "Semantico"));
-                                                return null;
-                                            }
-
-                                        }
-                                        else if (op1.GetType() == typeof(InstanciaUserType))
-                                        {
-                                            InstanciaUserType temp = (InstanciaUserType)op1;
-                                            if (tipo.Equals(temp.tipo.ToLower())) at.valor = temp;
-                                            else
-                                            {
-                                                mensajes.AddLast(mensa.error("No se le puede asignar al atributo " + at.nombre + " el valor: " + op1, l, c, "Semantico"));
-                                                return null;
-                                            }
-
-                                        }
-                                        
                                         else
                                         {
-                                            mensajes.AddLast(mensa.error("No se le puede asignar al atributo: " + at.nombre + " el valor: " + op1, l, c, "Semantico"));
+                                            mensajes.AddLast(mensa.error("No se le puede asignar al atributo: " + at.nombre + " el valor: null", l, c, "Semantico"));
                                             return null;
 
                                         }
                                         return "";
                                     }
+                                    else
+                                    {
+                                        if (op1 != null)
+                                        {
+
+                                            if (op1.GetType() == typeof(string) && tipo.Equals("string")) at.valor = (string)op1;
+                                            else if (op1.GetType() == typeof(int) && tipo.Equals("int")) at.valor = (int)op1;
+                                            else if (op1.GetType() == typeof(int) && tipo.Equals("double")) at.valor = Convert.ToInt32((Double)op1);
+                                            else if (op1.GetType() == typeof(Double) && tipo.Equals("double")) at.valor = (Double)op1;
+                                            else if (op1.GetType() == typeof(Double) && tipo.Equals("int")) at.valor = Convert.ToDouble((int)op1);
+                                            else if (op1.GetType() == typeof(Boolean) && tipo.Equals("boolean")) at.valor = (Boolean)op1;
+                                            else if (op1.GetType() == typeof(DateTime) && tipo.Equals("date")) at.valor = (DateTime)op1;
+                                            else if (op1.GetType() == typeof(TimeSpan) && tipo.Equals("time")) at.valor = (TimeSpan)op1;
+                                            else if (op1.GetType() == typeof(Map) && tipo.Equals("map"))
+                                            {
+                                                Map temp = (Map)op1;
+                                                Map valor = (Map)at.valor;
+                                                if (valor.id.Equals(temp.id))
+                                                {
+                                                    at.valor = temp;
+                                                    return "";
+                                                }
+                                                else
+                                                {
+                                                    mensajes.AddLast(mensa.error("No coincide los tipos: " + valor.id + " con: " + temp.id, l, c, "Semantico"));
+                                                    return null;
+                                                }
+
+                                            }
+                                            else if (op1.GetType() == typeof(List) && tipo.Equals("list"))
+                                            {
+                                                List temp = (List)op1;
+                                                List valor = (List)at.valor;
+                                                if (valor.id.Equals(temp.id))
+                                                {
+                                                    at.valor = temp;
+                                                    return "";
+                                                }
+                                                else
+                                                {
+                                                    mensajes.AddLast(mensa.error("No coincide los tipos: " + valor.id + " con: " + temp.id, l, c, "Semantico"));
+                                                    return null;
+                                                }
+                                            }
+                                            else if (tipo.Equals("set") && op1.GetType() == typeof(Set))
+                                            {
+                                                Set original = (Set)at.valor;
+                                                Set temp = (Set)op1;
+                                                if (original.id.Equals(temp.id))
+                                                {
+                                                    object resp = temp.buscarRepetidos(mensajes, l, c);
+                                                    if (resp == null) return null;
+                                                    temp.order();
+                                                    ts.setValor(id, temp);
+                                                }
+                                                else
+                                                {
+                                                    mensajes.AddLast(mensa.error("No coincide los tipos: " + original.id + " con: " + temp.id, l, c, "Semantico"));
+                                                    return null;
+                                                }
+
+                                            }
+                                            else if (op1.GetType() == typeof(InstanciaUserType))
+                                            {
+                                                InstanciaUserType temp = (InstanciaUserType)op1;
+                                                if (tipo.Equals(temp.tipo.ToLower())) at.valor = temp;
+                                                else
+                                                {
+                                                    mensajes.AddLast(mensa.error("No se le puede asignar al atributo " + at.nombre + " el valor: " + op1, l, c, "Semantico"));
+                                                    return null;
+                                                }
+
+                                            }
+
+                                            else
+                                            {
+                                                mensajes.AddLast(mensa.error("No se le puede asignar al atributo: " + at.nombre + " el valor: " + op1, l, c, "Semantico"));
+                                                return null;
+
+                                            }
+                                            return "";
+                                        }
+                                    }
+                                    return null;
                                 }
-                                return null;
                             }
                         }
+                        
                     }
                     else  mensajes.AddLast(mensa.error("Para acceder a un atributo se necesita que sea de tipo USERTYPE no se reconoce: " + atri.ToString(), l, c, "Semantico"));
                     
                     
                 }
+                ambito.listadoExcepciones.AddLast(new Excepcion("nullpointerexception", "No se puede asignar un valor a un null"));
+
             }
-            
+
             return null;
         }
 

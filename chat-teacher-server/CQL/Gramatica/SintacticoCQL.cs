@@ -6,6 +6,7 @@ using cql_teacher_server.CQL.Componentes.Ciclos;
 using cql_teacher_server.CQL.Componentes.Cursor;
 using cql_teacher_server.CQL.Componentes.Funcion_Procedure;
 using cql_teacher_server.CQL.Componentes.Procedure;
+using cql_teacher_server.CQL.Componentes.Try_Catch;
 using cql_teacher_server.CQL.Componentes.Variables;
 using cql_teacher_server.Herramientas;
 using Irony.Parsing;
@@ -48,12 +49,10 @@ namespace cql_teacher_server.CQL.Gramatica
 
                     LinkedList<InstruccionCQL> listaInstrucciones = instrucciones(raiz.ChildNodes.ElementAt(0));
                     TablaDeSimbolos tablaGlobal = new TablaDeSimbolos();
-                    TablaBaseDeDatos.tablaGeneral = tablaGlobal;
                     TablaDeSimbolos tablaCQL = new TablaDeSimbolos();
-                    LinkedList<string> mensajes = new LinkedList<string>();
                     String baseD = TablaBaseDeDatos.getMine(usuario);
 
-                    Ambito ambito = new Ambito(tablaGlobal, mensajes, usuario, baseD);
+                    Ambito ambito = new Ambito(tablaGlobal, new LinkedList<string>(), usuario, baseD,new LinkedList<Excepcion>());
 
 
                     //---------------------------------------------------- PRIMER RECORRIDO BUSCANDO FUNCIONES ----------------------------------------------
@@ -66,7 +65,7 @@ namespace cql_teacher_server.CQL.Gramatica
                             {
                                 TablaBaseDeDatos.listaFunciones.AddLast((Funcion)ins);
                             }
-                            else mensajes.AddLast(ms.error("Ya existe la funcion: " + ((Funcion)ins).id, ((Funcion)ins).l, ((Funcion)ins).c,"Semantico"));
+                            else ambito.mensajes.AddLast(ms.error("Ya existe la funcion: " + ((Funcion)ins).id, ((Funcion)ins).l, ((Funcion)ins).c,"Semantico"));
                         }
                     }
 
@@ -82,7 +81,7 @@ namespace cql_teacher_server.CQL.Gramatica
                         
                     }
 
-                    foreach (string m in mensajes)
+                    foreach (string m in ambito.mensajes)
                     {
                         System.Diagnostics.Debug.WriteLine(m);
                     }
@@ -168,7 +167,7 @@ namespace cql_teacher_server.CQL.Gramatica
                     //---------------------------------------- CREATE DATABASE IF NOT EXISTS ID -----------------------------------------
                     else
                     {
-                        idB = hijo.ChildNodes.ElementAt(5).ToString().Split(' ')[0];
+                        idB = hijo.ChildNodes.ElementAt(5).Token.Text.ToLower().TrimEnd().TrimStart();
                         lineaB = hijo.ChildNodes.ElementAt(5).Token.Location.Line;
                         columnaB = hijo.ChildNodes.ElementAt(5).Token.Location.Column;
                         flag = true;
@@ -1048,6 +1047,32 @@ namespace cql_teacher_server.CQL.Gramatica
                     return listaFE;
 
 
+
+
+
+
+                //------------------------------------------ TRY CATCH -------------------------------------------------------------------------------------
+                case "intrycatch":
+                    LinkedList<InstruccionCQL> listaTC = new LinkedList<InstruccionCQL>();
+                    int lTC = hijo.ChildNodes.ElementAt(0).Token.Location.Line;
+                    int cTC = hijo.ChildNodes.ElementAt(0).Token.Location.Column;
+                    LinkedList<InstruccionCQL> cuerpoTry = instrucciones(hijo.ChildNodes.ElementAt(2));
+                    string operacionC = hijo.ChildNodes.ElementAt(5).ChildNodes.ElementAt(0).Token.Text.ToLower().TrimStart().TrimEnd();
+                    string idC = hijo.ChildNodes.ElementAt(7).Token.Text.ToLower().TrimEnd().TrimStart();
+                    LinkedList<InstruccionCQL> cuerpoCatch = instrucciones(hijo.ChildNodes.ElementAt(9));
+                    listaTC.AddLast(new TryCatch(cuerpoTry, cuerpoCatch, idC, operacionC, lTC, cTC));
+                    return listaTC;
+
+
+
+
+
+                //--------------------------------------------- THROW ------------------------------------------------------------------------------------
+                case "inthrow":
+                    LinkedList<InstruccionCQL> listaTW = new LinkedList<InstruccionCQL>();
+                    string tipo = hijo.ChildNodes.ElementAt(2).ChildNodes.ElementAt(0).Token.Text.ToLower().TrimEnd().TrimStart();
+                    listaTW.AddLast(new inThrow(tipo));
+                    return listaTW;
             }
             return null;
 
@@ -1475,6 +1500,8 @@ namespace cql_teacher_server.CQL.Gramatica
                         else if (sepa.Equals("getminuts")) return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), "GETMINUTS", le, ce);
                         //--------------------------------- EXPRESION . GETSECONDS ------------------------------------------------------------------
                         else if (sepa.Equals("getseconds")) return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), "GETSECONDS", le, ce);
+                        //--------------------------------- EXPRESION . GETSECONDS ------------------------------------------------------------------
+                        else if (sepa.Equals("message")) return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), "MESSAGE", le, ce);
                         //--------------------------------- EXPRESION . SIZE
                         else return new Expresion(resolver_expresion(raiz.ChildNodes.ElementAt(0)), "SIZE", le, ce);
                         

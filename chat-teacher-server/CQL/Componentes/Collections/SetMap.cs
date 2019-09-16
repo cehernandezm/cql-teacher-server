@@ -1,4 +1,5 @@
 ﻿using cql_teacher_server.CQL.Arbol;
+using cql_teacher_server.CQL.Componentes.Try_Catch;
 using cql_teacher_server.Herramientas;
 using System;
 using System.Collections.Generic;
@@ -93,6 +94,7 @@ namespace cql_teacher_server.CQL.Componentes
                                 }
                             }
                         }
+                        ambito.listadoExcepciones.AddLast(new Excepcion("indexoutexception", "No se encontro la key: " + ky));
                         ambito.mensajes.AddLast(ms.error("No se encontro la key: " + ky, l, c, "Semantico"));
                     }
                     else if(mp.GetType() == typeof(List))
@@ -127,14 +129,22 @@ namespace cql_teacher_server.CQL.Componentes
                                                 return "";
                                             }
                                         }
-                                        else ambito.mensajes.AddLast(ms.error("No se puede asignar null al tipo: " + temp.id,l,c,"Semantico"));
+                                        else ambito.mensajes.AddLast(ms.error("No se puede asignar null al tipo: " + temp.id, l, c, "Semantico"));
                                     }
-                                    else ambito.mensajes.AddLast(ms.error("No coinciden los tipos: " + temp.id + " con: " + tipoValor,l,c,"Semantico"));
-                                    
+                                    else ambito.mensajes.AddLast(ms.error("No coinciden los tipos: " + temp.id + " con: " + tipoValor, l, c, "Semantico"));
+
                                 }
-                                else ambito.mensajes.AddLast(ms.error("El index es mayor al tamaño de la lista", l, c, "Semantico"));
+                                else
+                                {
+                                    ambito.listadoExcepciones.AddLast(new Excepcion("indexoutexception", "El index es mayor al tamaño de la lista"));
+                                    ambito.mensajes.AddLast(ms.error("El index es mayor al tamaño de la lista", l, c, "Semantico"));
+                                }
                             }
-                            else ambito.mensajes.AddLast(ms.error("Index tiene que ser mayor a 0 : " + index, l, c, "Semantico"));
+                            else
+                            {
+                                ambito.listadoExcepciones.AddLast(new Excepcion("indexoutexception","Index tiene que ser mayor a 0 : " + index));
+                                ambito.mensajes.AddLast(ms.error("Index tiene que ser mayor a 0 : " + index, l, c, "Semantico"));
+                            }
                         }
                         else ambito.mensajes.AddLast(ms.error("Index tiene que ser de tipo numerico: " + ky, l, c, "Semantico"));
                     }
@@ -182,9 +192,17 @@ namespace cql_teacher_server.CQL.Componentes
                                     else ambito.mensajes.AddLast(ms.error("No coinciden los tipos: " + temp.id + " con: " + tipoValor, l, c, "Semantico"));
 
                                 }
-                                else ambito.mensajes.AddLast(ms.error("El index es mayor al tamaño de la lista", l, c, "Semantico"));
+                                else
+                                {
+                                    ambito.listadoExcepciones.AddLast(new Excepcion("indexoutexception", "El index es mayor al tamaño de la lista"));
+                                    ambito.mensajes.AddLast(ms.error("El index es mayor al tamaño de la lista", l, c, "Semantico"));
+                                }
                             }
-                            else ambito.mensajes.AddLast(ms.error("Index tiene que ser mayor a 0 : " + index, l, c, "Semantico"));
+                            else
+                            {
+                                ambito.listadoExcepciones.AddLast(new Excepcion("indexoutexception", "Index tiene que ser mayor a 0 : " + index));
+                                ambito.mensajes.AddLast(ms.error("Index tiene que ser mayor a 0 : " + index, l, c, "Semantico"));
+                            }
                         }
                         else ambito.mensajes.AddLast(ms.error("Index tiene que ser de tipo numerico: " + ky, l, c, "Semantico"));
                     }

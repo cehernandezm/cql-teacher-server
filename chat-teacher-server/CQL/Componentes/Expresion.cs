@@ -9,6 +9,7 @@ using cql_teacher_server.CHISON.Componentes;
 using cql_teacher_server.CHISON;
 using cql_teacher_server.CQL.Componentes.Funcion_Procedure;
 using cql_teacher_server.CQL.Componentes.Cursor;
+using cql_teacher_server.CQL.Componentes.Try_Catch;
 
 namespace cql_teacher_server.CQL.Componentes
 {
@@ -277,6 +278,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
+                    ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede sumar " + op1.ToString() + " con " + op2.ToString()));
                     mensajes.AddLast(mes.error("No se puede sumar " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                     return null;
                 }
@@ -348,6 +350,7 @@ namespace cql_teacher_server.CQL.Componentes
                 }
                 else
                 {
+                    ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede restar " + op1.ToString() + " con " + op2.ToString()));
                     Mensaje mes = new Mensaje();
                     mensajes.AddLast(mes.error("No se puede restar " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                     return null;
@@ -363,6 +366,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
+                    ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede multiplicar " + op1.ToString() + " con " + op2.ToString()));
                     mensajes.AddLast(mes.error("No se puede multiplicar " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                     return null;
                 }
@@ -377,6 +381,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
+                    ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede obtener una potencia de " + op1.ToString() + " con " + op2.ToString()));
                     mensajes.AddLast(mes.error("No se puede obtener una potencia de " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                     return null;
                 }
@@ -393,6 +398,7 @@ namespace cql_teacher_server.CQL.Componentes
                     else
                     {
                         Mensaje mes = new Mensaje();
+                        ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede obtener el modulo de " + op1.ToString() + " con " + op2.ToString()));
                         mensajes.AddLast(mes.error("No se puede obtener el modulo de  " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                         return null;
                     }
@@ -400,6 +406,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
+                    ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede obtener el modulo de " + op1.ToString() + " con " + op2.ToString()));
                     mensajes.AddLast(mes.error("No se puede obtener el modulo un divisor 0", linea1, columna1, "Semantico"));
                     return null;
                 }
@@ -417,6 +424,7 @@ namespace cql_teacher_server.CQL.Componentes
                     else
                     {
                         Mensaje mes = new Mensaje();
+                        ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede dividir " + op1.ToString() + " con " + op2.ToString()));
                         mensajes.AddLast(mes.error("No se puede dividir  " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                         return null;
                     }
@@ -424,6 +432,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
+                    ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede dividir " + op1.ToString() + " con " + op2.ToString()));
                     mensajes.AddLast(mes.error("No se puede dividir entre 0", linea1, columna1, "Semantico"));
                     return null;
                 }
@@ -440,6 +449,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
+                    ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede conocer el mayor de " + op1.ToString() + " con " + op2.ToString()));
                     mensajes.AddLast(mes.error("No se puede conocer el mayor de   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                     return null;
                 }
@@ -456,6 +466,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
+                    ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede conocer el menor de " + op1.ToString() + " con " + op2.ToString()));
                     mensajes.AddLast(mes.error("No se puede conocer el menor de   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                     return null;
                 }
@@ -472,6 +483,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
+                    ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede conocer el mayor igual de " + op1.ToString() + " con " + op2.ToString()));
                     mensajes.AddLast(mes.error("No se puede conocer el mayor igual de   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                     return null;
                 }
@@ -488,6 +500,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
+                    ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede conocer el menor igual de " + op1.ToString() + " con " + op2.ToString()));
                     mensajes.AddLast(mes.error("No se puede conocer el menor igual de   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                     return null;
                 }
@@ -512,6 +525,7 @@ namespace cql_teacher_server.CQL.Componentes
                     else
                     {
                         Mensaje mes = new Mensaje();
+                        ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede conocer el igual igual " + op1.ToString() + " con " + op2.ToString()));
                         mensajes.AddLast(mes.error("No se puede conocer si es igual   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                         return null;
                     }
@@ -525,6 +539,7 @@ namespace cql_teacher_server.CQL.Componentes
                     else
                     {
                         Mensaje mes = new Mensaje();
+                        ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede conocer si es igual " + op1.ToString() + " con " + op2.ToString()));
                         mensajes.AddLast(mes.error("No se puede conocer si es igual   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                         return null;
                     }
@@ -539,6 +554,7 @@ namespace cql_teacher_server.CQL.Componentes
                     else
                     {
                         Mensaje mes = new Mensaje();
+                        ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede conocer si es igual " + op1.ToString() + " con " + op2.ToString()));
                         mensajes.AddLast(mes.error("No se puede conocer si es igual   " + op2.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                         return null;
                     }
@@ -565,6 +581,7 @@ namespace cql_teacher_server.CQL.Componentes
                     else
                     {
                         Mensaje mes = new Mensaje();
+                        ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede concoer si es diferente " + op1.ToString() + " con " + op2.ToString()));
                         mensajes.AddLast(mes.error("No se puede conocer si es diferente   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                         return null;
                     }
@@ -579,6 +596,7 @@ namespace cql_teacher_server.CQL.Componentes
                     else
                     {
                         Mensaje mes = new Mensaje();
+                        ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede concoer si es diferente " + op1.ToString() + " con " + op2.ToString()));
                         mensajes.AddLast(mes.error("No se puede conocer si es diferente   " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                         return null;
                     }
@@ -592,6 +610,7 @@ namespace cql_teacher_server.CQL.Componentes
                     else
                     {
                         Mensaje mes = new Mensaje();
+                        ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede concocer si es diferente " + op1.ToString() + " con " + op2.ToString()));
                         mensajes.AddLast(mes.error("No se puede conocer si es diferente   " + op2.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                         return null;
                     }
@@ -605,6 +624,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
+                    ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede aplicar (OR) de " + op1.ToString() + " con " + op2.ToString()));
                     mensajes.AddLast(mes.error("No se puede aplicar (OR) " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                     return null;
                 }
@@ -616,6 +636,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
+                    ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede aplicar (AND) " + op1.ToString() + " con " + op2.ToString()));
                     mensajes.AddLast(mes.error("No se puede aplicar (AND) " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                     return null;
                 }
@@ -632,6 +653,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
+                    ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede aplicar (XOR) " + op1.ToString() + " con " + op2.ToString()));
                     mensajes.AddLast(mes.error("No se puede aplicar (XOR) " + op1.ToString() + " con " + op2.ToString(), linea1, columna1, "Semantico"));
                     return null;
                 }
@@ -644,6 +666,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje mes = new Mensaje();
+                    ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede convertir a negativo " + op1.ToString() ));
                     mensajes.AddLast(mes.error("No se puede convertir a negativo a  " + op1.ToString(), linea1, columna1, "Semantico"));
                     return null;
                 }
@@ -654,6 +677,7 @@ namespace cql_teacher_server.CQL.Componentes
                 if (op1.GetType() == typeof(Boolean)) return !(Boolean)op1;
                 else
                 {
+                    ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede negar " + op1.ToString()));
                     Mensaje mes = new Mensaje();
                     mensajes.AddLast(mes.error("No se puede convertir a negar a  " + op1.ToString(), linea1, columna1, "Semantico"));
                     return null;
@@ -725,6 +749,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje men = new Mensaje();
+                    ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede castear " + op1.ToString() + " to  " + op2.ToString()));
                     mensajes.AddLast(men.error("No se puede castear: " + op1 + " to (" + casteo + ")", linea1, columna1, "Semantico"));
                     return null;
                 }
@@ -739,7 +764,7 @@ namespace cql_teacher_server.CQL.Componentes
                     if (a != null)
                     {
                         LinkedList<Atributo> lista = getAtributos(a, db, mensajes);
-                        if (lista != null) return new InstanciaUserType(tipoA, lista);
+                        if (lista != null) return new InstanciaUserType(tipoA, null);
                         else return null;
 
                     }
@@ -763,12 +788,16 @@ namespace cql_teacher_server.CQL.Componentes
                 if (op1.GetType() == typeof(InstanciaUserType))
                 {
                     InstanciaUserType temp = (InstanciaUserType)op1;
-                    foreach (Atributo a in temp.lista)
+                    if(temp.lista != null)
                     {
-                        if (a.nombre.Equals(casteo)) return a.valor;
+                        foreach (Atributo a in temp.lista)
+                        {
+                            if (a.nombre.Equals(casteo)) return a.valor;
+                        }
+                        Mensaje men = new Mensaje();
+                        mensajes.AddLast(men.error("No se encontro el atributo: " + casteo, linea1, columna1, "Semantico"));
                     }
-                    Mensaje men = new Mensaje();
-                    mensajes.AddLast(men.error("No se encontro el atributo: " + casteo, linea1, columna1, "Semantico"));
+                    
                     return null;
                 }
                 else
@@ -784,19 +813,23 @@ namespace cql_teacher_server.CQL.Componentes
                 if (op1.GetType() == typeof(InstanciaUserType))
                 {
                     InstanciaUserType temp = (InstanciaUserType)op1;
-                    foreach (Atributo a in temp.lista)
+                    if(temp.lista != null)
                     {
-                        if (a.nombre.Equals(casteo))
+                        foreach (Atributo a in temp.lista)
                         {
-                            if (a.valor != null)
+                            if (a.nombre.Equals(casteo))
                             {
-                                if (a.valor.GetType() == typeof(InstanciaUserType)) return (InstanciaUserType)a.valor;
+                                if (a.valor != null)
+                                {
+                                    if (a.valor.GetType() == typeof(InstanciaUserType)) return (InstanciaUserType)a.valor;
+                                }
+                                return (InstanciaUserType)op1;
                             }
-                            return (InstanciaUserType)op1;
                         }
+                        Mensaje men = new Mensaje();
+                        mensajes.AddLast(men.error("No se encontro el atributo: " + casteo, linea1, columna1, "Semantico"));
                     }
-                    Mensaje men = new Mensaje();
-                    mensajes.AddLast(men.error("No se encontro el atributo: " + casteo, linea1, columna1, "Semantico"));
+                   
                     return null;
                 }
                 else
@@ -868,6 +901,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje men = new Mensaje();
+                    ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede hacer el incremento a " + casteo));
                     mensajes.AddLast(men.error("No se puede hacer un incremento en la variable: " + casteo + " porque no es de tipo entero", linea1, columna1, "Semantico"));
                     return null;
                 }
@@ -890,6 +924,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else
                 {
                     Mensaje men = new Mensaje();
+                    ambito.listadoExcepciones.AddLast(new Excepcion("arithmeticexception", "No se puede hacer decremento a " + casteo));
                     mensajes.AddLast(men.error("No se puede hacer un decremento en la variable: " + casteo + " porque no es de tipo entero", linea1, columna1, "Semantico"));
                     return null;
                 }
@@ -986,6 +1021,7 @@ namespace cql_teacher_server.CQL.Componentes
                         {
                             if (keyValue.key.Equals(op2)) return keyValue.value;
                         }
+                        ambito.listadoExcepciones.AddLast(new Excepcion("indexoutexception", "No se encontro la key"));
                         mensajes.AddLast(ms.error("No se encontro la key: " + op2, linea1, columna1, "Semantico"));
                         return null;
                     }
@@ -1000,9 +1036,17 @@ namespace cql_teacher_server.CQL.Componentes
                                 if (index > -1)
                                 {
                                     if (index < temp.lista.Count()) return temp.lista.ElementAt(index);
-                                    else mensajes.AddLast(ms.error("El index supera el tamaño de la lista", linea1, columna1, "Semantico"));
+                                    else
+                                    {
+                                        ambito.listadoExcepciones.AddLast(new Excepcion("indexoutexception", "El index es mayor al tamaño de la lista"));
+                                        mensajes.AddLast(ms.error("El index supera el tamaño de la lista", linea1, columna1, "Semantico"));
+                                    }
                                 }
-                                else mensajes.AddLast(ms.error("El index debe ser positivo: " + index, linea1, columna1, "Semantico"));
+                                else
+                                {
+                                    ambito.listadoExcepciones.AddLast(new Excepcion("indexoutexception", "Index tiene que ser mayor a 0 : " + index));
+                                    mensajes.AddLast(ms.error("El index debe ser positivo: " + index, linea1, columna1, "Semantico"));
+                                }
                             }
                             else mensajes.AddLast(ms.error("El index debe ser tipo numerico no se reconoce: " + op2, linea1, columna1, "Semantico"));
                         }
@@ -1019,9 +1063,17 @@ namespace cql_teacher_server.CQL.Componentes
                                 if (index > -1)
                                 {
                                     if (index < temp.datos.Count()) return temp.datos.ElementAt(index);
-                                    else mensajes.AddLast(ms.error("El index supera el tamaño de la lista", linea1, columna1, "Semantico"));
+                                    else
+                                    {
+                                        ambito.listadoExcepciones.AddLast(new Excepcion("indexoutexception", "El index es mayor al tamaño de la lista"));
+                                        mensajes.AddLast(ms.error("El index supera el tamaño de la lista", linea1, columna1, "Semantico"));
+                                    }
                                 }
-                                else mensajes.AddLast(ms.error("El index debe ser positivo: " + index, linea1, columna1, "Semantico"));
+                                else
+                                {
+                                    ambito.listadoExcepciones.AddLast(new Excepcion("indexoutexception", "Index tiene que ser mayor a 0 : " + index));
+                                    mensajes.AddLast(ms.error("El index debe ser positivo: " + index, linea1, columna1, "Semantico"));
+                                }
                             }
                             else mensajes.AddLast(ms.error("El index debe ser tipo numerico no se reconoce: " + op2, linea1, columna1, "Semantico"));
                         }
@@ -1029,7 +1081,11 @@ namespace cql_teacher_server.CQL.Componentes
                     }
                     else mensajes.AddLast(ms.error("No se reconoce este tipo de Collection: " + op1.ToString(), linea1, columna1, "Semantico"));
                 }
-                else mensajes.AddLast(ms.error("No se puede aplicar GET a un NULL", linea1, columna1, "Semantico"));
+                else
+                {
+                    ambito.listadoExcepciones.AddLast(new Excepcion("nullpointerexception","No se puede aplicar get a un null"));
+                    mensajes.AddLast(ms.error("No se puede aplicar GET a un NULL", linea1, columna1, "Semantico"));
+                }
             }
             //-----------------------------------------------------------EXPRESION . SIZE ------------------------------------------------------
             else if (operacion.Equals("SIZE"))
@@ -1043,6 +1099,7 @@ namespace cql_teacher_server.CQL.Componentes
                     else mensajes.AddLast(ms.error("No se puede aplicar Size a un tipo no Collection: " + op1, linea1, columna1, "Semantico"));
 
                 }
+                ambito.listadoExcepciones.AddLast(new Excepcion("nullpointerexception", "No se puede aplicar size a un null"));
                 mensajes.AddLast(ms.error("No se puede aplicar SIZE en null", linea1, columna1, "Semantico"));
                 return null;
             }
@@ -1081,7 +1138,11 @@ namespace cql_teacher_server.CQL.Componentes
                     }
                     else mensajes.AddLast(ms.error("No se reconoce este tipo de Collection: " + op1.ToString(), linea1, columna1, "Semantico"));
                 }
-                else mensajes.AddLast(ms.error("No se puede aplicar GET a un NULL", linea1, columna1, "Semantico"));
+                else
+                {
+                    ambito.listadoExcepciones.AddLast(new Excepcion("nullpointerexception", "No se puede aplicar contains a un null"));
+                    mensajes.AddLast(ms.error("No se puede aplicar contains a un NULL", linea1, columna1, "Semantico"));
+                }
             }
             //-----------------------------------------------------------EXPRESION . LENGTH ------------------------------------------------------
             else if (operacion.Equals("LENGTH"))
@@ -1093,6 +1154,7 @@ namespace cql_teacher_server.CQL.Componentes
                     else mensajes.AddLast(ms.error("No se puede aplicar Length a un tipo no String: " + op1, linea1, columna1, "Semantico"));
 
                 }
+                ambito.listadoExcepciones.AddLast(new Excepcion("nullpointerexception", "No se puede aplicar length a un null"));
                 mensajes.AddLast(ms.error("No se puede aplicar Length en null", linea1, columna1, "Semantico"));
                 return null;
             }
@@ -1106,6 +1168,7 @@ namespace cql_teacher_server.CQL.Componentes
                     else mensajes.AddLast(ms.error("No se puede aplicar toUpperCase a un tipo no String: " + op1, linea1, columna1, "Semantico"));
 
                 }
+                ambito.listadoExcepciones.AddLast(new Excepcion("nullpointerexception", "No se puede aplicar touppercase a un null"));
                 mensajes.AddLast(ms.error("No se puede aplicar toUpperCase en null", linea1, columna1, "Semantico"));
                 return null;
             }
@@ -1119,6 +1182,7 @@ namespace cql_teacher_server.CQL.Componentes
                     else mensajes.AddLast(ms.error("No se puede aplicar toLowerCase a un tipo no String: " + op1, linea1, columna1, "Semantico"));
 
                 }
+                ambito.listadoExcepciones.AddLast(new Excepcion("nullpointerexception", "No se puede aplicar tolowercase a un null"));
                 mensajes.AddLast(ms.error("No se puede aplicar toLowerCase en null", linea1, columna1, "Semantico"));
                 return null;
             }
@@ -1140,7 +1204,12 @@ namespace cql_teacher_server.CQL.Componentes
                     else mensajes.AddLast(ms.error("startsWith solo aplica a string no se reconoce: " + op1, linea1, columna1, "Semantico"));
 
                 }
-                else mensajes.AddLast(ms.error("No se puede aplicar startsWith a un null", linea1, columna1, "Semantico"));
+                else
+                {
+                    ambito.listadoExcepciones.AddLast(new Excepcion("nullpointerexception", "No se puede aplicar startswith a un null"));
+
+                    mensajes.AddLast(ms.error("No se puede aplicar startsWith a un null", linea1, columna1, "Semantico"));
+                }
                 return null;
             }
             //--------------------------------------------------------- EXPRESION . ENDSWITH -----------------------------------------------------------
@@ -1161,7 +1230,12 @@ namespace cql_teacher_server.CQL.Componentes
                     else mensajes.AddLast(ms.error("endsWith solo aplica a string no se reconoce: " + op1, linea1, columna1, "Semantico"));
 
                 }
-                else mensajes.AddLast(ms.error("No se puede aplicar endsWith a un null", linea1, columna1, "Semantico"));
+                else
+                {
+                    ambito.listadoExcepciones.AddLast(new Excepcion("nullpointerexception", "No se puede aplicar endswith a un null"));
+
+                    mensajes.AddLast(ms.error("No se puede aplicar endsWith a un null", linea1, columna1, "Semantico"));
+                }
                 return null;
             }
             //---------------------------------------------------------- EXPRESION . SUBSTRING ( EXPRESION , EXPRESION )
@@ -1173,7 +1247,7 @@ namespace cql_teacher_server.CQL.Componentes
                     if (op1.GetType() == typeof(string))
                     {
                         string cadena = (string)op1;
-                        object fin = (condicion == null) ? null : condicion.ejecutar(ts,ambito, tsT);
+                        object fin = (condicion == null) ? null : condicion.ejecutar(ts, ambito, tsT);
                         if (op2 != null && fin != null)
                         {
                             if (op2.GetType() == typeof(int) && fin.GetType() == typeof(int))
@@ -1199,7 +1273,12 @@ namespace cql_teacher_server.CQL.Componentes
                     else mensajes.AddLast(ms.error("No se puede obtener un substring de: " + op1, linea1, columna1, "Semantico"));
 
                 }
-                else mensajes.AddLast(ms.error("No se puede obtener un substring de un null", linea1, columna1, "Semantico"));
+                else
+                {
+                    ambito.listadoExcepciones.AddLast(new Excepcion("nullpointerexception", "No se puede aplicar substring a un null"));
+
+                    mensajes.AddLast(ms.error("No se puede obtener un substring de un null", linea1, columna1, "Semantico"));
+                }
             }
             //-----------------------------------------------------------EXPRESION . GETYEAR ------------------------------------------------------
             else if (operacion.Equals("GETYEAR"))
@@ -1211,6 +1290,8 @@ namespace cql_teacher_server.CQL.Componentes
                     else mensajes.AddLast(ms.error("No se puede aplicar GetYear a un tipo no date: " + op1, linea1, columna1, "Semantico"));
 
                 }
+                ambito.listadoExcepciones.AddLast(new Excepcion("nullpointerexception", "No se puede aplicar getyear a un null"));
+
                 mensajes.AddLast(ms.error("No se puede aplicar GetYear en null", linea1, columna1, "Semantico"));
                 return null;
             }
@@ -1224,6 +1305,8 @@ namespace cql_teacher_server.CQL.Componentes
                     else mensajes.AddLast(ms.error("No se puede aplicar getMonth a un tipo no date: " + op1, linea1, columna1, "Semantico"));
 
                 }
+                ambito.listadoExcepciones.AddLast(new Excepcion("nullpointerexception", "No se puede aplicar getmonth a un null"));
+
                 mensajes.AddLast(ms.error("No se puede aplicar getMonth en null", linea1, columna1, "Semantico"));
                 return null;
             }
@@ -1237,6 +1320,8 @@ namespace cql_teacher_server.CQL.Componentes
                     else mensajes.AddLast(ms.error("No se puede aplicar getDay a un tipo no date: " + op1, linea1, columna1, "Semantico"));
 
                 }
+                ambito.listadoExcepciones.AddLast(new Excepcion("nullpointerexception", "No se puede aplicar getday a un null"));
+
                 mensajes.AddLast(ms.error("No se puede aplicar getDay en null", linea1, columna1, "Semantico"));
                 return null;
             }
@@ -1250,6 +1335,8 @@ namespace cql_teacher_server.CQL.Componentes
                     else mensajes.AddLast(ms.error("No se puede aplicar getHour a un tipo no time: " + op1, linea1, columna1, "Semantico"));
 
                 }
+                ambito.listadoExcepciones.AddLast(new Excepcion("nullpointerexception", "No se puede aplicar gethour a un null"));
+
                 mensajes.AddLast(ms.error("No se puede aplicar getHour en null", linea1, columna1, "Semantico"));
                 return null;
             }
@@ -1263,6 +1350,8 @@ namespace cql_teacher_server.CQL.Componentes
                     else mensajes.AddLast(ms.error("No se puede aplicar getMinuts a un tipo no time: " + op1, linea1, columna1, "Semantico"));
 
                 }
+                ambito.listadoExcepciones.AddLast(new Excepcion("nullpointerexception", "No se puede aplicar getminuts a un null"));
+
                 mensajes.AddLast(ms.error("No se puede aplicar getMinuts en null", linea1, columna1, "Semantico"));
                 return null;
             }
@@ -1276,7 +1365,24 @@ namespace cql_teacher_server.CQL.Componentes
                     else mensajes.AddLast(ms.error("No se puede aplicar getSeconds a un tipo no time: " + op1, linea1, columna1, "Semantico"));
 
                 }
+                ambito.listadoExcepciones.AddLast(new Excepcion("nullpointerexception", "No se puede aplicar getseconds a un null"));
+
                 mensajes.AddLast(ms.error("No se puede aplicar getSeconds en null", linea1, columna1, "Semantico"));
+                return null;
+            }
+            //-----------------------------------------------------------EXPRESION . GETSECONDS ------------------------------------------------------
+            else if (operacion.Equals("MESSAGE"))
+            {
+                Mensaje ms = new Mensaje();
+                if (op1 != null)
+                {
+                    if (op1.GetType() == typeof(Excepcion)) return ((Excepcion)op1).tipo + ": " + ((Excepcion)op1).detalle;
+                    else mensajes.AddLast(ms.error("No se puede aplicar Message a un tipo no Exception: " + op1, linea1, columna1, "Semantico"));
+
+                }
+                ambito.listadoExcepciones.AddLast(new Excepcion("nullpointerexception", "No se puede aplicar message a un null"));
+
+                mensajes.AddLast(ms.error("No se puede aplicar message en null", linea1, columna1, "Semantico"));
                 return null;
             }
             //------------------------------------------------------- TODAY ( ) -----------------------------------------------------------------------
@@ -1319,6 +1425,8 @@ namespace cql_teacher_server.CQL.Componentes
                     TablaSelect tabla = (TablaSelect)res;
                     return tabla.datos.Count();
                 }
+                ambito.listadoExcepciones.AddLast(new Excepcion("nullpointerexception", "No se puede aplicar count a un null"));
+
                 return null;
             }
             //---------------------------------------------------MIN ------------------------------------------------------------------------
@@ -1339,6 +1447,8 @@ namespace cql_teacher_server.CQL.Componentes
                     else mensajes.AddLast(mensa.error("La tabla tiene que tener almenos un registro", linea1, columna1, "Semantico"));
 
                 }
+                ambito.listadoExcepciones.AddLast(new Excepcion("nullpointerexception", "No se puede aplicar min a un null"));
+
                 return null;
             }
             //---------------------------------------------------MAX ------------------------------------------------------------------------
@@ -1359,6 +1469,8 @@ namespace cql_teacher_server.CQL.Componentes
                     else mensajes.AddLast(mensa.error("La tabla tiene que tener almenos un registro", linea1, columna1, "Semantico"));
 
                 }
+                ambito.listadoExcepciones.AddLast(new Excepcion("nullpointerexception", "No se puede aplicar max a un null"));
+
                 return null;
             }
             //---------------------------------------------------SUM ------------------------------------------------------------------------
@@ -1379,6 +1491,8 @@ namespace cql_teacher_server.CQL.Componentes
                     else mensajes.AddLast(mensa.error("La tabla tiene que tener almenos un registro", linea1, columna1, "Semantico"));
 
                 }
+                ambito.listadoExcepciones.AddLast(new Excepcion("nullpointerexception", "No se puede aplicar sum a un null"));
+
                 return null;
             }
             //---------------------------------------------------SUM ------------------------------------------------------------------------
@@ -1399,6 +1513,8 @@ namespace cql_teacher_server.CQL.Componentes
                     else mensajes.AddLast(mensa.error("La tabla tiene que tener almenos un registro", linea1, columna1, "Semantico"));
 
                 }
+                ambito.listadoExcepciones.AddLast(new Excepcion("nullpointerexception", "No se puede aplicar avg a un null"));
+
                 return null;
             }
             //---------------------------------------------------- LLAMADA A FUNCIONES --------------------------------------------------------
@@ -1484,7 +1600,12 @@ namespace cql_teacher_server.CQL.Componentes
                     }
                     else mensajes.AddLast(ms.error("El procedure: " + idAs + " no existe en esta base de datos: " + ambito.baseD, linea1, columna1, "Semantico"));
                 }
-                else mensajes.AddLast(ms.error("No existe la base de datos: " + ambito.baseD, linea1, columna1, "Semantico"));
+                else
+                {
+                    ambito.listadoExcepciones.AddLast(new Excepcion("usedbexception", "No existe la base de datos: " + ambito.baseD + " o no se ha usado el comando use"));
+
+                    ambito.mensajes.AddLast(ms.error("La base de datos ha usar: " + ambito.baseD + " no existe", linea1, columna1, "Semantico"));
+                }
 
                 return 0;
             }
@@ -1524,6 +1645,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else if (a.ToString().Equals("none"))
                 {
                     Mensaje me = new Mensaje();
+                    ambito.listadoExcepciones.AddLast(new Excepcion("columnexception", "el campo " + valor + " no existe en este ambito"));
                     mensajes.AddLast(me.error("el campo " + valor + " no existe en este ambito", linea1, columna1, "Semantico"));
                     return null;
                 }
