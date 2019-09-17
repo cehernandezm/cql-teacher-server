@@ -13,147 +13,92 @@ namespace cql_teacher_server.CHISON.Arbol
     {
         
 
-        public object analizar(ParseTreeNode raiz)
+        public object analizar(ParseTreeNode raiz, LinkedList<string> mensajes)
         {
             if(raiz != null)
             {
-                string etiqueta = raiz.ToString().Split(' ')[0].ToLower();
-
+                string etiqueta = raiz.Term.Name.ToLower();
+                int l = 0;
+                int c = 0;
                 switch (etiqueta)
                 {
-                    //-------------------------------------- objetos -------------------------------------------------------------------
-                    case "objetos":
-                        //-------------------------- objetos , objeto -----------------------------------------------------------------
-                        if (raiz.ChildNodes.Count() == 3)
+
+                    case "inobjetos":
+                        ParseTreeNode hijo;
+                        if (raiz.ChildNodes.Count() == 5)
                         {
-                            LinkedList<Atributo> listaA = (LinkedList<Atributo>)analizar(raiz.ChildNodes.ElementAt(0));
-                            Atributo aa = (Atributo)analizar(raiz.ChildNodes.ElementAt(2));
-                            if (aa != null) listaA.AddLast(aa);
-                            return listaA;
+                            analizar(raiz.ChildNodes.ElementAt(0),mensajes);
+                            hijo = raiz.ChildNodes.ElementAt(3);
                         }
-                        else if (raiz.ChildNodes.Count() == 1)
+                        else hijo = raiz.ChildNodes.ElementAt(1);
+                        object res = analizar(hijo,mensajes);
+                        if(res != null)
                         {
-                            //---------------------------- objeto -----------------------------------------------------------------------
-                            LinkedList<Atributo> listaA = new LinkedList<Atributo>();
-                            Atributo aa = (Atributo)analizar(raiz.ChildNodes.ElementAt(0));
-                            if (aa != null) listaA.AddLast(aa);
-                            return listaA;
-                        }
-                        break;
-
-                    //------------------------------------ OBJETO -----------------------------------------------------------------------
-                    case "objeto":
-
-
-                        string token = raiz.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                        token = token.TrimEnd();
-
-                        Object valor = null;
-                        string tipo = "";
-                        ParseTreeNode hijoT = raiz.ChildNodes.ElementAt(2);
-                        if (hijoT.ChildNodes.Count() == 2) // -------------------------------------------- [ ] -------------------------------------------------------
-                        {
-                            if (token.Equals("Data"))
+                            l = raiz.ChildNodes.ElementAt(2).Token.Location.Line;
+                            c = raiz.ChildNodes.ElementAt(2).Token.Location.Column;
+                            if (res.GetType() == typeof(LinkedList<Atributo>))
                             {
-                                tipo = "OBJETOS";
-                                valor = new Objeto();
-                            }
-                            else valor = new Objeto();
-                        }
-                        else if (hijoT.ChildNodes.Count() == 3) //---------------------- [ TABLAS/importar] ------------------------------------------------------------------
-                        {
-                            if (token.Equals("Data"))
-                            {
-                                string token1 = hijoT.ChildNodes.ElementAt(1).ToString().Split(' ')[0].ToLower();
-                                tipo = "OBJETOS";
-                                AnalizarTablas analisis = new AnalizarTablas();
-                                if (token1.Equals("importar"))
+                                LinkedList<Atributo> temp = (LinkedList<Atributo>)res;
+                                Atributo atri = getValor("name", temp);
+                                string nombreDB = "";
+                                Objeto info;
+                                if(atri == null)
                                 {
-                                    string direccion = hijoT.ChildNodes.ElementAt(1).ChildNodes.ElementAt(2).ToString().Split('(')[0];
-                                    direccion = direccion.TrimEnd();
-                                    direccion += ".chison";
-                                    object res = analizarImport(direccion);
-                                    if (res != null) valor = (Objeto)analisis.analizar((ParseTreeNode)res);
-                                    else valor = new Objeto();
-                                }
-                                else valor = (Objeto)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
-
-                                
-                            }
-                            else valor = new Objeto();
-
-                        }
-                        else
-                        {
-
-                            tipo = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[1];
-
-                            if (tipo.Equals("hora)"))
-                            {
-                                tipo = "HORA";
-                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                                valorTemp = valorTemp.Replace("\'", string.Empty);
-                                valorTemp = valorTemp.TrimEnd();
-                                valorTemp = valorTemp.TrimStart();
-                                valor = (string)valorTemp;
-                            }
-                            else if (tipo.Equals("fecha)"))
-                            {
-                                tipo = "FECHA";
-                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                                valorTemp = valorTemp.Replace("\'", string.Empty);
-                                valorTemp = valorTemp.TrimEnd();
-                                valorTemp = valorTemp.TrimStart();
-                                valor = (string)valorTemp;
-                            }
-                            else if (tipo.Equals("cadena)"))
-                            {
-                                tipo = "CADENA";
-                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                                valorTemp = valorTemp.TrimEnd();
-                                valor = (string)valorTemp;
-                            }
-                            else if (tipo.Equals("entero)"))
-                            {
-                                tipo = "ENTERO";
-                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                                valorTemp = valorTemp.TrimEnd();
-                                valor = (string)valorTemp;
-                            }
-                            else if (tipo.Equals("decimal)"))
-                            {
-                                tipo = "DECIMAL";
-                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                                valorTemp = valorTemp.TrimEnd();
-                                valor = (string)valorTemp;
-                            }
-                            else if (tipo.Equals("Key symbol)"))
-                            {
-                                tipo = "BOOLEAN";
-                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                                valorTemp = valorTemp.Replace("\"", string.Empty);
-                                valorTemp = valorTemp.TrimEnd();
-                                valorTemp = valorTemp.TrimStart();
-                                valor = (string)valorTemp;
-                            }
-                            if (token.Equals("NAME"))
-                            {
-                                if (!tipo.Equals("CADENA"))
-                                {
-                                    System.Diagnostics.Debug.WriteLine("ERROR NAME SOLO ACEPTA UN VALOR CADENA NO SE ESPERABA "
-                                        + valor + " , Linea : " + hijoT.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
-                                        + hijoT.ChildNodes.ElementAt(0).Token.Location.Column);
+                                    mensajes.AddLast("Se necesita un nombre para la base de datos Linea: " + l + " Columna: " + c);
                                     return null;
                                 }
-
+                                nombreDB = atri.valor.ToString();
+                                atri = getValor("data", temp);
+                                if(atri == null)
+                                {
+                                    mensajes.AddLast("Se necesita data para la base de datos Linea: " + l + " Columna: " + c);
+                                    return null;
+                                }
+                                info = (Objeto)atri.valor;
+                                TablaBaseDeDatos.global.AddLast(new BaseDeDatos(nombreDB, info));
+                                return "";
                             }
                         }
-                        Atributo a = new Atributo(token, valor, tipo);
-                        return a;
                         break;
 
-                    case "tipo":
+
+
+                    case "objetos":
+                        LinkedList<Atributo> listaAtributos = new LinkedList<Atributo>();
+                        object resultado;
+                        if (raiz.ChildNodes.Count() == 3)
+                        {
+                            listaAtributos = (LinkedList<Atributo>)analizar(raiz.ChildNodes.ElementAt(0), mensajes);
+                            resultado = analizar(raiz.ChildNodes.ElementAt(2),mensajes);
+                        }
+                        else resultado = analizar(raiz.ChildNodes.ElementAt(0),mensajes);
+                        if(resultado != null) listaAtributos.AddLast((Atributo)resultado);
+                        
+                        return listaAtributos;
+
+
+
+                    case "objeto":
+                        string key = raiz.ChildNodes.ElementAt(0).Token.Text.ToLower().TrimEnd('\"').TrimStart('\"').TrimEnd().TrimStart();
+                        l = raiz.ChildNodes.ElementAt(0).Token.Location.Line;
+                        c = raiz.ChildNodes.ElementAt(0).Token.Location.Column;
+                        if (key.Equals("name"))
+                        {
+                            string name = raiz.ChildNodes.ElementAt(2).ChildNodes.ElementAt(0).Token.Text.ToLower();
+                            name = name.TrimStart('\"').TrimEnd('\"').TrimEnd().TrimStart();
+                            return new Atributo("name", name, "");
+                        }
+                        else if (key.Equals("data"))
+                        {
+                            AnalizarObject analisis = new AnalizarObject();
+                            object resData = analisis.analizar(raiz.ChildNodes.ElementAt(2),mensajes);
+                            if (resData != null) return new Atributo("data", resData, "");
+                            mensajes.AddLast("DATA necesita tablas,procedures y USER TYPES Linea : " + l + " Columna:  " + c);
+                        }
+                        else mensajes.AddLast("No se reconoce el atributo para una base de datos: " + key + " Linea: " + l + " Columna: " + c);
                         break;
+
+
                 }
             }
             return null;
@@ -200,7 +145,14 @@ namespace cql_teacher_server.CHISON.Arbol
             return null;
         }
 
-
+        public Atributo getValor(string nombre,LinkedList<Atributo> lista)
+        {
+            foreach(Atributo a in lista)
+            {
+                if (a.nombre.Equals(nombre)) return a;
+            }
+            return null;
+        }
 
 
     }

@@ -69,7 +69,6 @@ namespace cql_teacher_server.CHISON.Arbol
                             tipo = "PERMISSIONS";
                             if (token.Equals("PERMISSIONS"))
                             {
-
                                 if (token1.Equals("importar"))
                                 {
                                     string direccion = hijoT.ChildNodes.ElementAt(1).ChildNodes.ElementAt(2).ToString().Split('(')[0];

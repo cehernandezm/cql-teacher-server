@@ -111,17 +111,7 @@ namespace cql_teacher_server.CHISON.Arbol
                             else if(token.Equals("ATTRS") && cql_type.Equals("OBJECT"))
                             {
                                 tipo = "ATTRS";
-                                AnalizarObject analisis = new AnalizarObject();
-                                if (token1.Equals("importar"))
-                                {
-                                    string direccion = hijoT.ChildNodes.ElementAt(1).ChildNodes.ElementAt(2).ToString().Split('(')[0];
-                                    direccion = direccion.TrimEnd();
-                                    direccion += ".chison";
-                                    object res = analizarImport(direccion);
-                                    valor = (LinkedList<Attrs>)analisis.analizar((ParseTreeNode)res);
-
-                                }
-                                else valor = (LinkedList<Attrs>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
+                               
                             }
                             else if(token.Equals("PARAMETERS") && cql_type.Equals("PROCEDURE"))
                             {

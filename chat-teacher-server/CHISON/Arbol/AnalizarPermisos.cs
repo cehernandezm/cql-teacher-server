@@ -129,7 +129,7 @@ namespace cql_teacher_server.CHISON.Arbol
                         ParseTreeNode hijoTa;
                         if (raiz.ChildNodes.Count() == 3)
                         {
-                           listaBases=(LinkedList<string>)analizar(raiz.ChildNodes.ElementAt(0));
+                            listaBases = (LinkedList<string>)analizar(raiz.ChildNodes.ElementAt(0));
 
                             hijoTa = raiz.ChildNodes.ElementAt(2);
                         }
@@ -146,7 +146,7 @@ namespace cql_teacher_server.CHISON.Arbol
                             string nombre = (string)buscarAtributo(listaAtri, "NAME");
                             nombre = nombre.ToLower().TrimEnd().TrimStart();
                             BaseDeDatos bases = TablaBaseDeDatos.getBase(nombre);
-                            if(bases != null)
+                            if (bases != null)
                             {
 
                                 listaBases.AddLast(nombre);
@@ -154,7 +154,7 @@ namespace cql_teacher_server.CHISON.Arbol
                             else System.Diagnostics.Debug.WriteLine("Error semantico no existe una base de datos con este nombre : " + nombre + ", Linea: " +
                                    +linea + " Columna: " + columna);
 
-                            
+
 
                         }
                         else System.Diagnostics.Debug.WriteLine("Error semantico un Permiso tiene que tener NAME "
@@ -176,6 +176,11 @@ namespace cql_teacher_server.CHISON.Arbol
             }
             return null;
         }
+
+
+
+
+
 
     }
 }

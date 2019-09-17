@@ -51,19 +51,30 @@ namespace cql_teacher_server.CHISON.Gramatica
         {
             if (raiz != null)
             {
-                string etiqueta = raiz.ToString().Split(' ')[0].ToLower();
+                string etiqueta = raiz.Term.Name.ToLower(); 
                 switch (etiqueta)
                 {
                     //-------------------------------------- Instruccion Superior ------------------------------
                     case "intruccion_superior":
-                        ejecutar(raiz.ChildNodes.ElementAt(0));
-                         ejecutar(raiz.ChildNodes.ElementAt(2));   
+                         ejecutar(raiz.ChildNodes.ElementAt(0));
+                         //ejecutar(raiz.ChildNodes.ElementAt(2));   
                         break;
 
                     //--------------------------------- database ----------------------------------------------------------------
                     case "database":
-                        if (raiz.ChildNodes.Count() == 4) { }
-                        else ejecutar(raiz.ChildNodes.ElementAt(3));
+                        if(raiz.ChildNodes.Count() == 5)
+                        {
+                            AnalizarBase analizar = new AnalizarBase();
+                            LinkedList<string> mensajes = new LinkedList<string>();
+                            analizar.analizar(raiz.ChildNodes.ElementAt(3),mensajes);
+
+                            foreach(string m in mensajes)
+                            {
+                                System.Diagnostics.Debug.WriteLine("ERROR: " + m);
+                            }
+                        }
+                        
+                        
                         break;
 
 
@@ -91,46 +102,7 @@ namespace cql_teacher_server.CHISON.Gramatica
 
                         break;
 
-                    //------------------------------------- bases ----------------------------------------------------------------------
-                    case "bases":
-                        ParseTreeNode hijo = null;
-                        LinkedList<Atributo> lista;
-                        if (raiz.ChildNodes.Count() == 3)
-                        {
-                            //-------------------------------- bases coma baseU ------------------------------------------------------
-                            ejecutar(raiz.ChildNodes.ElementAt(0));
-                            hijo = raiz.ChildNodes.ElementAt(2);  
-                        }
-                        else hijo = raiz.ChildNodes.ElementAt(0);
-                        //---------------------------------------------------------- Almacenar la base de datos --------------------------------------------------
-                        if( hijo != null)
-                        {
-
-                            AnalizarBase analisis = new AnalizarBase();
-                            lista = (LinkedList<Atributo>)analisis.analizar(hijo.ChildNodes.ElementAt(1));
-
-                            if (buscarAtributo(lista, "NAME"))
-                            {
-                                string nombre = (string)valorAtributo(lista, "NAME");
-                                nombre = nombre.ToLower().TrimStart().TrimEnd();
-                                object res = valorAtributo(lista, "Data");
-
-                                Objeto objeto = new Objeto();
-
-                                if (res != null) objeto = (Objeto)res;
-
-                                BaseDeDatos old = TablaBaseDeDatos.getBase(nombre);
-                                BaseDeDatos newBase = new BaseDeDatos(nombre, objeto);
-                                if (old == null) TablaBaseDeDatos.global.AddLast(newBase);
-                                else System.Diagnostics.Debug.WriteLine("Error Semantico: Una base de datos necesita nombre : , Linea: "
-                                     + hijo.ChildNodes.ElementAt(0).Token.Location.Line + " Columna : " + hijo.ChildNodes.ElementAt(0).Token.Location.Column);
-
-
-                            }
-    
-                        }
-                        
-                        break;
+                    
                     
                 }
             }

@@ -1,35 +1,19 @@
 $<
-    "DATABASES"= [
+    "DATABASES" = [
         <
-            "NAME"= "Database1",
-            "Data"= []
-        >,    
-        <
-        "NAME"= "Database2",
-        "Data"= []
-        >,
-        <
-        "NAME"= "Database3",
-        "Data"= []
-        >
-    ],
-    "USERS"= [
-        <
-            "NAME"="Luis",
-            "PASSWORD"= "1234",
-            "PERMISSIONS"= [
+            "NAME" = "database1",
+            "DATA" = [
                 <
-                    "NAME"= "Database1"
-                >,
-                <
-                    "NAME"="Database2"
+                    "CQL-TYPE" = "TABLE",
+                    "NAME" = "tabla1",
+                    "COLUMNS" = [],
+                    "DATA" = []
                 >
             ]
         >,
         <
-            "NAME"="Fernando",
-            "PASSWORD"= "5678",
-            "PERMISSIONS"= []
+            "NAME" = "database2",
+            "DATA" = []
         >
     ]
 >$

@@ -45,46 +45,41 @@ namespace cql_teacher_server.CHISON.Gramatica
             NonTerminal instruccion_superior = new NonTerminal("intruccion_superior");
 
             NonTerminal database = new NonTerminal("database");
-            NonTerminal bases = new NonTerminal("bases");
-            NonTerminal baseU = new NonTerminal("base");
 
             NonTerminal user = new NonTerminal("user");
 
             NonTerminal objetos = new NonTerminal("objetos");
             NonTerminal objeto = new NonTerminal("objeto");
             NonTerminal tipo = new NonTerminal("tipo");
-
-            NonTerminal listaTablas = new NonTerminal("listaTablas");
-            NonTerminal tabla = new NonTerminal("tabla");
-
-            NonTerminal listaElements = new NonTerminal("listaElements");
-
             NonTerminal importar = new NonTerminal("importar");
+
+            NonTerminal inObjetos = new NonTerminal("inobjetos");
 
             #endregion
 
             #region Gramatica
-            inicio.Rule = DOLAR + MENOR + instruccion_superior + MAYOR + DOLAR
-                        | listaTablas;
+            inicio.Rule = DOLAR + MENOR + instruccion_superior + MAYOR + DOLAR;
 
 
-            instruccion_superior.Rule = database + COMA + user;
+            instruccion_superior.Rule = database;
 
             database.Rule = DATABASES + IGUAL + LLAVEIZQ + LLAVEDER
-                          | DATABASES + IGUAL + LLAVEIZQ + bases + LLAVEDER;
+                          | DATABASES + IGUAL + LLAVEIZQ + inObjetos + LLAVEDER;
 
-            bases.Rule = bases + COMA + baseU
-                       | baseU;
+
 
             user.Rule = USERS + IGUAL + LLAVEIZQ + LLAVEDER
-                       |USERS + IGUAL + LLAVEIZQ + listaTablas + LLAVEDER
-                       | USERS + IGUAL + LLAVEIZQ + importar + LLAVEDER
+                       | USERS + IGUAL + LLAVEIZQ + objetos + LLAVEDER
                        ;
 
-            baseU.Rule = MENOR + objetos + MAYOR;
+            inObjetos.Rule = inObjetos + COMA + MENOR + objetos + MAYOR
+                           | MENOR + objetos + MAYOR
+                           ;
 
-            objetos.Rule = objetos + COMA + objeto
-                         | objeto;
+
+            objetos.Rule = objetos + COMA  + objeto 
+                         | objeto 
+                         ;
 
             objeto.Rule = CADENA + IGUAL + tipo;
 
@@ -97,21 +92,13 @@ namespace cql_teacher_server.CHISON.Gramatica
                       | HORA
                       | IN
                       | OUT
-                      | LLAVEIZQ + listaElements + LLAVEDER
-                      | LLAVEIZQ + listaTablas + LLAVEDER
+                      | inObjetos 
                       | LLAVEIZQ + LLAVEDER
+                      | LLAVEIZQ + inObjetos + LLAVEDER
                       | LLAVEIZQ + importar + LLAVEDER
                       ;
 
-            listaElements.Rule = listaElements + COMA + tipo
-                               | tipo
-                               ;
-
-            listaTablas.Rule = listaTablas + COMA + tabla
-                             | tabla
-                             ;
-
-            tabla.Rule = MENOR + objetos + MAYOR;
+           
 
             importar.Rule = DOLAR + CORIZQ + ID + CHISON + CORDER + DOLAR;
 
