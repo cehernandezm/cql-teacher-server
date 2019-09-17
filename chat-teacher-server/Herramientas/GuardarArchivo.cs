@@ -1,5 +1,6 @@
 ﻿using cql_teacher_server.CHISON;
 using cql_teacher_server.CHISON.Componentes;
+using cql_teacher_server.CQL.Componentes;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,9 +14,9 @@ namespace cql_teacher_server.Herramientas
         /*
          * Metodo se encarga de recorrer todo nuestra base de datos no relacional y guardarla en forma fisica
          */
-        public void guardarArchivo()
+        public void guardarArchivo(string archivo)
         {
-            using (FileStream fileStream = File.Open("DATABASE/Principal2.chison", FileMode.OpenOrCreate))
+            using (FileStream fileStream = File.Open("DATABASE/" + archivo +".chison", FileMode.OpenOrCreate))
             {
                 using(StreamWriter f = new StreamWriter(fileStream))
                 {
@@ -68,28 +69,13 @@ namespace cql_teacher_server.Herramientas
                                 Atributo lastA = d.valores.Count() > 0 ? d.valores.Last() : null;
                                 foreach (Atributo a in d.valores)
                                 {
-                                    if (a.valor.GetType() == typeof(LinkedList<object>))
+                                    if(a.valor != null)
                                     {
-
-                                        if (a.Equals(lastA)) f.WriteLine("\t\t\t\t\t\t\"" + a.nombre + "\" = [" + getElementos((LinkedList<object>)a.valor) + "]");
-                                        else f.WriteLine("\t\t\t\t\t\t\"" + a.nombre + "\" = [" + getElementos((LinkedList<object>)a.valor) + "],");
-                                      
+                                       string salida = getValor(a.valor, a.nombre, "\t\t\t\t\t\t");
+                                        if (!a.Equals(lastA)) salida += ",";
+                                        f.WriteLine(salida);
                                     }
-                                    else
-                                    {
-                                        if (a.Equals(lastA))
-                                        {
-                                            if (a.tipo.Equals("HORA") || a.tipo.Equals("FECHA")) f.WriteLine("\t\t\t\t\t\t\"" + a.nombre + "\" = \'" + a.valor + "\'");
-                                            else if (a.valor.GetType() == typeof(string)) f.WriteLine("\t\t\t\t\t\t\"" + a.nombre + "\" = \"" + a.valor + "\"");
-                                            else f.WriteLine("\t\t\t\t\t\t\"" + a.nombre + "\" = " + a.valor);
-                                        }
-                                        else
-                                        {
-                                            if (a.tipo.Equals("HORA") || a.tipo.Equals("FECHA")) f.WriteLine("\t\t\t\t\t\t\"" + a.nombre + "\" = \'" + a.valor + "\',");
-                                            else if (a.valor.GetType() == typeof(string)) f.WriteLine("\t\t\t\t\t\t\"" + a.nombre + "\" = \"" + a.valor + "\",");
-                                            else f.WriteLine("\t\t\t\t\t\t\"" + a.nombre + "\" = " + a.valor + ",");
-                                        }
-                                    }
+                                    
 
                                 }
 
@@ -121,7 +107,7 @@ namespace cql_teacher_server.Herramientas
                             {
                                 f.WriteLine("\t\t\t\t\t\t<");
                                 f.WriteLine("\t\t\t\t\t\t\t\"NAME\" = \"" + a.name + "\",");
-                                f.WriteLine("\t\t\t\t\t\t\t\"TYPE\" = \"" + a.type + "\",");
+                                f.WriteLine("\t\t\t\t\t\t\t\"TYPE\" = \"" + a.type + "\"");
 
                                 if (a.Equals(lastA)) f.WriteLine("\t\t\t\t\t\t>");
                                 else f.WriteLine("\t\t\t\t\t\t>,");
@@ -238,6 +224,96 @@ namespace cql_teacher_server.Herramientas
                 
             }
             return cadena;
+        }
+
+
+        /*
+         * Metodo que se encargara de ver el tipo de objeto a guardar
+           @param {valor} valor que se almacenara
+           @return {string} cadena de salida
+         */
+
+        private string getValor(object valor, string nombre, string tabulacion)
+        {
+            string salida = "";
+            if(!nombre.Equals("none")) salida = tabulacion + "\"" + nombre + "\" =";
+            if (valor.GetType() == typeof(string)) salida += "\"" + valor + "\"";     
+            else if (valor.GetType() == typeof(int) || valor.GetType() == typeof(double) || valor.GetType() == typeof(Boolean))  salida +=  valor; 
+            else if (valor.GetType() == typeof(DateTime))
+            {
+                string fecha = ((DateTime)valor).ToString("yyyy-MM-dd");
+                salida += "'" + fecha + "'";
+            }
+            else if (valor.GetType() == typeof(TimeSpan))
+            {
+                string hora = ((TimeSpan)valor).ToString(@"hh\:mm\:ss");
+                salida += "'" + hora + "'";
+            }
+            else if (valor.GetType() == typeof(InstanciaUserType))
+            {
+                InstanciaUserType temp = (InstanciaUserType)valor;
+                salida += "< \n";
+                if (temp.lista != null)
+                {
+                    var nodeLast = (temp.lista.Count() > 0) ? temp.lista.Last() : null;
+                    foreach (Atributo a in temp.lista)
+                    {
+                        salida += getValor(a.valor, a.nombre, tabulacion + "\t");
+                        if (!a.Equals(nodeLast)) salida += ",\n";
+                        else salida += "\n";
+                    }
+                }
+                salida += tabulacion + ">";
+               
+            }
+            else if (valor.GetType() == typeof(Map))
+            {
+                Map temp = (Map)valor;
+                salida += "< \n";
+                if (temp.datos != null)
+                {
+                    var nodeLast = (temp.datos.Count() > 0) ? temp.datos.Last() : null;
+                    foreach (KeyValue a in temp.datos)
+                    {
+                        salida += getValor(a.value, a.key.ToString(), tabulacion + "\t");
+                        if (!a.Equals(nodeLast)) salida += ",\n";
+                        else salida += "\n";
+                    }
+                }
+                salida += tabulacion + ">";
+            }
+            else if (valor.GetType() == typeof(List))
+            {
+                List temp = (List)valor;
+                salida += "[";
+                if(temp.lista != null)
+                {
+                    var nodelast = (temp.lista.Count() > 0) ? temp.lista.Last() : null;
+                    foreach(object o in temp.lista)
+                    {
+                        salida += getValor(o, "none", "no");
+                        if (!o.Equals(nodelast)) salida += ",";
+                    }
+                    salida += "]";
+                }
+            }
+            else if (valor.GetType() == typeof(Set))
+            {
+                Set temp = (Set)valor;
+                salida += "[";
+                if (temp.datos != null)
+                {
+                    var nodelast = (temp.datos.Count() > 0) ? temp.datos.Last() : null;
+                    foreach (object o in temp.datos)
+                    {
+                        salida += getValor(o, "none", "no");
+                        if (!o.Equals(nodelast)) salida += ",";
+                    }
+                    salida += "]";
+                }
+            }
+            return salida;
+
         }
 
 

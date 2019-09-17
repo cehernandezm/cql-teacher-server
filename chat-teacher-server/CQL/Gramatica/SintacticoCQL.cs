@@ -5,6 +5,7 @@ using cql_teacher_server.CQL.Componentes;
 using cql_teacher_server.CQL.Componentes.Ciclos;
 using cql_teacher_server.CQL.Componentes.Cursor;
 using cql_teacher_server.CQL.Componentes.Funcion_Procedure;
+using cql_teacher_server.CQL.Componentes.Leer.Escribir;
 using cql_teacher_server.CQL.Componentes.Procedure;
 using cql_teacher_server.CQL.Componentes.Try_Catch;
 using cql_teacher_server.CQL.Componentes.Variables;
@@ -1073,6 +1074,13 @@ namespace cql_teacher_server.CQL.Gramatica
                     string tipo = hijo.ChildNodes.ElementAt(2).ChildNodes.ElementAt(0).Token.Text.ToLower().TrimEnd().TrimStart();
                     listaTW.AddLast(new inThrow(tipo));
                     return listaTW;
+
+
+                //--------------------------------------------- COMMIT -------------------------------------------------------------------------------------------
+                case "incommit":
+                    LinkedList<InstruccionCQL> listaCOM = new LinkedList<InstruccionCQL>();
+                    listaCOM.AddLast(new Commit());
+                    return listaCOM;
             }
             return null;
 

@@ -1,5 +1,6 @@
 ﻿using cql_teacher_server.CHISON;
 using cql_teacher_server.CQL.Arbol;
+using cql_teacher_server.CQL.Componentes.Cursor;
 using cql_teacher_server.Herramientas;
 using System;
 using System.Collections.Generic;
@@ -90,6 +91,7 @@ namespace cql_teacher_server.CQL.Componentes
                             else if (re.GetType() == typeof(Map) && tipo.Equals("map")) return (Map)re;
                             else if (re.GetType() == typeof(List) && tipo.Equals("list")) return (List)re;
                             else if (re.GetType() == typeof(Set) && tipo.Equals("set")) return (Set)re;
+                            else if (re.GetType() == typeof(TypeCursor) && tipo.Equals("cursor")) return (TypeCursor)re;
                             else if (re.GetType() == typeof(InstanciaUserType))
                             {
                                 InstanciaUserType temp = (InstanciaUserType)re;

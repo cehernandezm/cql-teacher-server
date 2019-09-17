@@ -1,6 +1,7 @@
 ﻿using cql_teacher_server.CHISON;
 using cql_teacher_server.CHISON.Componentes;
 using cql_teacher_server.CQL.Arbol;
+using cql_teacher_server.CQL.Componentes.Cursor;
 using cql_teacher_server.CQL.Componentes.Try_Catch;
 using cql_teacher_server.Herramientas;
 using System;
@@ -61,7 +62,7 @@ namespace cql_teacher_server.CQL.Componentes
                 if (tipo.Equals("list")) ts.setValor(id, new List("none", new LinkedList<object>()));
                 else if (tipo.Equals("set")) ts.setValor(id, new Set("none", new LinkedList<object>()));
                 else if (tipo.Equals("map")) ts.setValor(id, new Map("none", new LinkedList<KeyValue>()));
-                else if (tipo.Equals("string") || tipo.Equals("int") || tipo.Equals("double") || tipo.Equals("date") || tipo.Equals("time") || tipo.Equals("boolean")) { }
+                else if (tipo.Equals("string") || tipo.Equals("int") || tipo.Equals("double") || tipo.Equals("date") || tipo.Equals("time") || tipo.Equals("boolean") || tipo.Equals("cursor")) { }
                 else ts.setValor(id, new InstanciaUserType("none", new LinkedList<Atributo>()));
                 return "";
             }
@@ -103,6 +104,11 @@ namespace cql_teacher_server.CQL.Componentes
                     else if (tipo.Equals("set"))
                     {
                         mensajes.AddLast(mensa.error("El tipo SET necesita ser instanciado", l, c, "Semantico"));
+                        return null;
+                    }
+                    else if (tipo.Equals("cursor"))
+                    {
+                        mensajes.AddLast(mensa.error("El tipo CURSOR necesita ser instanciado", l, c, "Semantico"));
                         return null;
                     }
                     else
@@ -191,6 +197,11 @@ namespace cql_teacher_server.CQL.Componentes
                             if (resp == null) return null;
                             temp.order();
                             ts.setValor(id, temp);
+                        }
+                        else if (tipo.Equals("cursor") && a.GetType() == typeof(TypeCursor))
+                        {
+                            ts.AddLast(new Simbolo(tipo, id));
+                            ts.setValor(id, (TypeCursor)a);
                         }
                         else if (a.GetType() == typeof(InstanciaUserType))
                         {

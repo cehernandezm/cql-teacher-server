@@ -41,7 +41,18 @@ namespace cql_teacher_server.CQL.Componentes.Cursor
             object existeVariable = ts.getValor(id);
             if (existeVariable.Equals("none"))
             {
-                TypeCursor typeCursor = new TypeCursor(null, (Select)select);
+                TypeCursor typeCursor;
+                if(select.GetType() == typeof(Expresion))
+                {
+                    object respuesta = (select == null) ? null : select.ejecutar(ts, ambito, tsT);
+                    if (respuesta == null) return null;
+                    if (respuesta.GetType() == typeof(TypeCursor)) typeCursor = (TypeCursor)respuesta;
+                    else
+                    {
+                        ambito.mensajes.AddLast(ms.error("A un cursor solo se le puede asignar un tipo Select no se reconoce: " + respuesta,l,c,"Semantico"));
+                        return null;
+                    }
+                }else typeCursor = new TypeCursor(null, (Select)select);
                 ts.AddLast(new Simbolo("cursor", id));
                 ts.setValor(id, typeCursor);
                 return "";

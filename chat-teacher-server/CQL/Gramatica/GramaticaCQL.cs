@@ -184,6 +184,8 @@ namespace cql_teacher_server.CQL.Gramatica
             var PROCEDUREALREADYEXISTS = ToTerm("ProcedurealreadyExists");
             var OBJECTALREADYEXISTS = ToTerm("ObjectAlreadyExists");
 
+            var COMMIT = ToTerm("COMMIT");
+
 
 
 
@@ -307,6 +309,8 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal inTryCatch = new NonTerminal("intrycatch");
             NonTerminal tiposExcepciones = new NonTerminal("tiposexcepciones");
             NonTerminal inThrow = new NonTerminal("inthrow");
+
+            NonTerminal inCommit = new NonTerminal("incommit");
             #endregion
 
             #region Gramatica
@@ -357,6 +361,7 @@ namespace cql_teacher_server.CQL.Gramatica
                              | inForEach
                              | inTryCatch
                              | inThrow + ";"
+                             | inCommit + ";"
                              ;
             #endregion
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
@@ -468,6 +473,7 @@ namespace cql_teacher_server.CQL.Gramatica
                               | MAP
                               | LIST
                               | SET
+                              | CURSOR
                               ;
             tipoVariable2.Rule = STRING
                               | INT
@@ -477,6 +483,7 @@ namespace cql_teacher_server.CQL.Gramatica
                               | TIME
                               | ID
                               | COUNTER
+                              | CURSOR
                               | MAP + "<" + tipoVariable2 + ToTerm(",") + tipoVariable2 + ">"
                               | LIST + "<" + tipoVariable2 + ">"
                               | SET + "<" + tipoVariable2 + ">"
@@ -758,7 +765,8 @@ namespace cql_teacher_server.CQL.Gramatica
             #endregion
 
             #region Cursor
-            inCursor.Rule = CURSOR + "@" + ID + IS + inSelect;
+            inCursor.Rule = CURSOR + "@" + ID + IS + inSelect
+                          | CURSOR + "@" + ID + "=" + expresion;
 
             inOperacionCursor.Rule = OPEN + "@" + ID
                                    | CLOSE + "@" + ID
@@ -793,6 +801,10 @@ namespace cql_teacher_server.CQL.Gramatica
 
             inThrow.Rule = THROW + NEW + tiposExcepciones;
 
+            #endregion
+
+            #region Cambios fisicos
+            inCommit.Rule = COMMIT;
             #endregion
             #endregion
 
