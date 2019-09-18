@@ -217,7 +217,7 @@ namespace cql_teacher_server.CHISON.Arbol
                             else if (tipo.Contains("map") && a.valor.GetType() == typeof(LinkedList<Atributo>))
                             {
                                 string id = tipo.TrimStart('m').TrimStart('a').TrimStart('p').TrimStart('>').TrimEnd('>');
-
+                                string tipoKey = id.Split(',')[0];
                                 LinkedList<Atributo> listatemp =(LinkedList<Atributo>)a.valor;
                                 if (listatemp.Count() > 0)
                                 {
@@ -225,7 +225,7 @@ namespace cql_teacher_server.CHISON.Arbol
 
                                     foreach (Atributo at in listatemp)
                                     {
-                                        KeyValue keyValue = new KeyValue(at.nombre, at.valor);
+                                        KeyValue keyValue = new KeyValue(keyMap(tipoKey,at.nombre), at.valor);
                                         listaRetorno.AddLast(keyValue);
                                     }
 
@@ -299,7 +299,7 @@ namespace cql_teacher_server.CHISON.Arbol
                         else if (tipo.Contains("map") && a.valor.GetType() == typeof(LinkedList<Atributo>))
                         {
                             string id = tipo.TrimStart('m').TrimStart('a').TrimStart('p').TrimStart('>').TrimEnd('>');
-
+                            string tipoKey = id.Split(',')[0];
                             LinkedList<Atributo> listatemp = (LinkedList<Atributo>)a.valor ;
                             if (listatemp.Count() > 0)
                             {
@@ -307,7 +307,7 @@ namespace cql_teacher_server.CHISON.Arbol
 
                                 foreach (Atributo at in listatemp)
                                 {
-                                    KeyValue keyValue = new KeyValue(at.nombre, at.valor);
+                                    KeyValue keyValue = new KeyValue(keyMap(tipoKey,at.nombre), at.valor);
                                     listaRetorno.AddLast(keyValue);
                                 }
 
@@ -349,6 +349,43 @@ namespace cql_teacher_server.CHISON.Arbol
                 if (a.name.Equals(nombre)) return a;
             }
             return null;
+        }
+
+        private object keyMap(string tipo, string valor)
+        {
+            tipo = tipo.ToLower();
+            if (tipo.Equals("int"))
+            {
+                int salida = 0;
+                Int32.TryParse(valor, out salida);
+                return salida;
+            }
+            else if (tipo.Equals("string")) return valor;
+            else if (tipo.Equals("double"))
+            {
+                Double salida = 0;
+                Double.TryParse(valor, out salida);
+                return salida;
+            }
+            else if (tipo.Equals("boolean"))
+            {
+                Boolean salida = false;
+                Boolean.TryParse(valor, out salida);
+                return salida;
+            }
+            else if (tipo.Equals("date"))
+            {
+                DateTime salida = DateTime.Today;
+                DateTime.TryParse(valor, out salida);
+                return salida;
+            }
+            else if (tipo.Equals("time"))
+            {
+                TimeSpan salida = DateTime.Now.TimeOfDay;
+                TimeSpan.TryParse(valor, out salida);
+                return salida;
+            }
+            return valor;
         }
 
         private User_Types buscarUser(string nombre, LinkedList<User_Types> lista)
