@@ -31,22 +31,22 @@ namespace cql_teacher_server.CHISON.Arbol
 
 
 
-                    case "inobjetos":
+                    case "lista":
                         LinkedList<Attrs> lista = new LinkedList<Attrs>();
                         ParseTreeNode hijo;
-                        if (raiz.ChildNodes.Count() == 5)
+                        if (raiz.ChildNodes.Count() == 3)
                         {
                             lista = (LinkedList<Attrs>)analizar(raiz.ChildNodes.ElementAt(0), mensajes);
 
-                            hijo = raiz.ChildNodes.ElementAt(3);
-                            l = raiz.ChildNodes.ElementAt(2).Token.Location.Line;
-                            c = raiz.ChildNodes.ElementAt(2).Token.Location.Column;
+                            hijo = raiz.ChildNodes.ElementAt(2).ChildNodes.ElementAt(1);
+                            l = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
+                            c = raiz.ChildNodes.ElementAt(1).Token.Location.Column;
                         }
                         else
                         {
-                            l = raiz.ChildNodes.ElementAt(0).Token.Location.Line;
-                            c = raiz.ChildNodes.ElementAt(0).Token.Location.Column;
-                            hijo = raiz.ChildNodes.ElementAt(1);
+                            l = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
+                            c = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Column;
+                            hijo = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1);
                         }
                         LinkedList<Atributo> resultado = (LinkedList<Atributo>)analizar(hijo, mensajes);
                         

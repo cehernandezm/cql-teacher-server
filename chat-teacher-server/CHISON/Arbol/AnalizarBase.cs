@@ -1,5 +1,6 @@
 ﻿using cql_teacher_server.CHISON.Componentes;
 using cql_teacher_server.CHISON.Gramatica;
+using cql_teacher_server.CQL.Componentes;
 using Irony.Parsing;
 using System;
 using System.Collections.Generic;
@@ -55,6 +56,7 @@ namespace cql_teacher_server.CHISON.Arbol
                                     return null;
                                 }
                                 info = (Objeto)atri.valor;
+                                info = fixData(info);
                                 TablaBaseDeDatos.global.AddLast(new BaseDeDatos(nombreDB, info));
                                 return "";
                             }
@@ -154,6 +156,209 @@ namespace cql_teacher_server.CHISON.Arbol
             return null;
         }
 
+
+        public Objeto fixData(Objeto datos)
+        {
+            Objeto nuevo = datos;
+            foreach(Tabla tabla in nuevo.tablas)
+            {
+                LinkedList<Data> temp = formatearData(tabla.datos, tabla.columnas, nuevo.user_types);
+                tabla.datos = temp;
+            }
+            return datos;
+        }
+
+
+        public Columna buscarColumna(LinkedList<Columna> lt, string nombre)
+        {
+            foreach (Columna ta in lt)
+            {
+                if (ta.name.Equals(nombre)) return ta;
+            }
+            return null;
+        }
+
+        private LinkedList<Data> formatearData(LinkedList<Data> lista, LinkedList<Columna> columnas, LinkedList<User_Types> user_Types)
+        {
+            LinkedList<Data> nueva = new LinkedList<Data>();
+
+            foreach (Data data in lista)
+            {
+                Data d = new Data(new LinkedList<Atributo>());
+                foreach (Atributo a in data.valores)
+                {
+                    Columna columna = buscarColumna(columnas, a.nombre);
+                    if (columna != null)
+                    {
+                        string tipo = columna.tipo.ToLower();
+                        if (a.valor != null)
+                        {
+                            if (tipo.Equals("string") && a.valor.GetType() == typeof(string)) d.valores.AddLast(new Atributo(columna.name, (string)a.valor, tipo));
+                            else if (tipo.Equals("int") && a.valor.GetType() == typeof(int)) d.valores.AddLast(new Atributo(columna.name, (int)a.valor, tipo));
+                            else if (tipo.Equals("double") && a.valor.GetType() == typeof(Double)) d.valores.AddLast(new Atributo(columna.name, (Double)a.valor, tipo));
+                            else if (tipo.Equals("date") && a.valor.GetType() == typeof(DateTime)) d.valores.AddLast(new Atributo(columna.name, (DateTime)a.valor, tipo));
+                            else if (tipo.Equals("time") && a.valor.GetType() == typeof(TimeSpan)) d.valores.AddLast(new Atributo(columna.name, (TimeSpan)a.valor, tipo));
+                            else if (tipo.Equals("counter") && a.valor.GetType() == typeof(int)) d.valores.AddLast(new Atributo(columna.name, (int)a.valor, tipo));
+                            else if (tipo.Contains("list") && a.valor.GetType() == typeof(Set))
+                            {
+                                string id = tipo.TrimStart('l').TrimStart('i').TrimStart('s').TrimStart('t').TrimStart('>').TrimEnd('>');
+
+                                List temp = new List(id, ((Set)a.valor).datos);
+                                d.valores.AddLast(new Atributo(columna.name, temp, columna.tipo));
+                            }
+                            else if (tipo.Contains("set") && a.valor.GetType() == typeof(Set))
+                            {
+                                string id = tipo.TrimStart('s').TrimStart('e').TrimStart('t').TrimStart('>').TrimEnd('>');
+
+                                Set temp = (Set)a.valor;
+                                temp.order();
+                                d.valores.AddLast(new Atributo(columna.name, temp, columna.tipo));
+                            }
+                            else if (tipo.Contains("map") && a.valor.GetType() == typeof(LinkedList<Atributo>))
+                            {
+                                string id = tipo.TrimStart('m').TrimStart('a').TrimStart('p').TrimStart('>').TrimEnd('>');
+
+                                LinkedList<Atributo> listatemp =(LinkedList<Atributo>)a.valor;
+                                if (listatemp.Count() > 0)
+                                {
+                                    LinkedList<KeyValue> listaRetorno = new LinkedList<KeyValue>();
+
+                                    foreach (Atributo at in listatemp)
+                                    {
+                                        KeyValue keyValue = new KeyValue(at.nombre, at.valor);
+                                        listaRetorno.AddLast(keyValue);
+                                    }
+
+                                    d.valores.AddLast(new Atributo(columna.name, new Map(id, listaRetorno), tipo));
+                                }
+                                else d.valores.AddLast(new Atributo(columna.name, new Map(id, new LinkedList<KeyValue>()), tipo));
+                            
+                            }
+                            else if (a.valor.GetType() == typeof(LinkedList<Atributo>) && tipo.Equals(a.nombre))
+                            {
+                                LinkedList<Atributo> at = (LinkedList<Atributo>)a.valor; ;
+                                if (at.Count() > 0)
+                                {
+                                    User_Types user = buscarUser(a.nombre, user_Types);
+                                    if (user != null) d.valores.AddLast(new Atributo(columna.name, setearUserType(user.type, at, tipo, user_Types), tipo));
+                                    else
+                                    {
+                                        System.Diagnostics.Debug.WriteLine("No existe usertype: " + tipo);
+                                        d.valores.AddLast(new Atributo(columna.name, new InstanciaUserType(tipo, null), tipo));
+                                    }
+                                }
+
+                            }
+                        }
+                        else
+                        {
+                            if (tipo.Equals("string") || tipo.Equals("date") || tipo.Equals("time")) d.valores.AddLast(new Atributo(columna.name, null, tipo));
+                        }
+                    }
+                }
+                if (d.valores.Count() > 0) nueva.AddLast(d);
+            }
+
+
+            return nueva;
+        }
+
+
+        private InstanciaUserType setearUserType(LinkedList<Attrs> lista, LinkedList<Atributo> valores, string tipoV, LinkedList<User_Types> user_Types)
+        {
+            InstanciaUserType instancia = new InstanciaUserType(tipoV, new LinkedList<Atributo>());
+            foreach(Atributo a in valores)
+            {
+                Attrs attrs = buscarAttr(lista, a.nombre);
+                if(attrs != null)
+                {
+                    string tipo = attrs.type;
+                    if (a.valor != null)
+                    {
+                        if (tipo.Equals("string") && a.valor.GetType() == typeof(string)) instancia.lista.AddLast(new Atributo(attrs.name, (string)a.valor, tipo));
+                        else if (tipo.Equals("int") && a.valor.GetType() == typeof(int)) instancia.lista.AddLast(new Atributo(attrs.name, (int)a.valor, tipo));
+                        else if (tipo.Equals("double") && a.valor.GetType() == typeof(Double)) instancia.lista.AddLast(new Atributo(attrs.name, (Double)a.valor, tipo));
+                        else if (tipo.Equals("date") && a.valor.GetType() == typeof(DateTime)) instancia.lista.AddLast(new Atributo(attrs.name, (DateTime)a.valor, tipo));
+                        else if (tipo.Equals("time") && a.valor.GetType() == typeof(TimeSpan)) instancia.lista.AddLast(new Atributo(attrs.name, (TimeSpan)a.valor, tipo));
+                        else if (tipo.Equals("counter") && a.valor.GetType() == typeof(int)) instancia.lista.AddLast(new Atributo(attrs.name, (int)a.valor, tipo));
+                        else if (tipo.Contains("list") && a.valor.GetType() == typeof(Set))
+                        {
+                            string id = tipo.TrimStart('l').TrimStart('i').TrimStart('s').TrimStart('t').TrimStart('>').TrimEnd('>');
+
+                            List temp = new List(id, ((Set)a.valor).datos);
+                            instancia.lista.AddLast(new Atributo(attrs.name, temp, tipo));
+                        }
+                        else if (tipo.Contains("set") && a.valor.GetType() == typeof(Set))
+                        {
+                            string id = tipo.TrimStart('s').TrimStart('e').TrimStart('t').TrimStart('>').TrimEnd('>');
+
+                            Set temp = (Set)a.valor;
+                            temp.order();
+                            instancia.lista.AddLast(new Atributo(attrs.name, temp,tipo));
+                        }
+                        else if (tipo.Contains("map") && a.valor.GetType() == typeof(LinkedList<Atributo>))
+                        {
+                            string id = tipo.TrimStart('m').TrimStart('a').TrimStart('p').TrimStart('>').TrimEnd('>');
+
+                            LinkedList<Atributo> listatemp = (LinkedList<Atributo>)a.valor ;
+                            if (listatemp.Count() > 0)
+                            {
+                                LinkedList<KeyValue> listaRetorno = new LinkedList<KeyValue>();
+
+                                foreach (Atributo at in listatemp)
+                                {
+                                    KeyValue keyValue = new KeyValue(at.nombre, at.valor);
+                                    listaRetorno.AddLast(keyValue);
+                                }
+
+                                instancia.lista.AddLast(new Atributo(attrs.name, new Map(id, listaRetorno), tipo));
+                            }
+                            else instancia.lista.AddLast(new Atributo(attrs.name, new Map(id, new LinkedList<KeyValue>()), tipo));
+
+                        }
+                        else if (a.valor.GetType() == typeof(LinkedList<Atributo>) && tipo.Equals(a.nombre))
+                        {
+
+                            LinkedList<Atributo> at = (LinkedList<Atributo>)a.valor;
+                            if (at.Count() > 0)
+                            {
+                                User_Types user = buscarUser(a.nombre, user_Types);
+                                if (user != null) instancia.lista.AddLast(new Atributo(attrs.name, new InstanciaUserType(tipo, null), tipo));
+                                else
+                                {
+                                    System.Diagnostics.Debug.WriteLine("No existe usertype: " + tipo);
+                                    instancia.lista.AddLast(new Atributo(attrs.name, new InstanciaUserType(tipo, null), tipo));
+                                }
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        if (tipo.Equals("string") || tipo.Equals("date") || tipo.Equals("time")) instancia.lista.AddLast(new Atributo(attrs.name, null, tipo));
+                    }
+                }
+            }
+            return instancia;
+        }
+
+        private Attrs buscarAttr(LinkedList<Attrs> lista, string nombre)
+        {
+            foreach(Attrs a in lista)
+            {
+                if (a.name.Equals(nombre)) return a;
+            }
+            return null;
+        }
+
+        private User_Types buscarUser(string nombre, LinkedList<User_Types> lista)
+        {
+            foreach(User_Types u in lista)
+            {
+                if (u.name.Equals(nombre)) return u;
+            }
+            return null;
+        }
 
     }
 }
