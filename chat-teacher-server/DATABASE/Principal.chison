@@ -30,7 +30,8 @@ $<
                             "columna3" = < "direccion" = "tu madre", "edad" = 23>
                         >,
                         <
-                            "columna1" = "hola2",
+                            "columna1" = $  INSERT INTO "VALUES" FROM 
+                            $,
                             "columna2" = < "hola" = 3 , "Carlos" = 2>,
                             "columna3" = < "direccion" = "tu madre", "edad" = 23>
                         >

@@ -16,6 +16,7 @@ namespace cql_teacher_server.CHISON.Gramatica
             var HORA = new RegexBasedTerminal("hora", "\\'(([0-1][0-9])|2[0-3]):([0-2][0-9]):([0-5][0-9])\\'");
             var ENTERO = new NumberLiteral("entero");
             var DECIMAL = new RegexBasedTerminal("decimal", "[0-9]+'.'[0-9]+");
+            var CODIGO = new RegexBasedTerminal("codigo", "\\$([\n]*.*?)*\\$");
             IdentifierTerminal ID = new IdentifierTerminal("ID");
 
             #endregion
@@ -97,6 +98,7 @@ namespace cql_teacher_server.CHISON.Gramatica
                       | LLAVEIZQ + LLAVEDER
                       | LLAVEIZQ +  lista + LLAVEDER
                       | LLAVEIZQ + inObjetos + LLAVEDER
+                      | CODIGO
                       | LLAVEIZQ + importar + LLAVEDER
                       ;
 
