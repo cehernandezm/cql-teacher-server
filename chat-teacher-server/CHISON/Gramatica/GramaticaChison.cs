@@ -51,7 +51,6 @@ namespace cql_teacher_server.CHISON.Gramatica
             NonTerminal objetos = new NonTerminal("objetos");
             NonTerminal objeto = new NonTerminal("objeto");
             NonTerminal tipo = new NonTerminal("tipo");
-            NonTerminal tipo2 = new NonTerminal("tipo");
             NonTerminal importar = new NonTerminal("importar");
 
             NonTerminal inObjetos = new NonTerminal("inobjetos");
@@ -83,7 +82,7 @@ namespace cql_teacher_server.CHISON.Gramatica
                          | objeto 
                          ;
 
-            objeto.Rule = tipo2 + IGUAL + tipo;
+            objeto.Rule = CADENA + IGUAL + tipo;
 
             tipo.Rule = CADENA
                       | TRUE
@@ -94,22 +93,13 @@ namespace cql_teacher_server.CHISON.Gramatica
                       | HORA
                       | IN
                       | OUT
-                      | inObjetos 
+                      | MENOR + objetos + MAYOR 
                       | LLAVEIZQ + LLAVEDER
-                      | inObjetos
                       | LLAVEIZQ +  lista + LLAVEDER
                       | LLAVEIZQ + inObjetos + LLAVEDER
                       | LLAVEIZQ + importar + LLAVEDER
                       ;
 
-            tipo2.Rule = CADENA
-                      | TRUE
-                      | FALSE
-                      | ENTERO
-                      | DECIMAL
-                      | FECHA
-                      | HORA
-                      ;
 
 
             lista.Rule = lista + COMA + tipo

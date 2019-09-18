@@ -35,20 +35,21 @@ namespace cql_teacher_server.CHISON.Arbol
 
 
 
-                    case "inobjetos":
+                    case "lista":
                         Objeto objeto = new Objeto();
                         ParseTreeNode hijo;
-                        if (raiz.ChildNodes.Count() == 5)
+                        if (raiz.ChildNodes.Count() == 3)
                         {
                             objeto = (Objeto)analizar(raiz.ChildNodes.ElementAt(0), mensajes);
-                            hijo = raiz.ChildNodes.ElementAt(3);
+                            hijo = raiz.ChildNodes.ElementAt(2).ChildNodes.ElementAt(1);
                         }
-                        else hijo = raiz.ChildNodes.ElementAt(1);
+                        else hijo = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1);
                         LinkedList<Atributo> resultado = (LinkedList<Atributo>) analizar(hijo, mensajes);
                         object tipo = tipoCQLTYPE(resultado, mensajes);
                         if(tipo != null)
                         {
                             if (tipo.GetType() == typeof(Tabla)) objeto.tablas.AddLast((Tabla)tipo);
+                            else if (tipo.GetType() == typeof(User_Types)) objeto.user_types.AddLast((User_Types)tipo);
                         }
                         return objeto;
 
@@ -102,6 +103,13 @@ namespace cql_teacher_server.CHISON.Arbol
                             return new Atributo("data",new LinkedList<Data>(), "");
 
                         }
+                        else if (key.Equals("attrs"))
+                        {
+                            AnalizarAttrs analizar = new AnalizarAttrs();
+                            object resT = analizar.analizar(raiz.ChildNodes.ElementAt(2), mensajes);
+                            if (resT != null) return new Atributo("attrs", (LinkedList<Attrs>)resT, "");
+                            return new Atributo("attrs", new LinkedList<Attrs>(), "");
+                        }
                         mensajes.AddLast("No se reconoce este atributo: " + key + " Linea :" + l + "Columna: " + c);
                         break;
                 }
@@ -154,6 +162,28 @@ namespace cql_teacher_server.CHISON.Arbol
                 }
                 LinkedList<Data> data = (LinkedList<Data>)resA.valor;
                 return new Tabla(name, columnas, data);
+            }
+
+            // ----------------------------------------------- USER TYPES -----------------------------
+            else if (cql_type.Equals("object"))
+            {
+                resA = buscarAtributo(atributos, "name");
+                if (resA == null)
+                {
+                    mensajes.AddLast("Se necesita un Nombre para el User type Linea: " + l + " Columna: " + c);
+                    return null;
+                }
+                string name = resA.valor.ToString();
+
+                resA = buscarAtributo(atributos, "attrs");
+                if (resA == null)
+                {
+                    mensajes.AddLast("Se necesita un ATTRS para el User type Linea: " + l + " Columna: " + c);
+                    return null;
+                }
+                LinkedList<Attrs> attrs = (LinkedList<Attrs>)resA.valor;
+
+                return new User_Types(name, attrs);
             }
             return null;
         }

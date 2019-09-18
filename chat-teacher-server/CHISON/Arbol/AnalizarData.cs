@@ -39,21 +39,21 @@ namespace cql_teacher_server.CHISON.Arbol
                 {
 
 
-                    case "inobjetos":
+                    case "lista":
                         LinkedList<Data> lista = new LinkedList<Data>();
                         object res;
-                        if(raiz.ChildNodes.Count() == 5)
+                        if(raiz.ChildNodes.Count() == 3)
                         {
                             lista = (LinkedList<Data>)analizar(raiz.ChildNodes.ElementAt(0), mensajes);
-                            l = raiz.ChildNodes.ElementAt(2).Token.Location.Line;
-                            c = raiz.ChildNodes.ElementAt(2).Token.Location.Column;
-                            res = analizar(raiz.ChildNodes.ElementAt(3),mensajes);
+                            l = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
+                            c = raiz.ChildNodes.ElementAt(1).Token.Location.Column;
+                            res = analizar(raiz.ChildNodes.ElementAt(2).ChildNodes.ElementAt(1),mensajes);
                         }
                         else
                         {
-                            l = raiz.ChildNodes.ElementAt(0).Token.Location.Line;
-                            c = raiz.ChildNodes.ElementAt(0).Token.Location.Column;
-                            res = analizar(raiz.ChildNodes.ElementAt(1),mensajes);
+                            l = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
+                            c = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Column;
+                            res = analizar(raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1),mensajes);
                         }
 
                         if (res != null) lista.AddLast(new Data((LinkedList<Atributo>)res));
@@ -96,7 +96,6 @@ namespace cql_teacher_server.CHISON.Arbol
                         if (raiz.ChildNodes.Count() == 1)
                         {
                             string term = raiz.ChildNodes.ElementAt(0).Term.Name.ToLower().TrimStart().TrimEnd();
-                            if (term.Equals("inobjetos")) return (LinkedList<Data>)analizar(raiz.ChildNodes.ElementAt(0), mensajes);
                             string valorRetornar = raiz.ChildNodes.ElementAt(0).Token.Text.TrimEnd('\"').TrimStart('\"');
                             valorRetornar = valorRetornar.TrimStart('\'').TrimEnd('\'');
                             valorRetornar = valorRetornar.TrimEnd().TrimStart();
@@ -113,29 +112,36 @@ namespace cql_teacher_server.CHISON.Arbol
                         else if(raiz.ChildNodes.Count() == 3)
                         {
                             string token = raiz.ChildNodes.ElementAt(1).Term.Name.ToLower();
-                            if (token.Equals("lista")) return (Set)analizar(raiz.ChildNodes.ElementAt(1), mensajes);
-                           
+                            if (token.Equals("lista")) return (Set)analizarLista(raiz.ChildNodes.ElementAt(1), mensajes);
+                            else if (token.Equals("objetos")) return (LinkedList<Atributo>)analizar(raiz.ChildNodes.ElementAt(1), mensajes);
+
 
                         }
 
                         break;
 
+                        
 
 
-
-                    case "lista":
-                        Set set = new Set("",new LinkedList<object>());
-                        if (raiz.ChildNodes.Count() == 3)
-                        {
-                            set = (Set)analizar(raiz.ChildNodes.ElementAt(0), mensajes);
-                            set.datos.AddLast(analizar(raiz.ChildNodes.ElementAt(2), mensajes));
-                        }
-                        else set.datos.AddLast(analizar(raiz.ChildNodes.ElementAt(0), mensajes));
-                        return set;
-                        break;
+                    
+                        
+                        
                 }
             }
             return null;
+        }
+
+
+        public object analizarLista(ParseTreeNode raiz, LinkedList<string> mensajes)
+        {
+            Set set = new Set("", new LinkedList<object>());
+            if (raiz.ChildNodes.Count() == 3)
+            {
+                set = (Set)analizar(raiz.ChildNodes.ElementAt(0), mensajes);
+                set.datos.AddLast(analizar(raiz.ChildNodes.ElementAt(2), mensajes));
+            }
+            else set.datos.AddLast(analizar(raiz.ChildNodes.ElementAt(0), mensajes));
+            return set;
         }
 
 

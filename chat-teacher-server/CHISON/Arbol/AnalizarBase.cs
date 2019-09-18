@@ -93,7 +93,7 @@ namespace cql_teacher_server.CHISON.Arbol
                             AnalizarObject analisis = new AnalizarObject();
                             object resData = analisis.analizar(raiz.ChildNodes.ElementAt(2),mensajes);
                             if (resData != null) return new Atributo("data", resData, "");
-                            mensajes.AddLast("DATA necesita tablas,procedures y USER TYPES Linea : " + l + " Columna:  " + c);
+                            mensajes.AddLast("LA DATA DE BASES DE DATOS necesita tablas,procedures y USER TYPES Linea : " + l + " Columna:  " + c);
                         }
                         else mensajes.AddLast("No se reconoce el atributo para una base de datos: " + key + " Linea: " + l + " Columna: " + c);
                         break;
