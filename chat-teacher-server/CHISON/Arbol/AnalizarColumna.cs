@@ -9,175 +9,114 @@ namespace cql_teacher_server.CHISON.Arbol
 {
     public class AnalizarColumna
     {
-
-        public object analizar(ParseTreeNode raiz)
+        int l = 0;
+        int c = 0;
+        public object analizar(ParseTreeNode raiz, LinkedList<string> mensajes)
         {
             if (raiz != null)
             {
-                string etiqueta = raiz.ToString().Split(' ')[0].ToLower();
+                string etiqueta = raiz.Term.Name.ToLower();
+               
                 switch (etiqueta)
                 {
 
-                    //-------------------------------------- objetos -------------------------------------------------------------------
-                    case "objetos":
-                        //-------------------------- objetos , objeto -----------------------------------------------------------------
-                        if (raiz.ChildNodes.Count() == 3)
+                    case "tipo":
+                        l = raiz.ChildNodes.ElementAt(0).Token.Location.Line;
+                        c = raiz.ChildNodes.ElementAt(0).Token.Location.Column;
+                        if (raiz.ChildNodes.Count == 2) return new LinkedList<Columna>();
+                        else if(raiz.ChildNodes.Count() == 3)
                         {
-                            LinkedList<Atributo> listaA = (LinkedList<Atributo>)analizar(raiz.ChildNodes.ElementAt(0));
-                            Atributo aa = (Atributo)analizar(raiz.ChildNodes.ElementAt(2));
-                            if (aa != null) listaA.AddLast(aa);
-                            return listaA;
+                            object res = analizar(raiz.ChildNodes.ElementAt(1),mensajes);
+                            if (res == null) return null;
+                            return (LinkedList<Columna>)res;
                         }
-                        else if (raiz.ChildNodes.Count() == 1)
-                        {
-                            //---------------------------- objeto -----------------------------------------------------------------------
-                            LinkedList<Atributo> listaA = new LinkedList<Atributo>();
-                            Atributo aa = (Atributo)analizar(raiz.ChildNodes.ElementAt(0));
-                            if (aa != null) listaA.AddLast(aa);
-                            return listaA;
-                        }
+                        mensajes.AddLast("La informacion para Columns tiene que ser de tipo objeto Linea: " + l + " Columna: " + c);
                         break;
 
-                    //------------------------------------ OBJETO -----------------------------------------------------------------------
-                    case "objeto":
 
 
-                        string token = raiz.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                        token = token.TrimEnd();
-
-                        Object valor = null;
-                        string tipo = "";
-                        ParseTreeNode hijoT = raiz.ChildNodes.ElementAt(2);
-                        if (hijoT.ChildNodes.Count() == 2) // -------------------------------------------- [ ] -------------------------------------------------------
+                    case "inobjetos":
+                        LinkedList<Columna> lista = new LinkedList<Columna>();
+                        ParseTreeNode hijoI;
+                        if (raiz.ChildNodes.Count() == 5)
                         {
-                            valor = new LinkedList<Columna>();
-                           
-                        }
-                        else if (hijoT.ChildNodes.Count() == 3) //---------------------- [ TABLAS ] ------------------------------------------------------------------
-                        {
-                            valor = new LinkedList<Columna>();
+                            lista = (LinkedList<Columna>)analizar(raiz.ChildNodes.ElementAt(0), mensajes);
+                            hijoI = raiz.ChildNodes.ElementAt(3);
+                            l = raiz.ChildNodes.ElementAt(2).Token.Location.Line;
+                            c = raiz.ChildNodes.ElementAt(2).Token.Location.Column;
                         }
                         else
                         {
-
-                            tipo = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[1];
-
-                            if (tipo.Equals("hora)"))
-                            {
-                                tipo = "HORA";
-                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                                valorTemp = valorTemp.Replace("\'", string.Empty);
-                                valorTemp = valorTemp.TrimEnd();
-                                valorTemp = valorTemp.TrimStart();
-                                valor = (string)valorTemp;
-                            }
-                            else if (tipo.Equals("fecha)"))
-                            {
-                                tipo = "FECHA";
-                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                                valorTemp = valorTemp.Replace("\'", string.Empty);
-                                valorTemp = valorTemp.TrimEnd();
-                                valorTemp = valorTemp.TrimStart();
-                                valor = (string)valorTemp;
-                            }
-                            else if (tipo.Equals("cadena)"))
-                            {
-                                tipo = "CADENA";
-                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                                valorTemp = valorTemp.TrimEnd();
-                                valor = (string)valorTemp;
-                            }
-                            else if (tipo.Equals("entero)"))
-                            {
-                                tipo = "ENTERO";
-                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                                valorTemp = valorTemp.TrimEnd();
-                                valor = (string)valorTemp;
-                            }
-                            else if (tipo.Equals("decimal)"))
-                            {
-                                tipo = "DECIMAL";
-                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                                valorTemp = valorTemp.TrimEnd();
-                                valor = (string)valorTemp;
-                            }
-                            else if (tipo.Equals("Keyword)"))
-                            {
-                                string valorTemp = hijoT.ChildNodes.ElementAt(0).ToString().Split("(")[0];
-                                valorTemp = valorTemp.Replace("\"", string.Empty);
-                                valorTemp = valorTemp.TrimEnd();
-                                valorTemp = valorTemp.TrimStart();
-                                if (valorTemp.Equals("true") || valorTemp.Equals("false")) tipo = "BOOLEAN";
-                                valor = (string)valorTemp;
-                            }
-                            if (token.Equals("NAME"))
-                            {
-                                if (!tipo.Equals("CADENA"))
-                                {
-                                    System.Diagnostics.Debug.WriteLine("ERROR NAME SOLO ACEPTA UN VALOR CADENA NO SE ESPERABA "
-                                        + valor + " , Linea : " + hijoT.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
-                                        + hijoT.ChildNodes.ElementAt(0).Token.Location.Column);
-                                    return null;
-                                }
-
-                            }
-                            else if (token.Equals("FK"))
-                            {
-                                if (!tipo.Equals("BOOLEAN"))
-                                {
-                                    System.Diagnostics.Debug.WriteLine("ERROR FK SOLO ACEPTA UN VALOR BOOLEAN NO SE ESPERABA "
-                                        + valor + " , Linea : " + hijoT.ChildNodes.ElementAt(0).Token.Location.Line + " Columna: "
-                                        + hijoT.ChildNodes.ElementAt(0).Token.Location.Column);
-                                    return null;
-                                }
-                            }
+                            l = raiz.ChildNodes.ElementAt(0).Token.Location.Line;
+                            c = raiz.ChildNodes.ElementAt(0).Token.Location.Column;
+                            hijoI = raiz.ChildNodes.ElementAt(1);
                         }
-                        Atributo a = new Atributo(token, valor, tipo);
-                        return a;
+                        object resI = analizar(hijoI, mensajes);
+                        if (resI != null)
+                        {
+                            LinkedList<Atributo> temp = (LinkedList<Atributo>)resI;
+                            Atributo a = valorAtributo(temp, "name");
+                            if (a == null)
+                            {
+                                mensajes.AddLast("Una columna necesita el atributo: name Linea:" + l + " Columna: " + c);
+                                return lista;
+                            }
+                            string nombre = a.valor.ToString();
+
+                            a = valorAtributo(temp, "type");
+                            if (a == null)
+                            {
+                                mensajes.AddLast("Una columna necesita el atributo: Type Linea:" + l + " Columna: " + c);
+                                return lista;
+                            }
+                            string type = a.valor.ToString();
+
+                            a = valorAtributo(temp, "pk");
+                            if (a == null)
+                            {
+                                mensajes.AddLast("Una columna necesita el atributo: PK Linea:" + l + " Columna: " + c);
+                                return lista;
+                            }
+                            Boolean pk = (Boolean)a.valor;
+
+                            lista.AddLast(new Columna(nombre, type, pk));
+                        }
+                        return lista;
+                        
+
+                    case "objetos":
+                        LinkedList<Atributo> listaValores = new LinkedList<Atributo>();
+                        object resO;
+                       
+                        if (raiz.ChildNodes.Count() == 3)
+                        {
+                            listaValores = (LinkedList<Atributo>)analizar(raiz.ChildNodes.ElementAt(0), mensajes);
+                            resO = analizar(raiz.ChildNodes.ElementAt(2), mensajes);
+
+                        }
+                        else resO = analizar(raiz.ChildNodes.ElementAt(0), mensajes);
+
+                        if(resO != null) listaValores.AddLast((Atributo)resO);
+
+                        return listaValores;
+                        
+
                         break;
 
 
-
-                    //-------------------------------------------------------------- analizar las tablas ---------------------------------------------------------
-                    case "listatablas":
-
-                        LinkedList<Columna> listaTablas = new LinkedList<Columna>();
-                        LinkedList<Atributo> listaAtri = new LinkedList<Atributo>();
-                        ParseTreeNode hijoTa;
-                        if (raiz.ChildNodes.Count() == 3)
+                    case "objeto":
+                        string key = raiz.ChildNodes.ElementAt(0).Token.Text.ToLower().TrimEnd('\"').TrimStart('\"').TrimStart().TrimEnd();
+                        l = raiz.ChildNodes.ElementAt(0).Token.Location.Line;
+                        c = raiz.ChildNodes.ElementAt(0).Token.Location.Column;
+                        string valor = raiz.ChildNodes.ElementAt(2).ChildNodes.ElementAt(0).Token.Text.ToLower().TrimEnd('\"').TrimStart('\"').TrimStart().TrimEnd();
+                        if (key.Equals("name")) return new Atributo("name", valor , "");
+                        else if (key.Equals("type")) return new Atributo("type", valor, "");
+                        else if (key.Equals("pk")) return new Atributo("pk", Boolean.Parse(valor), "");
+                        else
                         {
-                            listaTablas = (LinkedList<Columna>)analizar(raiz.ChildNodes.ElementAt(0));
-
-                            hijoTa = raiz.ChildNodes.ElementAt(2);
+                            mensajes.AddLast("No se reconoce el atributo: " + key + " para una columna");
+                            return null;
                         }
-                        else hijoTa = raiz.ChildNodes.ElementAt(0);
-
-                        int linea = hijoTa.ChildNodes.ElementAt(0).Token.Location.Line;
-                        int columna = hijoTa.ChildNodes.ElementAt(0).Token.Location.Column;
-
-                        listaAtri = (LinkedList<Atributo>)analizar(hijoTa.ChildNodes.ElementAt(1));
-
-
-                        if (buscarAtributo(listaAtri, "NAME") && buscarAtributo(listaAtri, "TYPE") && buscarAtributo(listaAtri, "PK"))
-                        {
-                            string nombre = (String)valorAtributo(listaAtri, "NAME");
-                            Boolean existe = buscarColumna(listaTablas, nombre);
-
-                            
-                            string tipoC = (String)valorAtributo(listaAtri, "TYPE");
-                            string pk = (String)valorAtributo(listaAtri, "PK");
-                            bool flag;
-                            bool fk = Boolean.TryParse(pk, out flag);
-                            Boolean pks = (flag) ? fk : false; 
-
-                            Columna t = new Columna(nombre,tipoC,pks);
-                            if (!existe) listaTablas.AddLast(t);
-                            else System.Diagnostics.Debug.WriteLine("Error semantico ya existe una Columna con este nombre: " + nombre + ", Linea: "
-                                    + linea + " Columna: " + columna);
-                        }
-                        else System.Diagnostics.Debug.WriteLine("Error semantico las Columnas tiene que tener NAME, TYPE y FK, Linea: "
-                                    + linea + " Columna: " + columna);
-                        return listaTablas;
 
                         break;
                 }
@@ -191,33 +130,12 @@ namespace cql_teacher_server.CHISON.Arbol
  ------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
-        //------------------------------------------------ Devuelve el nombre del objeto a buscar ----------------------------------------------------------------
 
-
-        public Boolean buscarAtributo(LinkedList<Atributo> lk, string atributo)
+        public Atributo valorAtributo(LinkedList<Atributo> lk, string atributo)
         {
             foreach (Atributo at in lk)
             {
-                if (at.nombre.Equals(atributo)) return true;
-            }
-            return false;
-        }
-
-        public Boolean buscarColumna(LinkedList<Columna> lt, string nombre)
-        {
-            foreach (Columna ta in lt)
-            {
-                if (ta.name.Equals(nombre)) return true;
-            }
-            return false;
-        }
-
-
-        public object valorAtributo(LinkedList<Atributo> lk, string atributo)
-        {
-            foreach (Atributo at in lk)
-            {
-                if (at.nombre.Equals(atributo)) return at.valor;
+                if (at.nombre.Equals(atributo)) return at;
             }
             return null;
         }

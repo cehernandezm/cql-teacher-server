@@ -1,4 +1,5 @@
 ﻿using cql_teacher_server.CHISON.Componentes;
+using cql_teacher_server.CQL.Componentes;
 using Irony.Parsing;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,9 @@ namespace cql_teacher_server.CHISON.Arbol
 {
     public class AnalizarObject
     {
+
+   
+      
 
         public object analizar(ParseTreeNode raiz, LinkedList<string> mensajes)
         {
@@ -84,11 +88,19 @@ namespace cql_teacher_server.CHISON.Arbol
                         }
                         else if (key.Equals("columns"))
                         {
+                            AnalizarColumna analizar = new AnalizarColumna();
+                            object resT = analizar.analizar(raiz.ChildNodes.ElementAt(2), mensajes);
+                            if(resT != null) return new Atributo("columns", (LinkedList<Columna>)resT, "");
                             return new Atributo("columns", new LinkedList<Columna>(), "");
+
                         }
                         else if (key.Equals("data"))
                         {
-                            return new Atributo("data", new LinkedList<Data>(), "");
+                            AnalizarData analizar = new AnalizarData();
+                            object resT = analizar.inicio(raiz.ChildNodes.ElementAt(2), mensajes);
+                            if (resT != null) return new Atributo("data", (LinkedList<Data>)resT, "");
+                            return new Atributo("data",new LinkedList<Data>(), "");
+
                         }
                         mensajes.AddLast("No se reconoce este atributo: " + key + " Linea :" + l + "Columna: " + c);
                         break;
@@ -158,16 +170,98 @@ namespace cql_teacher_server.CHISON.Arbol
             return null;
         }
 
-        public Boolean buscarColumna(LinkedList<Attrs> lt, string nombre)
+        public Columna buscarColumna(LinkedList<Columna> lt, string nombre)
         {
-            foreach (Attrs ta in lt)
+            foreach (Columna ta in lt)
             {
-                if (ta.name.Equals(nombre)) return true;
+                if (ta.name.Equals(nombre)) return ta;
             }
-            return false;
+            return null;
         }
 
+        private LinkedList<Data> formatearData(LinkedList<Data> lista, LinkedList<Columna> columnas)
+        {
+            LinkedList<Data> nueva = new LinkedList<Data>();
 
+            foreach(Data data in lista)
+            {
+                Data d = new Data(new LinkedList<Atributo>());
+                foreach(Atributo a in data.valores)
+                {
+                    Columna columna = buscarColumna(columnas, a.nombre);
+                    if(columna != null)
+                    {
+                        string tipo = columna.tipo.ToLower();
+                        if(a.valor != null)
+                        {
+                            if(tipo.Equals("string") && a.valor.GetType() == typeof(string)) d.valores.AddLast(new Atributo(columna.name, (string)a.valor, tipo));
+                            else if (tipo.Equals("int") && a.valor.GetType() == typeof(int)) d.valores.AddLast(new Atributo(columna.name, (int)a.valor, tipo));
+                            else if (tipo.Equals("double") && a.valor.GetType() == typeof(Double)) d.valores.AddLast(new Atributo(columna.name, (Double)a.valor, tipo));
+                            else if (tipo.Equals("date") && a.valor.GetType() == typeof(DateTime)) d.valores.AddLast(new Atributo(columna.name, (DateTime)a.valor, tipo));
+                            else if (tipo.Equals("time") && a.valor.GetType() == typeof(TimeSpan)) d.valores.AddLast(new Atributo(columna.name, (TimeSpan)a.valor, tipo));
+                            else if (tipo.Equals("counter") && a.valor.GetType() == typeof(int)) d.valores.AddLast(new Atributo(columna.name, (int)a.valor, tipo));
+                            else if (tipo.Contains("list") && a.valor.GetType() == typeof(Set))
+                            {
+                                string id = tipo.TrimStart('l').TrimStart('i').TrimStart('s').TrimStart('t').TrimStart('>').TrimEnd('>');
+
+                                List temp = new List(id, ((Set)a.valor).datos);
+                                d.valores.AddLast(new Atributo(columna.name, temp, columna.tipo));
+                            }
+                            else if (tipo.Contains("set") && a.valor.GetType() == typeof(Set))
+                            {
+                                string id = tipo.TrimStart('s').TrimStart('e').TrimStart('t').TrimStart('>').TrimEnd('>');
+
+                                Set temp = (Set)a.valor;
+                                temp.order();
+                                d.valores.AddLast(new Atributo(columna.name, temp, columna.tipo));
+                            }
+                            else if(tipo.Contains("map") && a.valor.GetType() == typeof(LinkedList<Data>))
+                            {
+                                string id = tipo.TrimStart('m').TrimStart('a').TrimStart('p').TrimStart('>').TrimEnd('>');
+                                LinkedList<Data> temp = (LinkedList<Data>)a.valor;
+                                if (temp.Count() > 0)
+                                {
+                                    LinkedList<Atributo> listatemp = temp.ElementAt(0).valores;
+                                    if(listatemp.Count() > 0)
+                                    {
+                                        LinkedList<KeyValue> listaRetorno = new LinkedList<KeyValue>();
+
+                                        foreach(Atributo at in listatemp)
+                                        {
+                                            KeyValue keyValue = new KeyValue(at.nombre, at.valor);
+                                            listaRetorno.AddLast(keyValue);
+                                        }
+
+                                        d.valores.AddLast(new Atributo(columna.name, new Map(id, listaRetorno), tipo));
+                                    }
+                                    else d.valores.AddLast(new Atributo(columna.name, new Map(id, new LinkedList<KeyValue>()), tipo));
+                                }
+                                else d.valores.AddLast(new Atributo(columna.name, new Map(id, new LinkedList<KeyValue>()),tipo));
+                            }
+                            else if (a.valor.GetType() == typeof(LinkedList<Data>)){
+                                LinkedList<Data> temp = (LinkedList<Data>)a.valor;
+                                if(temp.Count() > 0)
+                                {
+                                    LinkedList<Atributo> at = temp.ElementAt(0).valores;
+                                    if(at.Count() > 0)
+                                    {
+                                        
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (tipo.Equals("string") || tipo.Equals("date") || tipo.Equals("time")) d.valores.AddLast(new Atributo(columna.name, null, tipo));
+                        }
+                    }
+                }
+                if (d.valores.Count() > 0) nueva.AddLast(d);
+            }
+
+
+            return nueva;
+        }
 
 
     }

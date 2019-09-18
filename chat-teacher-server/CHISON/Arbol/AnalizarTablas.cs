@@ -87,10 +87,10 @@ namespace cql_teacher_server.CHISON.Arbol
                                     direccion = direccion.TrimEnd();
                                     direccion += ".chison";
                                     object res = analizarImport(direccion);
-                                    valor = (LinkedList<Data>)analisis.analizar((ParseTreeNode)res);
+                                    //valor = (LinkedList<Data>)analisis.analizar((ParseTreeNode)res);
 
                                 }
-                                else valor = (LinkedList<Data>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
+                               // else valor = (LinkedList<Data>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
 
                             }
                             else if (token.Equals("COLUMNS") && cql_type.Equals("TABLE"))
@@ -103,10 +103,10 @@ namespace cql_teacher_server.CHISON.Arbol
                                     direccion = direccion.TrimEnd();
                                     direccion += ".chison";
                                     object res = analizarImport(direccion);
-                                    valor = (LinkedList<Columna>)analisis.analizar((ParseTreeNode)res);
+                                    //valor = (LinkedList<Columna>)analisis.analizar((ParseTreeNode)res);
 
                                 }
-                                else valor = (LinkedList<Columna>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
+                                //else valor = (LinkedList<Columna>)analisis.analizar(hijoT.ChildNodes.ElementAt(1));
                             }
                             else if(token.Equals("ATTRS") && cql_type.Equals("OBJECT"))
                             {
