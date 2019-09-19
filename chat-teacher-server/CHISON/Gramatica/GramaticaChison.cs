@@ -63,7 +63,7 @@ namespace cql_teacher_server.CHISON.Gramatica
             inicio.Rule = DOLAR + MENOR + instruccion_superior + MAYOR + DOLAR;
 
 
-            instruccion_superior.Rule = database;
+            instruccion_superior.Rule = database + COMA + user;
 
             database.Rule = DATABASES + IGUAL + LLAVEIZQ + LLAVEDER
                           | DATABASES + IGUAL + LLAVEIZQ + inObjetos + LLAVEDER;
@@ -71,7 +71,7 @@ namespace cql_teacher_server.CHISON.Gramatica
 
 
             user.Rule = USERS + IGUAL + LLAVEIZQ + LLAVEDER
-                       | USERS + IGUAL + LLAVEIZQ + objetos + LLAVEDER
+                       | USERS + IGUAL + LLAVEIZQ + inObjetos + LLAVEDER
                        ;
 
             inObjetos.Rule = inObjetos + COMA + MENOR + objetos + MAYOR

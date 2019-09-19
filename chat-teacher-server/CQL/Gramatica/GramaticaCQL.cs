@@ -291,6 +291,7 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal inProcedure = new NonTerminal("inprocedure");
             NonTerminal listaParametros = new NonTerminal("listaparametros");
             NonTerminal listaDeclaracion = new NonTerminal("listadeclaracion");
+            NonTerminal listaDeclaracion2 = new NonTerminal("listadeclaracion2");
 
             NonTerminal callProcedure = new NonTerminal("callprocedure");
 
@@ -454,9 +455,7 @@ namespace cql_teacher_server.CQL.Gramatica
                              | callProcedure
                              ;
 
-            llamadaFuncion.Rule = ID + "(" + ")"
-                                | ID + "(" + listValues + ")"
-                                ;
+           
 
             #endregion
 
@@ -750,7 +749,11 @@ namespace cql_teacher_server.CQL.Gramatica
             inLog.Rule = LOG + "(" + expresion + ")";
 
             //---------------------------------------------------- PROCEDURE ------------------------------------------------------------------------------
-            inProcedure.Rule = PROCEDURE + ID + listaParametros + "{" + instrucciones + "}";
+            inProcedure.Rule = PROCEDURE + ID + "(" + ")" + "," + "(" + ")" + "{" + instrucciones + "}"
+                             | PROCEDURE + ID + "(" + listaDeclaracion + ")" + "," + "(" + ")" + "{" + instrucciones + "}"
+                             | PROCEDURE + ID + "(" + ")" + "," + "(" + listaDeclaracion2 + ")" + "{" + instrucciones + "}"
+                             | PROCEDURE + ID + "(" + listaDeclaracion + ")" + "," + "(" + listaDeclaracion2 + ")" + "{" + instrucciones + "}"
+                             ;
 
             listaParametros.Rule = listaParametros + "," + "(" + listaDeclaracion + ")"
                                  | "(" + listaDeclaracion + ")"
@@ -759,9 +762,21 @@ namespace cql_teacher_server.CQL.Gramatica
             listaDeclaracion.Rule = listaDeclaracion + "," + parametros
                                   | parametros
                                   ;
+
+            listaDeclaracion2.Rule = listaDeclaracion2 + "," + parametros
+                                 | parametros
+                                 ;
+
+
             parametros.Rule = tipoVariable + "@" + ID;
 
-            callProcedure.Rule = CALL + ID + "(" + listValues + ")";
+            callProcedure.Rule = CALL + ID + "(" + listValues + ")"
+                               | CALL + ID + "(" + ")"
+                               ;
+
+            llamadaFuncion.Rule = ID + "(" + ")"
+                               | ID + "(" + listValues + ")"
+                               ;
             #endregion
 
             #region Cursor

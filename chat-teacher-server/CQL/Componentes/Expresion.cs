@@ -1594,7 +1594,7 @@ namespace cql_teacher_server.CQL.Componentes
                     Procedures procedure = bd.buscarProcedure(identificador);
                     if (procedure != null)
                     {
-                        CallProcedure callProcedure = new CallProcedure(procedure.parametro, procedure.cuerpo, linea1, columna1);
+                        CallProcedure callProcedure = new CallProcedure(procedure.parametro,procedure.identificadorOut, procedure.cuerpo, linea1, columna1);
                         callProcedure.valores = listaUser;
                         return callProcedure.ejecutar(ts, ambito, tsT); ;
                     }

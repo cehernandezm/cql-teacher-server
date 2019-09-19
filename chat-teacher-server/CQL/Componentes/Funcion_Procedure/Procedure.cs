@@ -15,7 +15,9 @@ namespace cql_teacher_server.CQL.Componentes.Funcion_Procedure
     {
         string id { set; get; }
         public string identificador { set; get; }
+        public string identificadorOut { set; get; }
         LinkedList<listaParametros> parametros { set; get; }
+        LinkedList<listaParametros> retornos { set; get; }
         LinkedList<InstruccionCQL> cuerpo { set; get; }
         int l { set; get; }
         int c { set; get; }
@@ -30,15 +32,17 @@ namespace cql_teacher_server.CQL.Componentes.Funcion_Procedure
         * @param {c} columna del id
         * @param {codigo} codigo original
         */
-        public Procedure(string id, LinkedList<listaParametros> parametros, LinkedList<InstruccionCQL> cuerpo, int l, int c, string codigo)
+        public Procedure(string id, LinkedList<listaParametros> parametros, LinkedList<listaParametros> retornos, LinkedList<InstruccionCQL> cuerpo, int l, int c, string codigo)
         {
             this.id = id;
             this.parametros = parametros;
+            this.retornos = retornos;
             this.cuerpo = cuerpo;
             this.l = l;
             this.c = c;
             this.codigo = codigo;
             generarID();
+            generarOut();
         }
 
         /*
@@ -69,7 +73,7 @@ namespace cql_teacher_server.CQL.Componentes.Funcion_Procedure
                             {
                                 if (db.buscarProcedure(identificador) == null)
                                 {
-                                    db.objetos.procedures.AddLast(new Procedures(id, codigo, identificador, parametros, cuerpo));
+                                    db.objetos.procedures.AddLast(new Procedures(id, codigo, identificador, parametros,identificadorOut,retornos, cuerpo));
                                     return "";
                                 }
                                 else ambito.mensajes.AddLast(ms.error("El procedure: " + id + " ya existe en esta DB: " + ambito.baseD,l,c,"Semantico"));
@@ -108,6 +112,21 @@ namespace cql_teacher_server.CQL.Componentes.Funcion_Procedure
         }
 
 
-       
+        /*
+         * METODO QUE GENERA EL IDENTIFICADOR UNICO PARA CADA PROCEDURE
+         */
+        private void generarOut()
+        {
+            string iden = "";
+            foreach (listaParametros lista in retornos)
+            {
+                foreach (Declaracion d in lista.lista)
+                {
+                    iden += "_" + d.tipo;
+                }
+            }
+            identificadorOut = iden;
+        }
+
     }
 }

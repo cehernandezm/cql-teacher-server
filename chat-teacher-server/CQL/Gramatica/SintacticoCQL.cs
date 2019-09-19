@@ -137,7 +137,6 @@ namespace cql_teacher_server.CQL.Gramatica
         {
             string token = raiz.Term.Name;
             ParseTreeNode hijo = raiz;
-            
             switch (token)
             {
                 //-------------------------------- USE DB ----------------------------------------------------------------
@@ -194,7 +193,7 @@ namespace cql_teacher_server.CQL.Gramatica
 
                     if (tokend.Equals("declaracion"))
                     {
-                        lista = (LinkedList<InstruccionCQL>)instruccion(hijo);
+                        lista = (LinkedList<InstruccionCQL>)instruccion(hijo.ChildNodes.ElementAt(0));
                         t = declaracionTipo(hijo.ChildNodes.ElementAt(0));
                     }
                     else t = hijo.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Text;
@@ -986,9 +985,39 @@ namespace cql_teacher_server.CQL.Gramatica
                     string idP = hijo.ChildNodes.ElementAt(1).Token.Text.ToLower().TrimEnd().TrimStart();
                     int lPR = hijo.ChildNodes.ElementAt(1).Token.Location.Line;
                     int cPR = hijo.ChildNodes.ElementAt(1).Token.Location.Column;
-                    LinkedList<InstruccionCQL> cuerpoPR = instrucciones(hijo.ChildNodes.ElementAt(4));
-                    LinkedList<listaParametros> parametroPR = GetListaParametros(hijo.ChildNodes.ElementAt(2));
-                    listaPR.AddLast(new Procedure(idP,parametroPR,cuerpoPR,lPR,cPR,""));
+
+                    //------------------------------ PROCEDURE ID (), () { instrucciones }
+                    if(hijo.ChildNodes.Count() == 5)
+                    {
+                        LinkedList<InstruccionCQL> cuerpoPR = instrucciones(hijo.ChildNodes.ElementAt(3));
+                        listaPR.AddLast(new Procedure(idP, new LinkedList<listaParametros>(), new LinkedList<listaParametros>(), cuerpoPR,lPR,cPR,""));
+
+                    }
+                    else if(hijo.ChildNodes.Count() == 6)
+                    {
+                        LinkedList<InstruccionCQL> cuerpoPR = instrucciones(hijo.ChildNodes.ElementAt(4));
+                        string termLista = hijo.ChildNodes.ElementAt(2).Term.Name.ToLower();
+                        if (termLista.Equals("listadeclaracion"))
+                        {
+                            LinkedList<listaParametros> parametroPR = GetListaParametros(hijo.ChildNodes.ElementAt(2));
+                            listaPR.AddLast(new Procedure(idP, parametroPR, new LinkedList<listaParametros>(), cuerpoPR, lPR, cPR, ""));
+                        }
+                        else
+                        {
+                            LinkedList<listaParametros> parametroPR = GetListaParametros(hijo.ChildNodes.ElementAt(2));
+                            listaPR.AddLast(new Procedure(idP,  new LinkedList<listaParametros>(), parametroPR, cuerpoPR, lPR, cPR, ""));
+                        }
+                    }
+                    else
+                    {
+                        LinkedList<InstruccionCQL> cuerpoPR = instrucciones(hijo.ChildNodes.ElementAt(5));
+                        LinkedList<listaParametros> parametroPR = GetListaParametros(hijo.ChildNodes.ElementAt(2));
+                        LinkedList<listaParametros> parametroPR2 = GetListaParametros(hijo.ChildNodes.ElementAt(3));
+                        listaPR.AddLast(new Procedure(idP, parametroPR, parametroPR2, cuerpoPR, lPR, cPR, ""));
+                    }
+            
+
+                    
 
                     return listaPR;
 
@@ -1111,6 +1140,7 @@ namespace cql_teacher_server.CQL.Gramatica
         {
             LinkedList<InstruccionCQL> lista = new LinkedList<InstruccionCQL>();
             ParseTreeNode hijo;
+            System.Diagnostics.Debug.WriteLine(raiz.Term.Name);
             if (raiz.ChildNodes.Count() == 2)
             {
                 lista = getListaDeclaracion(raiz.ChildNodes.ElementAt(0));
@@ -1118,6 +1148,7 @@ namespace cql_teacher_server.CQL.Gramatica
             }
             else hijo = raiz.ChildNodes.ElementAt(0);
             LinkedList<InstruccionCQL> listaD = (LinkedList<InstruccionCQL>)instruccion(hijo);
+            System.Diagnostics.Debug.WriteLine("tam: " + listaD.Count());
             lista = new LinkedList<InstruccionCQL>(lista.Union(listaD));
             return lista;
         }
@@ -1139,7 +1170,7 @@ namespace cql_teacher_server.CQL.Gramatica
                 hijo = raiz.ChildNodes.ElementAt(1);
             }
             else hijo = raiz.ChildNodes.ElementAt(0);
-            LinkedList<InstruccionCQL> decla = getListaDeclaracion(hijo);
+            LinkedList<InstruccionCQL> decla = (LinkedList<InstruccionCQL>)instruccion(hijo);
             lista.AddLast(new listaParametros(decla));
             return lista;
         }
@@ -1550,6 +1581,7 @@ namespace cql_teacher_server.CQL.Gramatica
 
                         return new Expresion("INSTANCIA", ln, cn, tipoA);
                     }
+                    
                     else if (idE.Equals("ID"))
                     {
                         string valor = raiz.ChildNodes.ElementAt(1).Token.Text;
@@ -1669,6 +1701,7 @@ namespace cql_teacher_server.CQL.Gramatica
                     string id = hijo.ChildNodes.ElementAt(1).Token.Text.ToLower().TrimEnd().TrimStart();
                     int l = hijo.ChildNodes.ElementAt(1).Token.Location.Line;
                     int c = hijo.ChildNodes.ElementAt(1).Token.Location.Column;
+                    if(hijo.ChildNodes.Count() == 2) return new Expresion("llamadaProcedure", l, c, new LinkedList<Expresion>(), id);
                     return new Expresion("llamadaProcedure", l, c, listaExpresiones(hijo.ChildNodes.ElementAt(2)), id);
 
                 }

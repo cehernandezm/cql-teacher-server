@@ -110,6 +110,10 @@ namespace cql_teacher_server.CHISON.Arbol
                             if (resT != null) return new Atributo("attrs", (LinkedList<Attrs>)resT, "");
                             return new Atributo("attrs", new LinkedList<Attrs>(), "");
                         }
+                        else if (key.Equals("parameteres"))
+                        {
+
+                        }
                         mensajes.AddLast("No se reconoce este atributo: " + key + " Linea :" + l + "Columna: " + c);
                         break;
                 }

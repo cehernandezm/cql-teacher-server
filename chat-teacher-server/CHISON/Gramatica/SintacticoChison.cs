@@ -27,12 +27,13 @@ namespace cql_teacher_server.CHISON.Gramatica
                     System.Diagnostics.Debug.WriteLine(arbol.ParserMessages.ElementAt(i).Message + " Linea: " + arbol.ParserMessages.ElementAt(i).Location.Line.ToString()
                               + " Columna: " + arbol.ParserMessages.ElementAt(i).Location.Column.ToString() + " Archivo: Principal \n");
                 }
-
+                
                 if(arbol.ParserMessages.Count() < 1)
                 {
                     graficar(raiz);
 
-                    ejecutar(raiz.ChildNodes.ElementAt(2));
+                    LinkedList<string> mensajes = new LinkedList<string>();
+                    ejecutar(raiz.ChildNodes.ElementAt(2),mensajes);
                     
                 }
                     
@@ -47,7 +48,7 @@ namespace cql_teacher_server.CHISON.Gramatica
          ---------------------------------------------------------- METODOS PARA ANALIZAR EL ARBOL --------------------------------------------------------
          -------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-        public Object ejecutar(ParseTreeNode raiz)
+        public Object ejecutar(ParseTreeNode raiz, LinkedList<string> mensajes)
         {
             if (raiz != null)
             {
@@ -56,8 +57,8 @@ namespace cql_teacher_server.CHISON.Gramatica
                 {
                     //-------------------------------------- Instruccion Superior ------------------------------
                     case "intruccion_superior":
-                         ejecutar(raiz.ChildNodes.ElementAt(0));
-                         //ejecutar(raiz.ChildNodes.ElementAt(2));   
+                         ejecutar(raiz.ChildNodes.ElementAt(0),mensajes);
+                         ejecutar(raiz.ChildNodes.ElementAt(2),mensajes);   
                         break;
 
                     //--------------------------------- database ----------------------------------------------------------------
@@ -65,7 +66,6 @@ namespace cql_teacher_server.CHISON.Gramatica
                         if(raiz.ChildNodes.Count() == 5)
                         {
                             AnalizarBase analizar = new AnalizarBase();
-                            LinkedList<string> mensajes = new LinkedList<string>();
                             analizar.analizar(raiz.ChildNodes.ElementAt(3),mensajes);
 
                             foreach(string m in mensajes)
@@ -84,19 +84,8 @@ namespace cql_teacher_server.CHISON.Gramatica
 
                         if(raiz.ChildNodes.Count() == 5)
                         {
-                            string token1 = raiz.ChildNodes.ElementAt(3).ToString().Split(' ')[0].ToLower();
-                            AnalizarUsuario analisis = new AnalizarUsuario();
-                            if (token1.Equals("importar"))
-                            {
-                                
-                                string direccion = raiz.ChildNodes.ElementAt(3).ChildNodes.ElementAt(2).ToString().Split('(')[0];
-                                direccion = direccion.TrimEnd();
-                                direccion += ".chison";
-                                
-                                object res = analizarImport(direccion);
-
-                                if (res != null) analisis.analizar((ParseTreeNode)res);
-                            }else analisis.analizar(raiz.ChildNodes.ElementAt(3)); 
+                            AnalizarUsuario analizar = new AnalizarUsuario();
+                            analizar.analizar(raiz.ChildNodes.ElementAt(3), mensajes);
                         }
 
 

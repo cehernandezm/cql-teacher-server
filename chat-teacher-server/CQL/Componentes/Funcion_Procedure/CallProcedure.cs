@@ -13,6 +13,9 @@ namespace cql_teacher_server.CQL.Componentes.Funcion_Procedure
     public class CallProcedure : InstruccionCQL
     {
         LinkedList<listaParametros> parametros { set; get; }
+
+        string identificadorRetornos { set; get; }
+
         LinkedList<InstruccionCQL> cuerpo { set; get; }
         public LinkedList<Expresion> valores { set; get; }
         int l { set; get; }
@@ -27,9 +30,10 @@ namespace cql_teacher_server.CQL.Componentes.Funcion_Procedure
         * @param {c} columna del id
         * @param {codigo} codigo original
         */
-        public CallProcedure(LinkedList<listaParametros> parametros, LinkedList<InstruccionCQL> cuerpo, int l, int c)
+        public CallProcedure(LinkedList<listaParametros> parametros, string identificadorRetornos, LinkedList<InstruccionCQL> cuerpo, int l, int c)
         {
             this.parametros = parametros;
+            this.identificadorRetornos = identificadorRetornos;
             this.cuerpo = cuerpo;
             this.l = l;
             this.c = c;
@@ -82,39 +86,45 @@ namespace cql_teacher_server.CQL.Componentes.Funcion_Procedure
                         object re = ((Retorno)r).valor;
                         if (re != null)
                         {
-                            if (re.GetType() == typeof(LinkedList<object>))
-                            {
-                                LinkedList<object> temp = (LinkedList<object>)re;
-                                if (temp.Count() == parametros.Count()) return temp;
-                                else
-                                {
-                                    ambito.listadoExcepciones.AddLast(new Excepcion("numberreturnsexception", "La cantidad de valores retornados no concuerda con el valor de parametros"));
-                                    ambito.mensajes.AddLast(ms.error("La cantidad de valores retornados no concuerda con el valor de parametros", l, c, "Semantico"));
-                                    return null;
-                                }
-                            }
+                            LinkedList<object> temp;
+                            if (re.GetType() == typeof(LinkedList<object>))temp = (LinkedList<object>)re;
                             else
                             {
-                                LinkedList<object> temp = new LinkedList<object>();
+                                temp = new LinkedList<object>();
                                 temp.AddLast(re);
-                                if (parametros.Count() == 1) return temp;
-                                else
-                                {
-                                    ambito.listadoExcepciones.AddLast(new Excepcion("numberreturnsexception", "La cantidad de valores retornados no concuerda con el valor de parametros"));
-
-                                    ambito.mensajes.AddLast(ms.error("La cantidad de valores retornados no concuerda con el valor de parametros", l, c, "Semantico"));
-                                    return null;
-                                }
+                                
                             }
+                            string idGenerado = idOut(temp);
+                            if (idGenerado == null) return null;
+                            if (idGenerado.Equals(identificadorRetornos)) return temp;
+                            else
+                            {
+                                ambito.listadoExcepciones.AddLast(new Excepcion("numberreturnsexception", "La cantidad de valores retornados no concuerda con el valor de parametros se esperaba: " + identificadorRetornos + " se obtuvo " + idGenerado));
+                                ambito.mensajes.AddLast(ms.error("La cantidad de valores retornados no concuerda con el valor de parametros se esperaba: " + identificadorRetornos + " se obtuvo " + idGenerado, l, c, "Semantico"));
+                                return null;
+                            }
+
+
                         }
                         return null;
                     }
+                }
+                if (identificadorRetornos.Equals("")) return "";
+                else
+                {
+                    ambito.listadoExcepciones.AddLast(new Excepcion("numberreturnsexception", "Se necesita retornar valores de tipo: " + identificadorRetornos ));
+                    ambito.mensajes.AddLast(ms.error("Se necesita retornar valores de tipo: " + identificadorRetornos, l, c, "Semantico"));
+                    return null;
                 }
             }
             else ambito.mensajes.AddLast(ms.error("La cantidad de valores no concuerda con la cantidad de parametros", l, c, "Semantico"));
 
             return null;
         }
+
+        /*
+         * METODO QUE DEVUELVE EL TAMAÑO DE LA LISTA DE PARAMETROS
+         */
 
         int tamanioTotalParametros()
         {
@@ -125,5 +135,32 @@ namespace cql_teacher_server.CQL.Componentes.Funcion_Procedure
             }
             return index;
         }
+
+        /*
+         * METODO QUE DEVUELVE UN IDENTIFICADOR DE RETORNOS
+         */
+
+        private string idOut(LinkedList<object> lista)
+        {
+            string id = "";
+            foreach(object o in lista)
+            {
+                if (o == null) return null;
+                else
+                {
+                    if (o.GetType() == typeof(string)) id += "_string";
+                    else if (o.GetType() == typeof(int)) id += "_int";
+                    else if (o.GetType() == typeof(double)) id += "double";
+                    else if (o.GetType() == typeof(DateTime)) id += "_date";
+                    else if (o.GetType() == typeof(Boolean)) id += "_boolean";
+                    else if (o.GetType() == typeof(Map)) id += "_map";
+                    else if (o.GetType() == typeof(List)) id += "_list";
+                    else if (o.GetType() == typeof(Set)) id += "_set";
+                    else if (o.GetType() == typeof(InstanciaUserType)) id += "_" + ((InstanciaUserType)o).tipo;
+                }
+            }
+            return id;
+        }
+
     }
 }

@@ -7,55 +7,28 @@ $<
                     "CQL-TYPE" = "TABLE",
                     "NAME" = "tabla1",
                     "COLUMNS" = [
-                        <
-                            "NAME" = "columna1",
-                            "TYPE" = "string",
-                            "PK" = TRUE
-                        >,
-                        <
-                            "NAME" = "columna2",
-                            "TYPE" = "Map<string,int>",
-                            "PK" = False
-                        >,
-                        <
-                            "NAME" = "columna3",
-                            "Type" = "Estudiante",
-                            "PK" = False
-                        >
                     ],
                     "DATA" = [
-                        <
-                            "columna1" = "hola",
-                            "columna2" = < "hola" = 3 , "Carlos" = 2>,
-                            "columna3" = < "direccion" = "tu madre", "edad" = 23>
-                        >,
-                        <
-                            "columna1" = $  INSERT INTO "VALUES" FROM 
-                            $,
-                            "columna2" = < "hola" = 3 , "Carlos" = 2>,
-                            "columna3" = < "direccion" = "tu madre", "edad" = 23>
-                        >
-                    ]
-                >,
-                <
-                    "CQL-TYPE" = "OBJECT",
-                    "NAME" = "Estudiante",
-                    "ATTRS" = [
-                        <
-                            "Name" = "direccion",
-                            "type" = "string"
-                        >,
-                        <
-                            "NAME" = "edad",
-                            "type" = "int"
-                        >
                     ]
                 >
             ]
-        >,
-        <
-            "NAME" = "database2",
-            "DATA" = []
         >
+    ],
+    "USERS" = [
+      <
+        "name" = "luis",
+        "PASSWORD" = "123",
+        "permissions" = [
+            <
+            "name" = "database1"
+            >
+        ]
+      >,
+      <
+        "name" = "calor",
+        "password" = "123",
+        "permissions" = []
+      >  
     ]
+
 >$
