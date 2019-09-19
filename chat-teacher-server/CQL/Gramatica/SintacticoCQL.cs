@@ -97,6 +97,35 @@ namespace cql_teacher_server.CQL.Gramatica
 
         }
 
+
+        public object analizarProcedure(string cadena, LinkedList<string> mensajes)
+        {
+            GramaticaCQL gramatica = new GramaticaCQL();
+            LanguageData lenguaje = new LanguageData(gramatica);
+            Parser parser = new Parser(gramatica);
+            ParseTree arbol = parser.Parse(cadena);
+            ParseTreeNode raiz = arbol.Root;
+
+            if (arbol != null)
+            {
+                for (int i = 0; i < arbol.ParserMessages.Count(); i++)
+                {
+                    System.Diagnostics.Debug.WriteLine(arbol.ParserMessages.ElementAt(i).Message + " Linea: " + arbol.ParserMessages.ElementAt(i).Location.Line.ToString()
+                             + " Columna: " + arbol.ParserMessages.ElementAt(i).Location.Column.ToString() + "\n");
+                }
+
+                if (arbol.ParserMessages.Count() < 1)
+                {
+                    graficar(raiz);
+
+                    LinkedList<InstruccionCQL> listaInstrucciones = instrucciones(raiz.ChildNodes.ElementAt(0));
+                    return listaInstrucciones;
+
+                }
+            }
+            return null;
+        }
+
        
 
         /*

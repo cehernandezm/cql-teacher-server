@@ -53,6 +53,7 @@ namespace cql_teacher_server.CHISON.Arbol
                         {
                             l = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
                             c = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Column;
+                            System.Diagnostics.Debug.WriteLine(raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1).Term.Name);
                             res = analizar(raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1),mensajes);
                         }
 
@@ -137,7 +138,7 @@ namespace cql_teacher_server.CHISON.Arbol
             Set set = new Set("", new LinkedList<object>());
             if (raiz.ChildNodes.Count() == 3)
             {
-                set = (Set)analizar(raiz.ChildNodes.ElementAt(0), mensajes);
+                set = (Set)analizarLista(raiz.ChildNodes.ElementAt(0), mensajes);
                 set.datos.AddLast(analizar(raiz.ChildNodes.ElementAt(2), mensajes));
             }
             else set.datos.AddLast(analizar(raiz.ChildNodes.ElementAt(0), mensajes));

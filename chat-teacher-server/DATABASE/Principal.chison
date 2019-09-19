@@ -7,9 +7,45 @@ $<
                     "CQL-TYPE" = "TABLE",
                     "NAME" = "tabla1",
                     "COLUMNS" = [
+                        <
+                            "NAME" = "columna1",
+                            "TYPE" = "List<int>",
+                            "PK" = False
+                        >,
+                        <
+                            "NAME" = "columna2",
+                            "TYPE" = "Set<int>",
+                            "PK" = False
+                        >
                     ],
                     "DATA" = [
+                        <
+                            "columna1" = [3,2,5,4,1],
+                            "columna2" = [3,2,5,4,1]
+                        >,
+                        <
+                            "columna1" = [4,5,6,1,2],
+                            "columna2" = [4,5,6,1,2]
+                        >
+
                     ]
+                >,
+                <
+                    "CQL-TYPE" = "PROCEDURE",
+                    "NAME" = "hola",
+                    "PARAMETERS" = [
+                        <
+                            "name" = "saludo",
+                            "type" = "string",
+                            "as" = in
+                        >,
+                        <
+                            "name" = "retorno1",
+                            "type" = "int",
+                            "as" = out
+                        >
+                    ],
+                    "INSTR" = $ LOG("hola: " + @saludo); $
                 >
             ]
         >

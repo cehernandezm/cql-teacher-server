@@ -19,12 +19,7 @@ namespace cql_teacher_server.CHISON.Componentes
         public LinkedList<listaParametros> parametro { set; get; }
         LinkedList<listaParametros> retornos { set; get; }
         public LinkedList<InstruccionCQL> cuerpo { set; get; }
-        public Procedures(string nombre, LinkedList<Parametros> parametros, string instruccion)
-        {
-            this.nombre = nombre;
-            this.parametros = parametros;
-            this.instruccion = instruccion;
-        }
+       
 
         public Procedures(string nombre, string instruccion, string identificador, LinkedList<listaParametros> parametro,string identificadorOut, LinkedList<listaParametros> retornos, LinkedList<InstruccionCQL> cuerpo)
         {
