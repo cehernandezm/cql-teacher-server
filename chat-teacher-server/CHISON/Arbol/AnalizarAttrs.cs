@@ -1,7 +1,9 @@
 ﻿using cql_teacher_server.CHISON.Componentes;
+using cql_teacher_server.CHISON.Gramatica;
 using Irony.Parsing;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -44,6 +46,15 @@ namespace cql_teacher_server.CHISON.Arbol
                         }
                         else
                         {
+                            //-------------------------------- IMPORTAR ------------------------------------------
+                            if (raiz.ChildNodes.ElementAt(0).ChildNodes.Count() == 1)
+                            {
+                                hijo = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0);
+                                string direccion = hijo.Token.Text.TrimStart('$').TrimStart('{').TrimEnd('}').TrimEnd('}').TrimEnd('$').TrimEnd('}');
+                                object nuevoNodo = analizarImport(direccion, mensajes);
+                                if (nuevoNodo != null) return analizar((ParseTreeNode)nuevoNodo, mensajes);
+                                else return null;
+                            }
                             l = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Line;
                             c = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(0).Token.Location.Column;
                             hijo = raiz.ChildNodes.ElementAt(0).ChildNodes.ElementAt(1);
@@ -70,6 +81,45 @@ namespace cql_teacher_server.CHISON.Arbol
                         }
                         return lista;
 
+
+                    case "inobjetos":
+                        LinkedList<Attrs> lista2 = new LinkedList<Attrs>();
+                        ParseTreeNode hijo2;
+                        if (raiz.ChildNodes.Count() == 5)
+                        {
+                            lista2 = (LinkedList<Attrs>)analizar(raiz.ChildNodes.ElementAt(0), mensajes);
+
+                            hijo2 = raiz.ChildNodes.ElementAt(3);
+                            l = raiz.ChildNodes.ElementAt(1).Token.Location.Line;
+                            c = raiz.ChildNodes.ElementAt(1).Token.Location.Column;
+                        }
+                        else
+                        {
+                            l = raiz.ChildNodes.ElementAt(0).Token.Location.Line;
+                            c = raiz.ChildNodes.ElementAt(0).Token.Location.Column;
+                            hijo2 = raiz.ChildNodes.ElementAt(1);
+                        }
+                        LinkedList<Atributo> resultado2 = (LinkedList<Atributo>)analizar(hijo2, mensajes);
+
+                        if (resultado2 != null)
+                        {
+                            Atributo temp = buscarAtributo(resultado2, "name");
+                            if (temp == null)
+                            {
+                                mensajes.AddLast("Los attr necesitan un atributo name, Linea: " + l + " Columna: " + c);
+                                return lista2;
+                            }
+                            string name = temp.valor.ToString().ToLower().TrimEnd().TrimStart();
+                            temp = buscarAtributo(resultado2, "type");
+                            if (temp == null)
+                            {
+                                mensajes.AddLast("Los attr necesitan un atributo type, Linea: " + l + " Columna: " + c);
+                                return lista2;
+                            }
+                            string type = temp.valor.ToString().ToLower().TrimEnd().TrimStart();
+                            lista2.AddLast(new Attrs(name, type));
+                        }
+                        return lista2;
 
 
 
@@ -128,9 +178,43 @@ namespace cql_teacher_server.CHISON.Arbol
             return null;
         }
 
-      
+        public object analizarImport(string direccion, LinkedList<string> mensajes)
+        {
+            try
+            {
+                string text = System.IO.File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\DATABASE", direccion));
+                GramaticaChison gramatica = new GramaticaChison();
+                LanguageData lenguaje = new LanguageData(gramatica);
+                Parser parser = new Parser(lenguaje);
+                ParseTree arbol = parser.Parse(text);
+                ParseTreeNode raiz = arbol.Root;
 
-       
+                if (arbol != null)
+                {
+                    for (int i = 0; i < arbol.ParserMessages.Count(); i++)
+                    {
+                        mensajes.AddLast(arbol.ParserMessages.ElementAt(i).Message + " Linea: " + arbol.ParserMessages.ElementAt(i).Location.Line.ToString()
+                                  + " Columna: " + arbol.ParserMessages.ElementAt(i).Location.Column.ToString() + ", ARCHIVO: " + direccion);
+                    }
+
+                    System.Diagnostics.Debug.WriteLine(raiz.ChildNodes.ElementAt(0).Term.Name);
+                    if (arbol.ParserMessages.Count() < 1) return raiz.ChildNodes.ElementAt(0);
+
+
+
+                }
+                else return null;
+
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine("ERROR CHISON SintacticoChison: " + e.Message);
+
+            }
+            return null;
+        }
+
+
 
 
     }

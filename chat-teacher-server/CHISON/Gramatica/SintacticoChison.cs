@@ -66,7 +66,15 @@ namespace cql_teacher_server.CHISON.Gramatica
                         if(raiz.ChildNodes.Count() == 5)
                         {
                             AnalizarBase analizar = new AnalizarBase();
-                            analizar.analizar(raiz.ChildNodes.ElementAt(3),mensajes);
+                            string termB = raiz.ChildNodes.ElementAt(3).Term.Name.ToLower();
+                            if(termB.Equals("inobjetos")) analizar.analizar(raiz.ChildNodes.ElementAt(3),mensajes);
+                            else
+                            {
+                                string direccion = raiz.ChildNodes.ElementAt(3).ChildNodes.ElementAt(2).Token.Text.TrimEnd().TrimStart();
+                                object nuevoNodo = analizarImport(direccion + ".chison", mensajes);
+                                if (nuevoNodo != null) analizar.analizar((ParseTreeNode)nuevoNodo,mensajes);
+                            }
+
 
                             foreach(string m in mensajes)
                             {
@@ -85,7 +93,14 @@ namespace cql_teacher_server.CHISON.Gramatica
                         if(raiz.ChildNodes.Count() == 5)
                         {
                             AnalizarUsuario analizar = new AnalizarUsuario();
-                            analizar.analizar(raiz.ChildNodes.ElementAt(3), mensajes);
+                            string termB = raiz.ChildNodes.ElementAt(3).Term.Name.ToLower();
+                            if (termB.Equals("inobjetos")) analizar.analizar(raiz.ChildNodes.ElementAt(3), mensajes);
+                            else
+                            {
+                                string direccion = raiz.ChildNodes.ElementAt(3).ChildNodes.ElementAt(2).Token.Text.TrimEnd().TrimStart();
+                                object nuevoNodo = analizarImport(direccion + ".chison", mensajes);
+                                if (nuevoNodo != null) analizar.analizar((ParseTreeNode)nuevoNodo, mensajes);
+                            }
                         }
 
 
@@ -190,12 +205,11 @@ namespace cql_teacher_server.CHISON.Gramatica
         }
 
 
-        public object analizarImport(string direccion)
+        public object analizarImport(string direccion, LinkedList<string> mensajes)
         {
             try
             {
                 string text = System.IO.File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\DATABASE", direccion));
-
                 GramaticaChison gramatica = new GramaticaChison();
                 LanguageData lenguaje = new LanguageData(gramatica);
                 Parser parser = new Parser(lenguaje);
@@ -206,16 +220,13 @@ namespace cql_teacher_server.CHISON.Gramatica
                 {
                     for (int i = 0; i < arbol.ParserMessages.Count(); i++)
                     {
-                        System.Diagnostics.Debug.WriteLine(arbol.ParserMessages.ElementAt(i).Message + " Linea: " + arbol.ParserMessages.ElementAt(i).Location.Line.ToString()
-                                  + " Columna: " + arbol.ParserMessages.ElementAt(i).Location.Column.ToString() + "\n");
+                        mensajes.AddLast(arbol.ParserMessages.ElementAt(i).Message + " Linea: " + arbol.ParserMessages.ElementAt(i).Location.Line.ToString()
+                                  + " Columna: " + arbol.ParserMessages.ElementAt(i).Location.Column.ToString() + ", ARCHIVO: " + direccion);
                     }
 
-                    if (arbol.ParserMessages.Count() < 1)
-                    {
+                    if (arbol.ParserMessages.Count() < 1) return raiz.ChildNodes.ElementAt(0);
 
-                        return raiz.ChildNodes.ElementAt(0);
-
-                    }
+                    
 
                 }
                 else return null;

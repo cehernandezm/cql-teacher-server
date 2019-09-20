@@ -60,19 +60,24 @@ namespace cql_teacher_server.CHISON.Gramatica
             #endregion
 
             #region Gramatica
-            inicio.Rule = DOLAR + MENOR + instruccion_superior + MAYOR + DOLAR;
+            inicio.Rule = DOLAR + MENOR + instruccion_superior + MAYOR + DOLAR
+                        | inObjetos
+                        ;
 
 
             instruccion_superior.Rule = database + COMA + user;
 
             database.Rule = DATABASES + IGUAL + LLAVEIZQ + LLAVEDER
-                          | DATABASES + IGUAL + LLAVEIZQ + inObjetos + LLAVEDER;
+                          | DATABASES + IGUAL + LLAVEIZQ + inObjetos + LLAVEDER
+                          | DATABASES + IGUAL + LLAVEIZQ + importar + LLAVEDER
+                          ;
 
 
 
             user.Rule = USERS + IGUAL + LLAVEIZQ + LLAVEDER
-                       | USERS + IGUAL + LLAVEIZQ + inObjetos + LLAVEDER
-                       ;
+                      | USERS + IGUAL + LLAVEIZQ + inObjetos + LLAVEDER
+                      | USERS + IGUAL + LLAVEIZQ + importar + LLAVEDER
+                      ;
 
             inObjetos.Rule = inObjetos + COMA + MENOR + objetos + MAYOR
                            | MENOR + objetos + MAYOR
@@ -83,7 +88,8 @@ namespace cql_teacher_server.CHISON.Gramatica
                          | objeto 
                          ;
 
-            objeto.Rule = CADENA + IGUAL + tipo;
+            objeto.Rule = CADENA + IGUAL + tipo
+                        ;
 
             tipo.Rule = CADENA
                       | TRUE
@@ -98,8 +104,7 @@ namespace cql_teacher_server.CHISON.Gramatica
                       | LLAVEIZQ + LLAVEDER
                       | LLAVEIZQ +  lista + LLAVEDER
                       | LLAVEIZQ + inObjetos + LLAVEDER
-                      | CODIGO
-                      | LLAVEIZQ + importar + LLAVEDER
+                      | CODIGO  
                       ;
 
 

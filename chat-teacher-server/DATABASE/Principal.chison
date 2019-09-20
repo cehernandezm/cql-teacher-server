@@ -27,7 +27,20 @@ $<
                             "columna1" = [4,5,6,1,2],
                             "columna2" = [4,5,6,1,2]
                         >
-
+                    ]
+                >,
+                <
+                    "CQL-TYPE" = "OBJECT",
+                    "NAME" = "USER1",
+                    "ATTRS" = [
+                        <
+                            "NAME" = "direccion",
+                            "TYPE" = "string"
+                        >,
+                        <
+                            "NAME" = "direccion",
+                            "TYPE" = "string"
+                        >
                     ]
                 >,
                 <
@@ -47,7 +60,10 @@ $<
                     ],
                     "INSTR" = $ LOG("hola: " + @saludo); $
                 >
-            ]
+                
+                     ]
+                
+            
         >
     ],
     "USERS" = [
@@ -55,9 +71,7 @@ $<
         "name" = "luis",
         "PASSWORD" = "123",
         "permissions" = [
-            <
-            "name" = "database1"
-            >
+            ${prueba.chison}$
         ]
       >,
       <

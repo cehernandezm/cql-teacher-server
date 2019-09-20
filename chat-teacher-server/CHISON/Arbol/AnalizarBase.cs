@@ -107,14 +107,13 @@ namespace cql_teacher_server.CHISON.Arbol
         }
 
 
-        
 
-        public object analizarImport(string direccion)
+
+        public object analizarImport(string direccion, LinkedList<string> mensajes)
         {
             try
             {
                 string text = System.IO.File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\DATABASE", direccion));
-
                 GramaticaChison gramatica = new GramaticaChison();
                 LanguageData lenguaje = new LanguageData(gramatica);
                 Parser parser = new Parser(lenguaje);
@@ -125,15 +124,13 @@ namespace cql_teacher_server.CHISON.Arbol
                 {
                     for (int i = 0; i < arbol.ParserMessages.Count(); i++)
                     {
-                        System.Diagnostics.Debug.WriteLine(arbol.ParserMessages.ElementAt(i).Message + " Linea: " + arbol.ParserMessages.ElementAt(i).Location.Line.ToString()
-                                  + " Columna: " + arbol.ParserMessages.ElementAt(i).Location.Column.ToString() + "Archivo: " + direccion +"\n");
+                        mensajes.AddLast(arbol.ParserMessages.ElementAt(i).Message + " Linea: " + arbol.ParserMessages.ElementAt(i).Location.Line.ToString()
+                                  + " Columna: " + arbol.ParserMessages.ElementAt(i).Location.Column.ToString() + ", ARCHIVO: " + direccion);
                     }
+                    System.Diagnostics.Debug.WriteLine(raiz.ChildNodes.ElementAt(0).Token.Text);
+                    if (arbol.ParserMessages.Count() < 1) return raiz.ChildNodes.ElementAt(0);
 
-                    if (arbol.ParserMessages.Count() < 1)
-                    {
-                        return raiz.ChildNodes.ElementAt(0);
 
-                    }
 
                 }
                 else return null;
@@ -141,7 +138,7 @@ namespace cql_teacher_server.CHISON.Arbol
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine("ERROR CHISON AnanalizarBase: " + e.Message);
+                System.Diagnostics.Debug.WriteLine("ERROR CHISON SintacticoChison: " + e.Message);
 
             }
             return null;
