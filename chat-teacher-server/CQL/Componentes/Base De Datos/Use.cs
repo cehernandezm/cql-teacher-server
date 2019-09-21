@@ -57,7 +57,7 @@ namespace cql_teacher_server.CQL.Componentes
                 return null;
             }
             Usuario usu = TablaBaseDeDatos.getUsuario(ambito.usuario);
-            if( usu == null)
+            if( usu == null && !ambito.usuario.Equals("admin"))
             {
                 ambito.mensajes.AddLast(mensa.error("El usuario: " + ambito.usuario + " no existe ", linea, columna, "Semantico"));
                 return null;

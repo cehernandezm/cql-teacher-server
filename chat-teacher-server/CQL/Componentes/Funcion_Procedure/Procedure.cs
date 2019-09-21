@@ -60,8 +60,14 @@ namespace cql_teacher_server.CQL.Componentes.Funcion_Procedure
             {
                 if (ambito.usuario.Equals("admin"))
                 {
-
+                    if (db.buscarProcedure(identificador) == null)
+                    {
+                        db.objetos.procedures.AddLast(new Procedures(id, codigo, identificador, parametros, identificadorOut, retornos, cuerpo));
+                        return "";
+                    }
+                    else ambito.mensajes.AddLast(ms.error("El procedure: " + id + " ya existe en esta DB: " + ambito.baseD, l, c, "Semantico"));
                 }
+            
                 else
                 {
                     Usuario us = TablaBaseDeDatos.getUsuario(ambito.usuario);

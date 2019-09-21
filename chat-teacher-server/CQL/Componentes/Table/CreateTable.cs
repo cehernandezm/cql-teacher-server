@@ -71,7 +71,70 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 if (ambito.usuario.Equals("admin"))
                 {
+                    //------------------------------------  SOLO HAY UNA PRIMARIA ------------------------------------------------------------
+                    if (primarias == null)
+                    {
+                        if (!(cantidadDePrimarias(lista) > 1))
+                        {
+                            if (!columnasRepetidas(lista, lista, ambito.mensajes))
+                            {
+                                Tabla old = TablaBaseDeDatos.getTabla(db, nombre);
+                                if (old == null)
+                                {
+                                    if (searchTipo(lista, ambito.mensajes, db))
+                                    {
+                                        Tabla nueva = new Tabla(nombre, lista, new LinkedList<Data>());
+                                        db.objetos.tablas.AddLast(nueva);
+                                        ambito.mensajes.AddLast(mensa.message("Se creo exitosamente la tabla: " + nombre));
+                                        return "";
+                                    }
 
+                                }
+                                else
+                                {
+                                    if (flag) return "";
+                                    ambito.listadoExcepciones.AddLast(new Excepcion("tablealreadyexists", "La tabla: " + nombre + " ya existe en la DB: " + ambito.baseD));
+                                    ambito.mensajes.AddLast(mensa.error("La tabla: " + nombre + " ya existe en la DB: " + ambito.baseD, l, c, "Semantico"));
+                                    return null;
+                                }
+                            }
+                        }
+                        else ambito.mensajes.AddLast(mensa.error("La tabla: " + nombre + " solo puede tener una clave primaria o use llaves compuestas", l, c, "Semantico"));
+                    }
+                    //-------------------------------------- LLAVE PRIMARIA COMPUESTA -------------------------------------------------------
+                    else
+                    {
+                        if (!(cantidadDePrimarias(lista) > 0))
+                        {
+                            if (!(columnasRepetidas(lista, lista, ambito.mensajes)))
+                            {
+                                if (!hayCounter(primarias, lista, ambito.mensajes))
+                                {
+                                    if (existenColumnas(primarias, lista, ambito.mensajes))
+                                    {
+                                        Tabla temp = TablaBaseDeDatos.getTabla(db, nombre);
+                                        if (temp == null)
+                                        {
+                                            if (searchTipo(lista, ambito.mensajes, db))
+                                            {
+                                                temp = new Tabla(nombre, lista, new LinkedList<Data>());
+                                                db.objetos.tablas.AddLast(temp);
+                                                ambito.mensajes.AddLast(mensa.message("Se creo exitosamente la tabla: " + nombre));
+                                                return "";
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            if (flag) return "";
+                                            ambito.mensajes.AddLast(mensa.error("La tabla: " + nombre + " ya existe en la DB: " + ambito.baseD, l, c, "Semantico"));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else ambito.mensajes.AddLast(mensa.error("La tabla: " + nombre + " solo puede tener primarias compuestas", l, c, "Semantico"));
+                    }
                 }
                 else
                 {

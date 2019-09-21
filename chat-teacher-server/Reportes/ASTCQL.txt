@@ -1,26 +1,14 @@
 digraph Arbol{ rankdir=TB; 
- node[shape = box, style = filled, color = white];nodo92919[label="inicio ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo4181390[label="instrucciones ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo53944861[label="instruccion ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo11599658[label="inlog ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo52222588[label="LOG (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo11599658"-> "nodo52222588" 
-nodo1206253[label="expresion ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo54281387[label="expresion ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo26743348[label="hola:  (cadena) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo54281387"-> "nodo26743348" 
-"nodo1206253"-> "nodo54281387" 
-nodo62599984[label="+ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo1206253"-> "nodo62599984" 
-nodo65535886[label="expresion ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo63433729[label="@ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo65535886"-> "nodo63433729" 
-nodo35945528[label="saludo (ID) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo65535886"-> "nodo35945528" 
-"nodo1206253"-> "nodo65535886" 
-"nodo11599658"-> "nodo1206253" 
-"nodo53944861"-> "nodo11599658" 
-"nodo4181390"-> "nodo53944861" 
-"nodo92919"-> "nodo4181390" 
+ node[shape = box, style = filled, color = white];nodo22599820[label="inicio ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo30887001[label="instrucciones ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo1968367[label="instruccion ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo5720734[label="use ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo10340569[label="use (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo5720734"-> "nodo10340569" 
+nodo47056750[label="database1 (ID) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo5720734"-> "nodo47056750" 
+"nodo1968367"-> "nodo5720734" 
+"nodo30887001"-> "nodo1968367" 
+"nodo22599820"-> "nodo30887001" 
 
 }

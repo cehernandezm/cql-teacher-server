@@ -44,7 +44,7 @@ namespace cql_teacher_server.CQL.Componentes
                 object respuesta = ins.ejecutar(ts, ambito, tsT);
                 if(respuesta == null)
                 {
-                    ambito.listadoExcepciones.AddLast(new Excepcion("batchException", "Hubo un error en la ejecucion del batch, Linea: " + l + " Columna: " + c));
+                    ambito.listadoExcepciones.AddLast(new Excepcion("batchexception", "Hubo un error en la ejecucion del batch, Linea: " + l + " Columna: " + c));
                     ambito.mensajes.AddLast(ms.error("Hubo un error en la ejecucion del batch",l,c,"Semantico"));
                     LeerArchivo leer = new LeerArchivo("Principal2.chison");
                     return null;

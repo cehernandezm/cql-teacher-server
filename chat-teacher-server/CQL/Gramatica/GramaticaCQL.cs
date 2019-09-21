@@ -183,6 +183,7 @@ namespace cql_teacher_server.CQL.Gramatica
             var FUNCTIONALREADYEXISTS = ToTerm("FunctionAlreadyExists");
             var PROCEDUREALREADYEXISTS = ToTerm("ProcedurealreadyExists");
             var OBJECTALREADYEXISTS = ToTerm("ObjectAlreadyExists");
+            var BATCHEXCEPTION = ToTerm("BatchException");
 
             var COMMIT = ToTerm("COMMIT");
             var ROLLBACK = ToTerm("ROLLBACK");
@@ -875,6 +876,7 @@ namespace cql_teacher_server.CQL.Gramatica
                                   | FUNCTIONALREADYEXISTS
                                   | PROCEDUREALREADYEXISTS
                                   | OBJECTALREADYEXISTS
+                                  | BATCHEXCEPTION
                                   ;
 
             inThrow.Rule = THROW + NEW + tiposExcepciones;

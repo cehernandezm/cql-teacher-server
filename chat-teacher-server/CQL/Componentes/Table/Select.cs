@@ -114,7 +114,63 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 if (user.Equals("admin"))
                 {
+                    Tabla tabla = TablaBaseDeDatos.getTabla(db, id);
+                    if (tabla != null)
+                    {
+                        LinkedList<Columna> cabecera = new LinkedList<Columna>();
+                        if (campos == null) cabecera = new LinkedList<Columna>(cabecera.Union(tabla.columnas));
+                        else cabecera = getColumnas(tabla, ts, ambito);
+                        if (cabecera != null)
+                        {
+                            LinkedList<Data> datos = new LinkedList<Data>();
+                            if (campos == null) datos = getAllData(tabla, ts, ambito, cabecera);
+                            else datos = getData(tabla, ts, ambito, cabecera);
+                            if (datos != null)
+                            {
+                                TablaSelect tablaSelect = new TablaSelect(cabecera, datos);
+                                System.Diagnostics.Debug.WriteLine(operacion);
+                                if (operacion.Equals("none")) { }
+                                else
+                                {
+                                    if (operacion.Contains("b"))
+                                    {
+                                        if (checkOrder(tablaSelect.columnas, mensajes))
+                                        {
 
+                                            LinkedList<int> pos = posicionesColumnas(tablaSelect.columnas);
+                                            try
+                                            {
+                                                if (pos.Count() > 0) tablaSelect.datos = new LinkedList<Data>(sort(tablaSelect.datos, pos, 0));
+                                            }
+                                            catch (Exception)
+                                            {
+                                                mensajes.AddLast(mensa.error("Esta intentando ordenar por un dato no primitivo", l, c, "Semantico"));
+                                            }
+
+
+                                        }
+                                        else return null;
+                                    }
+                                    if (operacion.Contains("c"))
+                                    {
+                                        tablaSelect.datos = limitar(tablaSelect.datos, ts, ambito, tsT);
+                                        if (datos == null) return null;
+
+                                    }
+                                }
+
+
+
+                                mensajes.AddLast(mensa.consulta(tablaSelect));
+                                return tablaSelect;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        ambito.listadoExcepciones.AddLast(new Excepcion("tabledontexists", "La tabla: " + id + " no existe en la DB: " + ambito.baseD));
+                        ambito.mensajes.AddLast(mensa.error("La tabla: " + id + " no existe en la DB: " + ambito.baseD, l, c, "Semantico"));
+                    }
                 }
                 else
                 {

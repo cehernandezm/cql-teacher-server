@@ -76,7 +76,42 @@ namespace cql_teacher_server.CQL.Componentes
                 {
                     if (ambito.usuario.Equals("admin"))
                     {
+                        if (operacion.Equals("ADD"))
+                        {
+                            if (!searchColumns(listaAdd, tabla.columnas, ambito.mensajes))
+                            {
+                                if (searchTipo(listaAdd, ambito.mensajes, db))
+                                {
+                                    foreach (Columna cc in listaAdd)
+                                    {
+                                        tabla.columnas.AddLast(cc);
+                                        agregarColumna(tabla.datos, cc);
+                                        ambito.mensajes.AddLast(mensa.message("Se agrego exitosamente la columna: " + cc.name));
+                                    }
+                                    return "";
+                                }
 
+                            }
+                        }
+                        else
+                        {
+                            if (existeColumna(listaDrop, tabla.columnas, ambito.mensajes, ambito))
+                            {
+                                if (!isPK(listaDrop, tabla.columnas, ambito.mensajes))
+                                {
+                                    foreach (string s in listaDrop)
+                                    {
+                                        Columna columna = getColumna(s, tabla.columnas);
+                                        int index = indexColumna(s, tabla.columnas);
+                                        deleteData(index, tabla.datos);
+                                        tabla.columnas.Remove(columna);
+                                        ambito.mensajes.AddLast(mensa.message("Columna: " + s + " ha sido eliminada con existo"));
+                                    }
+                                    return "";
+                                }
+
+                            }
+                        }
                     }
                     else
                     {

@@ -81,7 +81,20 @@ namespace cql_teacher_server.CQL.Componentes
             {
                 if (ambito.usuario.Equals("admin"))
                 {
+                    Tabla tabla = TablaBaseDeDatos.getTabla(db, id);
+                    if (tabla != null)
+                    {
+                        object res;
+                        if (operacion.Equals("NORMAL")) res = deleteALL(tabla, ts, ambito);
+                        else res = deleteSpecific(ts, ambito, tabla);
+                        if (res != null) return res;
 
+                    }
+                    else
+                    {
+                        ambito.listadoExcepciones.AddLast(new Excepcion("tabledontexists", "La tabla: " + id + " no existe en la DB: " + ambito.baseD));
+                        ambito.mensajes.AddLast(mensa.error("La tabla: " + id + " no existe en la DB: " + ambito.baseD, l, c, "Semantico"));
+                    }
                 }
                 else
                 {

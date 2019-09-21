@@ -56,7 +56,27 @@ namespace cql_teacher_server.CQL.Componentes
                 if (user.Equals("admin"))
                 {
 
-                  
+                    Usuario usuario2 = TablaBaseDeDatos.getUsuario(id);
+                    if (usuario2 != null)
+                    {
+                        if (operacion.Equals("GRANT"))
+                        {
+                            usuario2.bases.AddLast(iddb);
+                            mensajes.AddLast(mensa.message("Se le dio permiso al usuario: " + id + " sobre la DB: " + iddb));
+                        }
+                        else
+                        {
+                            usuario2.bases.Remove(iddb);
+                            mensajes.AddLast(mensa.message("Se le quitaron permisos al usuario: " + id + " sobre la DB: " + iddb));
+                        }
+
+                        return "";
+                    }
+                    else
+                    {
+                        ambito.listadoExcepciones.AddLast(new Excepcion("userdontexists", "El usuario " + id + " no existe"));
+                        mensajes.AddLast(mensa.error("El usuario " + id + " no existe", l, c, "Semantico"));
+                    }
                 }
                 else
                 {
