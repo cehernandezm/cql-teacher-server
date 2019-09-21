@@ -7,25 +7,26 @@ using System.Threading.Tasks;
 
 namespace cql_teacher_server.CQL.Componentes.Leer.Escribir
 {
-    public class Commit : InstruccionCQL
+    public class Rollback : InstruccionCQL
     {
+       
 
-        public Commit()
+        public Rollback()
         {
             
         }
 
+
         /*
-         * Metodo de la implementacion
-         * @ts tabla de simbolos global
-         * @user usuario que ejecuta la accion
-         * @baseD base de datos donde estamos ejecutando todo
-         * @mensajes linkedlist con la salida deseada
-     */
+       * Metodo de la implementacion
+       * @ts tabla de simbolos global
+       * @user usuario que ejecuta la accion
+       * @baseD base de datos donde estamos ejecutando todo
+       * @mensajes linkedlist con la salida deseada
+   */
         public object ejecutar(TablaDeSimbolos ts, Ambito ambito, TablaDeSimbolos tsT)
         {
-            GuardarArchivo archivo = new GuardarArchivo();
-            archivo.guardarArchivo("Principal");
+            LeerArchivo leer = new LeerArchivo("Principal.chison");
             return "";
         }
     }

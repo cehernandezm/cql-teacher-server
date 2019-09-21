@@ -8,28 +8,61 @@ $<
 					"NAME" = "tabla1",
 					"COLUMNS" = [
 						<
-							"NAME" = "fecha",
-							"TYPE" = "date",
+							"NAME" = "columna1",
+							"TYPE" = "list<int>",
 							"PK" = False
 						>,
 						<
-							"NAME" = "id",
-							"TYPE" = "counter",
-							"PK" = True
-						>,
-						<
-							"NAME" = "hora",
-							"TYPE" = "time",
+							"NAME" = "columna2",
+							"TYPE" = "set<int>",
 							"PK" = False
 						>
 					],
 					"DATA" = [
 					<
-						"fecha" ='2019-09-16',
-						"id" =1,
-						"hora" ='21:03:42'
+						"columna1" =[3,2,5,4,1],
+						"columna2" =[1,2,3,4,5]
+					>,
+					<
+						"columna1" =[4,5,6,1,2],
+						"columna2" =[1,2,4,5,6]
+					>,
+					<
+						"columna1" =[2,3,4,55],
+						"columna2" =[0,1,2,3,4]
 					>
 					]
+				>,
+				<
+					"CQL-TYPE" = "OBJECT",
+					"NAME" = "user1",
+					"ATTRS" = [
+						<
+							"NAME" = "direccion",
+							"TYPE" = "string"
+						>,
+						<
+							"NAME" = "direccion",
+							"TYPE" = "string"
+						>
+					]
+				>,
+				<
+					"CQL-TYPE" = "PROCEDURE",
+					"NAME" = "hola",
+					"PARAMETERS" = [
+					<
+						"NAME" = "saludo",
+						"TYPE" = "string",
+						"AS" = "IN"
+					>,
+						<
+							"NAME" = "retorno1",
+							"TYPE" = "int",
+							"AS" = "OUT"
+					>
+					],
+					"INSTR" = $ LOG("hola: " + @saludo); $
 				>
 			]
 		>
@@ -37,19 +70,16 @@ $<
 	"USERS" = [
 		<
 			"NAME" = "luis",
-			"PASSWORD" = "1234",
+			"PASSWORD" = "123",
 			"PERMISSIONS" = [
 			<
 			"NAME" = "database1"
-			>,
-			<
-			"NAME" = "database2"
 			>
 			]
 		>,
 		<
-			"NAME" = "fernando",
-			"PASSWORD" = "5678",
+			"NAME" = "calor",
+			"PASSWORD" = "123",
 			"PERMISSIONS" = [
 			]
 		>

@@ -17,7 +17,7 @@ namespace cql_teacher_server.CHISON.Componentes
         public string identificador { set; get; }
         public string identificadorOut { set; get; }
         public LinkedList<listaParametros> parametro { set; get; }
-        LinkedList<listaParametros> retornos { set; get; }
+        public LinkedList<listaParametros> retornos { set; get; }
         public LinkedList<InstruccionCQL> cuerpo { set; get; }
        
 

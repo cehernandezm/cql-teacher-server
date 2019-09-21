@@ -1,4 +1,6 @@
-﻿using cql_teacher_server.CHISON.Gramatica;
+﻿using cql_teacher_server.CHISON;
+using cql_teacher_server.CHISON.Componentes;
+using cql_teacher_server.CHISON.Gramatica;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,18 +11,21 @@ namespace cql_teacher_server.Herramientas
 {
     public class LeerArchivo
     {
-        public LeerArchivo()
+        string direccion { set; get; }
+        public LeerArchivo(string direccion)
         {
-            
-               string text = System.IO.File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\DATABASE", "Principal.chison"));
+            this.direccion = direccion;
+            TablaBaseDeDatos.global = new LinkedList<BaseDeDatos>();
+            TablaBaseDeDatos.listaUsuario = new LinkedList<Usuario>();
+            string text = System.IO.File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\DATABASE", direccion));
 
-                SintacticoChison sintactico = new SintacticoChison();
-                sintactico.analizar(text);
-           
-            
-           
+            SintacticoChison sintactico = new SintacticoChison();
+            sintactico.analizar(text);
+
+
+
         }
 
- 
+
     }
 }

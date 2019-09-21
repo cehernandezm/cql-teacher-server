@@ -1,84 +1,91 @@
 $<
-    "DATABASES" = [
-        <
-            "NAME" = "database1",
-            "DATA" = [
-                <
-                    "CQL-TYPE" = "TABLE",
-                    "NAME" = "tabla1",
-                    "COLUMNS" = [
-                        <
-                            "NAME" = "columna1",
-                            "TYPE" = "List<int>",
-                            "PK" = False
-                        >,
-                        <
-                            "NAME" = "columna2",
-                            "TYPE" = "Set<int>",
-                            "PK" = False
-                        >
-                    ],
-                    "DATA" = [
-                        <
-                            "columna1" = [3,2,5,4,1],
-                            "columna2" = [3,2,5,4,1]
-                        >,
-                        <
-                            "columna1" = [4,5,6,1,2],
-                            "columna2" = [4,5,6,1,2]
-                        >
-                    ]
-                >,
-                <
-                    "CQL-TYPE" = "OBJECT",
-                    "NAME" = "USER1",
-                    "ATTRS" = [
-                        <
-                            "NAME" = "direccion",
-                            "TYPE" = "string"
-                        >,
-                        <
-                            "NAME" = "direccion",
-                            "TYPE" = "string"
-                        >
-                    ]
-                >,
-                <
-                    "CQL-TYPE" = "PROCEDURE",
-                    "NAME" = "hola",
-                    "PARAMETERS" = [
-                        <
-                            "name" = "saludo",
-                            "type" = "string",
-                            "as" = in
-                        >,
-                        <
-                            "name" = "retorno1",
-                            "type" = "int",
-                            "as" = out
-                        >
-                    ],
-                    "INSTR" = $ LOG("hola: " + @saludo); $
-                >
-                
-                     ]
-                
-            
-        >
-    ],
-    "USERS" = [
-      <
-        "name" = "luis",
-        "PASSWORD" = "123",
-        "permissions" = [
-            ${prueba.chison}$
-        ]
-      >,
-      <
-        "name" = "calor",
-        "password" = "123",
-        "permissions" = []
-      >  
-    ]
-
+	"DATABASES" = [
+		<
+			"NAME" = "database1",
+			"Data" = [
+				<
+					"CQL-TYPE" = "TABLE",
+					"NAME" = "tabla1",
+					"COLUMNS" = [
+						<
+							"NAME" = "columna1",
+							"TYPE" = "list<int>",
+							"PK" = False
+						>,
+						<
+							"NAME" = "columna2",
+							"TYPE" = "set<int>",
+							"PK" = False
+						>
+					],
+					"DATA" = [
+					<
+						"columna1" =[3,2,5,4,1],
+						"columna2" =[1,2,3,4,5]
+					>,
+					<
+						"columna1" =[4,5,6,1,2],
+						"columna2" =[1,2,4,5,6]
+					>,
+					<
+						"columna1" =[2,3,4,55],
+						"columna2" =[0,1,2,3,4]
+					>,
+					<
+						"columna1" =[0,2],
+						"columna2" =[0,1]
+					>
+					]
+				>,
+				<
+					"CQL-TYPE" = "OBJECT",
+					"NAME" = "user1",
+					"ATTRS" = [
+						<
+							"NAME" = "direccion",
+							"TYPE" = "string"
+						>,
+						<
+							"NAME" = "direccion",
+							"TYPE" = "string"
+						>
+					]
+				>,
+				<
+					"CQL-TYPE" = "PROCEDURE",
+					"NAME" = "hola",
+					"PARAMETERS" = [
+					<
+						"NAME" = "saludo",
+						"TYPE" = "string",
+						"AS" = "IN"
+					>,
+						<
+							"NAME" = "retorno1",
+							"TYPE" = "int",
+							"AS" = "OUT"
+					>
+					],
+					"INSTR" = $ LOG("hola: " + @saludo); $
+				>
+			]
+		>
+	],
+	"USERS" = [
+		<
+			"NAME" = "luis",
+			"PASSWORD" = "123",
+			"PERMISSIONS" = [
+			<
+			"NAME" = "database1"
+			>
+			]
+		>,
+		<
+			"NAME" = "calor",
+			"PASSWORD" = "123",
+			"PERMISSIONS" = [
+			]
+		>
+	]
 >$

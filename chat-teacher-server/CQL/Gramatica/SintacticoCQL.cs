@@ -1139,6 +1139,23 @@ namespace cql_teacher_server.CQL.Gramatica
                     LinkedList<InstruccionCQL> listaCOM = new LinkedList<InstruccionCQL>();
                     listaCOM.AddLast(new Commit());
                     return listaCOM;
+
+
+                //------------------------------------------------------------- ROLLBACK -----------------------------------------------------------------------------
+                case "inrollback":
+                    LinkedList<InstruccionCQL> listaRO = new LinkedList<InstruccionCQL>();
+                    listaRO.AddLast(new Rollback());
+                    return listaRO;
+
+
+                //------------------------------------------------------------- BATCH -------------------------------------------------------------------------------------
+                case "inbatch":
+                    LinkedList<InstruccionCQL> listaBa = new LinkedList<InstruccionCQL>();
+                    int lba = hijo.ChildNodes.ElementAt(0).Token.Location.Line;
+                    int cba = hijo.ChildNodes.ElementAt(0).Token.Location.Column;
+                    LinkedList<InstruccionCQL> cuerpoBa = instrucciones(hijo.ChildNodes.ElementAt(2));
+                    listaBa.AddLast(new Batch(lba, cba, cuerpoBa));
+                    return listaBa;
             }
             return null;
 

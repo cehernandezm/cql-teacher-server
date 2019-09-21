@@ -185,7 +185,11 @@ namespace cql_teacher_server.CQL.Gramatica
             var OBJECTALREADYEXISTS = ToTerm("ObjectAlreadyExists");
 
             var COMMIT = ToTerm("COMMIT");
+            var ROLLBACK = ToTerm("ROLLBACK");
 
+            var BEGIN = ToTerm("BEGIN");
+            var BATCH = ToTerm("BATCH");
+            var APPLY = ToTerm("APPLY");
 
 
 
@@ -312,6 +316,14 @@ namespace cql_teacher_server.CQL.Gramatica
             NonTerminal inThrow = new NonTerminal("inthrow");
 
             NonTerminal inCommit = new NonTerminal("incommit");
+            NonTerminal inRollback = new NonTerminal("inrollback");
+
+            NonTerminal inInstruccion = new NonTerminal("instruccion");
+
+            NonTerminal inBatch = new NonTerminal("inbatch");
+            NonTerminal instruccionesBatch = new NonTerminal("instruccion");
+            NonTerminal instruccionesBatch2 = new NonTerminal("instrucciones");
+
             #endregion
 
             #region Gramatica
@@ -319,11 +331,20 @@ namespace cql_teacher_server.CQL.Gramatica
             #region Instrucciones de inicio
             inicio.Rule = instrucciones;
 
-            instrucciones.Rule = instrucciones + instruccion
-                               | instruccion
+            instrucciones.Rule = instrucciones + inInstruccion
+                               | inInstruccion
                                ;
 
-            instruccion.Rule = use + ";"
+            instruccionesBatch2.Rule = instruccionesBatch2 + instruccionesBatch
+                                     | instruccionesBatch
+                                     ;
+
+            instruccionesBatch.Rule = inInsert + ";"
+                                    | inUpdate + ";"
+                                    | inDelete + ";"
+                                    ;
+
+            inInstruccion.Rule = use + ";"
                              | inInsertMap + ";"
                              | inSetMap + ";"
                              | inMultiAsignacion + ";"
@@ -363,6 +384,48 @@ namespace cql_teacher_server.CQL.Gramatica
                              | inTryCatch
                              | inThrow + ";"
                              | inCommit + ";"
+                             | inRollback + ";"
+                             | inBatch + ";"
+                             ;
+            instruccion.Rule = use + ";"
+                             | inInsertMap + ";"
+                             | inSetMap + ";"
+                             | inMultiAsignacion + ";"
+                             | inRemoveMap + ";"
+                             | inClear + ";"
+                             | createDatabase + ";"
+                             | declaracion + ";"
+                             | declaracionA + ";"
+                             | asignacion + ";"
+                             | ifsuperior
+                             | inSwitch
+                             | inDrop + ";"
+                             | inTable + ";"
+                             | inAlterTable + ";"
+                             | inDropTable + ";"
+                             | inTruncaTable + ";"
+                             | inUser + ";"
+                             | editUser + ";"
+                             | inInsert + ";"
+                             | inUpdate + ";"
+                             | inDelete + ";"
+                             | inSelect + ";"
+                             | inBreak + ";"
+                             | inWhile
+                             | inDoWhile + ";"
+                             | inFor
+                             | inReturn + ";"
+                             | inLog + ";"
+                             | inContinue + ";"
+                             | inCursor + ";"
+                             | inExpresion + ";"
+                             | inOperacionCursor + ";"
+                             | inForEach
+                             | inTryCatch
+                             | inThrow + ";"
+                             | inCommit + ";"
+                             | inRollback + ";"
+                             | inBatch + ";"
                              ;
             #endregion
             //--------------------------------------------------- USE ---------------------------------------------------------------------------------------
@@ -819,8 +882,17 @@ namespace cql_teacher_server.CQL.Gramatica
             #endregion
 
             #region Cambios fisicos
+
             inCommit.Rule = COMMIT;
+
+            inRollback.Rule = ROLLBACK;
+
             #endregion
+
+            #region Batch
+            inBatch.Rule = BEGIN + BATCH + instruccionesBatch2 + APPLY + BATCH ;
+            #endregion
+
             #endregion
 
             #region Preferencias

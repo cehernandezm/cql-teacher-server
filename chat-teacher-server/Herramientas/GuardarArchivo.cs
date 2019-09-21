@@ -1,6 +1,7 @@
 ﻿using cql_teacher_server.CHISON;
 using cql_teacher_server.CHISON.Componentes;
 using cql_teacher_server.CQL.Componentes;
+using cql_teacher_server.CQL.Componentes.Procedure;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,12 +12,13 @@ namespace cql_teacher_server.Herramientas
 {
     public class GuardarArchivo
     {
+
         /*
-         * Metodo se encarga de recorrer todo nuestra base de datos no relacional y guardarla en forma fisica
-         */
+* Metodo se encarga de recorrer todo nuestra base de datos no relacional y guardarla en forma fisica
+*/
         public void guardarArchivo(string archivo)
         {
-            using (FileStream fileStream = File.Open("DATABASE/" + archivo +".chison", FileMode.OpenOrCreate))
+            using (FileStream fileStream = File.Open("DATABASE/" + archivo +".chison", FileMode.Truncate))
             {
                 using(StreamWriter f = new StreamWriter(fileStream))
                 {
@@ -123,6 +125,7 @@ namespace cql_teacher_server.Herramientas
                         }
 
                         //------------------------------------------------ PROCEDURES -------------------------------------------------------------------------------
+                        
                         foreach (Procedures p in o.procedures)
                         {
                             f.WriteLine("\t\t\t\t<");
@@ -131,20 +134,52 @@ namespace cql_teacher_server.Herramientas
                             f.WriteLine("\t\t\t\t\t\"PARAMETERS\" = [");
 
                             //------------------------------------------------------ PARAMETROS ---------------------------------------------------------------------
-                            Parametros lastPa = p.parametros.Count() > 0 ? p.parametros.Last() : null;
-                            foreach (Parametros pa in p.parametros)
+                            //.........................................................IN ...........................................................................
+                            Boolean flagHayParameter = false;
+                            listaParametros parametro = p.parametro.ElementAt(0);
+                            if (parametro.lista.Count() > 0)
                             {
-                                f.WriteLine("\t\t\t\t\t\t<");
-                                f.WriteLine("\t\t\t\t\t\t\t\"NAME\" = \"" + pa.nombre + "\",");
-                                f.WriteLine("\t\t\t\t\t\t\t\"TYPE\" = \"" + pa.tipo + "\",");
-                                f.WriteLine("\t\t\t\t\t\t\t\"AS\" = " + pa.ass);
+                                var nodeLastParameter = parametro.lista.Last();
+                                foreach (Declaracion d in parametro.lista)
+                                {
+                                    flagHayParameter = true;
+                                    f.WriteLine("\t\t\t\t\t<");
+                                    f.WriteLine("\t\t\t\t\t\t\"NAME\" = \"" + d.id + "\",");
+                                    f.WriteLine("\t\t\t\t\t\t\"TYPE\" = \"" + d.tipo + "\",");
+                                    f.WriteLine("\t\t\t\t\t\t\"AS\" = \"IN\"");
+                                    if (!d.Equals(nodeLastParameter)) f.WriteLine("\t\t\t\t\t>,");
 
-                                if (pa.Equals(lastPa)) f.WriteLine("\t\t\t\t\t\t>");
-                                else f.WriteLine("\t\t\t\t\t\t>,");
+
+                                }
                             }
 
+                            //------------------------------------------------------- OUT -------------------------------------------------------------------------------
+                            parametro = p.retornos.ElementAt(0);
+                            if(parametro.lista.Count() > 0)
+                            {
+                                if(flagHayParameter) f.WriteLine("\t\t\t\t\t>,");
+                                var nodeLastParameter = parametro.lista.Last();
+                                foreach (Declaracion d in parametro.lista)
+                                {
+                                    flagHayParameter = true;
+                                    f.WriteLine("\t\t\t\t\t\t<");
+                                    f.WriteLine("\t\t\t\t\t\t\t\"NAME\" = \"" + d.id + "\",");
+                                    f.WriteLine("\t\t\t\t\t\t\t\"TYPE\" = \"" + d.tipo + "\",");
+                                    f.WriteLine("\t\t\t\t\t\t\t\"AS\" = \"OUT\"");
+                                    if (!d.Equals(nodeLastParameter)) f.WriteLine("\t\t\t\t\t>,");
+                                    else f.WriteLine("\t\t\t\t\t>");
+
+
+                                }
+                            }
+                            else
+                            {
+                                if(flagHayParameter) f.WriteLine("\t\t\t\t\t>");
+                            }
                             f.WriteLine("\t\t\t\t\t],");
-                            f.WriteLine("\t\t\t\t\t\"INSTR\" = \"" + p.instruccion + "\"");
+                            f.WriteLine("\t\t\t\t\t\"INSTR\" = $" + p.instruccion + "$");
+                            if(p.Equals(lastP)) f.WriteLine("\t\t\t\t>");
+                            else f.WriteLine("\t\t\t\t>,");
                         }
 
                         f.WriteLine("\t\t\t]");

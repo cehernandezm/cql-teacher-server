@@ -27,7 +27,7 @@ namespace cql_teacher_server.Controllers
             TablaBaseDeDatos.listaEnUso = new LinkedList<USO>();
             TablaBaseDeDatos.listaFunciones = new LinkedList<CQL.Componentes.Funcion>();
 
-            LeerArchivo leer = new LeerArchivo();
+            LeerArchivo leer = new LeerArchivo("Principal.chison");
           
 
             
