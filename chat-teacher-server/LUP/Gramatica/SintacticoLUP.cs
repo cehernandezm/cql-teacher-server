@@ -39,7 +39,7 @@ namespace cql_teacher_server.LUP.Gramatica
                     if (AST != null)
                     {
                         Object res = AST.ejecutar();
-                        if (AST.GetType() == typeof(Usuario))
+                        if (AST.GetType() == typeof(UsuarioLUP))
                         {
                             Boolean flag = (Boolean) res;
                             salida = (flag) ? "[+LOGIN]\n\t[SUCCESS]\n[-LOGIN]": "[+LOGIN]\n\t[FAIL]\n[-LOGIN]";
@@ -90,7 +90,7 @@ namespace cql_teacher_server.LUP.Gramatica
                     string password = actual.ChildNodes.ElementAt(17).Token.Text;
                     password = password.TrimEnd();
                     password = password.TrimStart();
-                    return new Usuario(usuario, password);
+                    return new UsuarioLUP(usuario, password);
 
                     break;
 

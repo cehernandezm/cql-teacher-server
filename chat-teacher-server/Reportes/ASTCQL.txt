@@ -1,14 +1,14 @@
 digraph Arbol{ rankdir=TB; 
- node[shape = box, style = filled, color = white];nodo22599820[label="inicio ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo30887001[label="instrucciones ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo1968367[label="instruccion ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo5720734[label="use ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo10340569[label="use (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo5720734"-> "nodo10340569" 
-nodo47056750[label="database1 (ID) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo5720734"-> "nodo47056750" 
-"nodo1968367"-> "nodo5720734" 
-"nodo30887001"-> "nodo1968367" 
-"nodo22599820"-> "nodo30887001" 
+ node[shape = box, style = filled, color = white];nodo18589739[label="inicio ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo16731734[label="instrucciones ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo15094412[label="instruccion ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo21622334[label="use ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo61828887[label="use (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo21622334"-> "nodo61828887" 
+nodo5967463[label="database1 (ID) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo21622334"-> "nodo5967463" 
+"nodo15094412"-> "nodo21622334" 
+"nodo16731734"-> "nodo15094412" 
+"nodo18589739"-> "nodo16731734" 
 
 }
