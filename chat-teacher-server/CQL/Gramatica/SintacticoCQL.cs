@@ -26,7 +26,7 @@ namespace cql_teacher_server.CQL.Gramatica
          * @retonar un set de errores o un set de mensajes
          */
 
-        public void analizar(string cadena, string usuario)
+        public object analizar(string cadena, string usuario)
         {
             usuario = usuario.TrimEnd();
             usuario = usuario.TrimStart();
@@ -35,17 +35,21 @@ namespace cql_teacher_server.CQL.Gramatica
             Parser parser = new Parser(gramatica);
             ParseTree arbol = parser.Parse(cadena);
             ParseTreeNode raiz = arbol.Root;
-
+            string salida = "";
             if (arbol != null)
             {
+                Mensaje ms = new Mensaje();
                 for (int i = 0; i < arbol.ParserMessages.Count(); i++)
                 {
-                    System.Diagnostics.Debug.WriteLine(arbol.ParserMessages.ElementAt(i).Message + " Linea: " + arbol.ParserMessages.ElementAt(i).Location.Line.ToString()
-                             + " Columna: " + arbol.ParserMessages.ElementAt(i).Location.Column.ToString() + "\n");
+                    string tipo;
+                    if (arbol.ParserMessages.ElementAt(i).Message.Contains("Invalid")) tipo = "Lexico";
+                    else tipo = "Sintactico";
+                    salida += ms.error(arbol.ParserMessages.ElementAt(i).Message, arbol.ParserMessages.ElementAt(i).Location.Line, arbol.ParserMessages.ElementAt(i).Location.Column, tipo);
                 }
 
                 if (arbol.ParserMessages.Count() < 1)
                 {
+                    salida = "";
                     graficar(raiz);
 
                     LinkedList<InstruccionCQL> listaInstrucciones = instrucciones(raiz.ChildNodes.ElementAt(0));
@@ -59,7 +63,7 @@ namespace cql_teacher_server.CQL.Gramatica
                     //---------------------------------------------------- PRIMER RECORRIDO BUSCANDO FUNCIONES ----------------------------------------------
                     foreach(InstruccionCQL ins in listaInstrucciones)
                     {
-                        Mensaje ms = new Mensaje();
+                        
                         if(ins.GetType() == typeof(Funcion))
                         {
                             if (!buscarFuncion(((Funcion)ins).identificador))
@@ -84,6 +88,7 @@ namespace cql_teacher_server.CQL.Gramatica
 
                     foreach (string m in ambito.mensajes)
                     {
+                        salida += m + "\n";
                         System.Diagnostics.Debug.WriteLine(m);
                     }
                    
@@ -94,6 +99,7 @@ namespace cql_teacher_server.CQL.Gramatica
                     
                 }
             }
+            return salida;
 
         }
 

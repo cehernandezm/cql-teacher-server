@@ -21,8 +21,8 @@ namespace cql_teacher_server.LUP.Componentes
         public object ejecutar()
         {
             SintacticoCQL sintactio = new SintacticoCQL();
-            sintactio.analizar(codigo,usuario);
-            string salida = "[+DATA]\n[-DATA]\n[+MESSAGE]\n[-MESSAGE]";
+
+            string salida = sintactio.analizar(codigo, usuario).ToString();
             return salida;
         }
     }

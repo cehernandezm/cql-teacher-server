@@ -21,7 +21,7 @@ namespace cql_teacher_server.LUP.Gramatica
             var PASS = ToTerm("PASS");
             var QUERY = ToTerm("QUERY");
             var DATA = ToTerm("DATA");
-
+            var STRUCT = ToTerm("STRUCT");
 
             var MAS = ToTerm("+");
             var MENOS = ToTerm("-");
@@ -48,6 +48,7 @@ namespace cql_teacher_server.LUP.Gramatica
             NonTerminal logout = new NonTerminal("logout");
             NonTerminal query = new NonTerminal("query");
             NonTerminal data = new NonTerminal("data");
+            NonTerminal instruct = new NonTerminal("struct");
 
             NonTerminal expresion_cuerpo = new NonTerminal("expresion_cuerpo");
 
@@ -63,7 +64,9 @@ namespace cql_teacher_server.LUP.Gramatica
 
             instruccion.Rule = login
                              | logout
-                             | query;
+                             | query
+                             | instruct
+                             ;
 
 
 
@@ -80,6 +83,7 @@ namespace cql_teacher_server.LUP.Gramatica
 
             data.Rule = LLAVEIZQ + MAS + DATA + LLAVEDER + expresion_cuerpo + LLAVEIZQ + MENOS + DATA + LLAVEDER;
 
+            instruct.Rule = LLAVEIZQ + MAS + STRUCT + LLAVEDER + LLAVEIZQ + MAS + USER + LLAVEDER + CUERPO + LLAVEIZQ + MENOS + USER + LLAVEDER + LLAVEIZQ + MENOS + STRUCT + LLAVEDER;
 
             query.Rule = LLAVEIZQ + MAS + QUERY + LLAVEDER + LLAVEIZQ + MAS + USER + LLAVEDER + ID + LLAVEIZQ + MENOS + USER + LLAVEDER
                        + data + LLAVEIZQ + MENOS + QUERY + LLAVEDER;

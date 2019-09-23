@@ -22,10 +22,10 @@ namespace cql_teacher_server.LUP.Componentes
 
         public Object ejecutar()
         {
-            System.Diagnostics.Debug.WriteLine("US:" + usuario + "PAS:" + password);
             if (usuario.Equals("admin") && password.Equals("admin")) return true;
             Usuario user = TablaBaseDeDatos.getUsuario(usuario.ToLower().TrimEnd().TrimStart());
             if (user == null) return false;
+            System.Diagnostics.Debug.WriteLine("US:" + usuario + "PAS:" + password);
             return password.Equals(user.password);
         }
     }

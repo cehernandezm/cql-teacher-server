@@ -41,17 +41,17 @@ namespace cql_teacher_server.LUP.Gramatica
                         Object res = AST.ejecutar();
                         if (AST.GetType() == typeof(UsuarioLUP))
                         {
-                            Boolean flag = (Boolean) res;
-                            salida = (flag) ? "[+LOGIN]\n\t[SUCCESS]\n[-LOGIN]": "[+LOGIN]\n\t[FAIL]\n[-LOGIN]";
-                            
-                        }else if(AST.GetType() == typeof(Logout))
-                        {
-                            Boolean flag = (Boolean) res;
-                            salida = (flag) ? "[+LOGOUT]\n\t[SUCCESS]\n[-LOGOUT]" : "[+LOGOUT]\n\t[FAIL]\n[-LOGOUT]";
-                        }else if(AST.GetType() == typeof(Consulta))
-                        {
-                            salida = (string) res;
+                            Boolean flag = (Boolean)res;
+                            salida = (flag) ? "[+LOGIN]\n\t[SUCCESS]\n[-LOGIN]" : "[+LOGIN]\n\t[FAIL]\n[-LOGIN]";
+
                         }
+                        else if (AST.GetType() == typeof(Logout))
+                        {
+                            Boolean flag = (Boolean)res;
+                            salida = (flag) ? "[+LOGOUT]\n\t[SUCCESS]\n[-LOGOUT]" : "[+LOGOUT]\n\t[FAIL]\n[-LOGOUT]";
+                        }
+                        else if (AST.GetType() == typeof(Consulta))salida = (string)res;                      
+                        else if (AST.GetType() == typeof(InStruct)) salida = (string)res;
                     } 
                 }
 
@@ -87,6 +87,7 @@ namespace cql_teacher_server.LUP.Gramatica
                     string usuario = actual.ChildNodes.ElementAt(8).Token.Text;
                     usuario = usuario.TrimEnd();
                     usuario = usuario.TrimStart();
+                    usuario = usuario.ToLower();
                     string password = actual.ChildNodes.ElementAt(17).Token.Text;
                     password = password.TrimEnd();
                     password = password.TrimStart();
@@ -100,7 +101,14 @@ namespace cql_teacher_server.LUP.Gramatica
                     string user = actual.ChildNodes.ElementAt(8).Token.Text;
                     user = user.TrimEnd();
                     user = user.TrimStart();
+                    user = user.ToLower();
                     return new Logout(user);
+                    break;
+
+                //------------------------------------------- SI EL PAQUETE ES UN STRUCT -----------------------------------------------------------------
+                case "struct":
+                    string userS = actual.ChildNodes.ElementAt(8).Token.Text.TrimEnd().TrimStart().ToLower();
+                    return new InStruct(userS);
                     break;
                 //------------------------------------------- SI EL PAQUETE ES DE CONSULTA ----------------------------------------------------------------
 

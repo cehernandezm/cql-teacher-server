@@ -23,15 +23,21 @@ namespace cql_teacher_server.Herramientas
 
         public string consulta(TablaSelect tabla)
         {
-            string resultado = "";
+            string resultado = "[+DATA]\n";
+            resultado += "\n\t<table class=\"table\">\n";
+            resultado += "\n\t<thead class=\"thead-dark\">\n";
+            resultado += "\t<tr>\n";
             foreach(Columna columa in tabla.columnas)
             {
-                resultado += columa.name + "|";
+                resultado += "\t\t<th scope = \"col\">" + columa.name + "</th>\n";
             }
-            resultado += "\n";
-            foreach(Data data in tabla.datos)
+            resultado += "\t</tr>\n";
+            resultado += "\t</thead>\n";
+            resultado += "\t<tbody>\n";
+            foreach (Data data in tabla.datos)
             {
-                foreach(Atributo atributo in data.valores)
+                resultado += "\t<tr>\n";
+                foreach (Atributo atributo in data.valores)
                 {
                     if(atributo.valor.GetType() == typeof(Map))
                     {
@@ -40,8 +46,9 @@ namespace cql_teacher_server.Herramientas
                         {
                             temp += key.key + ":" + key.value + ",";
                         }
+                        temp = temp.TrimStart(',');
                         temp += "]"; 
-                        resultado +=temp + "|";
+                        resultado += "\t\t<td>" + temp + "</td>\n";
                     }
                     else if(atributo.valor.GetType() == typeof(Set))
                     {
@@ -50,8 +57,9 @@ namespace cql_teacher_server.Herramientas
                         {
                             temp += p.ToString() + ",";
                         }
+                        temp = temp.TrimStart(',');
                         temp += "]";
-                        resultado += temp + "|";
+                        resultado += "\t\t<td>" + temp + "</td>\n";
                     }
                     else if (atributo.valor.GetType() == typeof(List))
                     {
@@ -60,8 +68,9 @@ namespace cql_teacher_server.Herramientas
                         {
                             temp += p.ToString() + ",";
                         }
+                        temp = temp.TrimStart(',');
                         temp += "]";
-                        resultado += temp + "|";
+                        resultado += "\t\t<td>" + temp + "</td>\n";
                     }
                     else if(atributo.valor.GetType() == typeof(InstanciaUserType))
                     {
@@ -70,13 +79,17 @@ namespace cql_teacher_server.Herramientas
                         {
                             temp += a.nombre + ":" + a.valor + ",";
                         }
+                        temp = temp.TrimStart(',');
                         temp += "]";
-                        resultado += temp + "|";
+                        resultado += "\t\t<td>" + temp + "</td>\n";
                     }
-                    else resultado += atributo.valor.ToString() + "|";
+                    else resultado += "\t\t<td>" + atributo.valor.ToString() + "</td>";
                 }
-                resultado += "\n";
+                resultado += "\t</tr>\n";
             }
+            resultado += "\t</tbody>\n";
+            resultado += "\t</table>\n";
+            resultado += "[-DATA]";
             return resultado;
         }
     }

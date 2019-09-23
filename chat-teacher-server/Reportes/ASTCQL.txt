@@ -1,14 +1,26 @@
 digraph Arbol{ rankdir=TB; 
- node[shape = box, style = filled, color = white];nodo18589739[label="inicio ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo16731734[label="instrucciones ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo15094412[label="instruccion ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo21622334[label="use ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-nodo61828887[label="use (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo21622334"-> "nodo61828887" 
-nodo5967463[label="database1 (ID) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
-"nodo21622334"-> "nodo5967463" 
-"nodo15094412"-> "nodo21622334" 
-"nodo16731734"-> "nodo15094412" 
-"nodo18589739"-> "nodo16731734" 
+ node[shape = box, style = filled, color = white];nodo13890759[label="inicio ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo31199535[label="instrucciones ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo9971341[label="instruccion ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo59982262[label="inlog ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo52262439[label="LOG (Keyword) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo59982262"-> "nodo52262439" 
+nodo64260612[label="expresion ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo21337325[label="expresion ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo36850661[label="hola:  (cadena) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo21337325"-> "nodo36850661" 
+"nodo64260612"-> "nodo21337325" 
+nodo26192260[label="+ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo64260612"-> "nodo26192260" 
+nodo43178681[label="expresion ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+nodo30713186[label="@ (Key symbol) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo43178681"-> "nodo30713186" 
+nodo56159982[label="saludo (ID) ", fillcolor="LightBlue", style ="filled", shape="box"]; 
+"nodo43178681"-> "nodo56159982" 
+"nodo64260612"-> "nodo43178681" 
+"nodo59982262"-> "nodo64260612" 
+"nodo9971341"-> "nodo59982262" 
+"nodo31199535"-> "nodo9971341" 
+"nodo13890759"-> "nodo31199535" 
 
 }
