@@ -76,7 +76,11 @@ namespace cql_teacher_server.CQL.Componentes
                 foreach(InstruccionCQL ins in cuerpo)
                 {
                     object r = ins.ejecutar(newAmbito, ambito, tsT);
-                    if (r == null) return null;
+                    if (r == null)
+                    {
+                        ambito.mensajes.AddLast(ms.error("Error en la Funcion: " + id, l, c, "Semantico"));
+                        return null;
+                    }
                     else if (r.GetType() == typeof(Retorno))
                     {
                         object re = ((Retorno)r).valor;
@@ -85,6 +89,7 @@ namespace cql_teacher_server.CQL.Componentes
 
                             if (re.GetType() == typeof(int) && tipo.Equals("int")) return (int)re;
                             else if (re.GetType() == typeof(string) && tipo.Equals("string")) return (String)re;
+                            else if (re.GetType() == typeof(Boolean) && tipo.Equals("boolean")) return (Boolean)re;
                             else if (re.GetType() == typeof(double) && tipo.Equals("double")) return (Double)re;
                             else if (re.GetType() == typeof(DateTime) && tipo.Equals("date")) return (DateTime)re;
                             else if (re.GetType() == typeof(TimeSpan) && tipo.Equals("time")) return (TimeSpan)re;

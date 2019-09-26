@@ -1,4 +1,6 @@
-﻿using cql_teacher_server.LUP.Arbol;
+﻿using cql_teacher_server.CHISON;
+using cql_teacher_server.CHISON.Componentes;
+using cql_teacher_server.LUP.Arbol;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +19,14 @@ namespace cql_teacher_server.LUP.Componentes
 
         public object ejecutar()
         {
-            return usuario == "admin";
+            if (usuario.Equals("admin")) return true;
+            Usuario user = TablaBaseDeDatos.getUsuario(usuario.ToLower().TrimEnd().TrimStart());
+            if(user != null)
+            {
+                TablaBaseDeDatos.deleteMine(usuario);
+                return true;
+            }
+            return false;
         }
     }
 }

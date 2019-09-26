@@ -56,6 +56,7 @@ namespace cql_teacher_server.CQL.Componentes.Try_Catch
                 object res = ins.ejecutar(newAmbito, ambito, tsT);
                 if (res == null)
                 {
+                    System.Diagnostics.Debug.WriteLine("TIPO: " + ins.GetType());
                     flagCatch = true;
                     break;
                 }
@@ -68,7 +69,7 @@ namespace cql_teacher_server.CQL.Componentes.Try_Catch
                 if(ambito.listadoExcepciones.Count() > 0)
                 {
                     Excepcion e = (Excepcion)ambito.listadoExcepciones.Last.Value;
-                    if (e.tipo.Equals(tipo))
+                    if (e.tipo.Equals(tipo) || e.tipo.Equals("exception"))
                     {
                         ambito.listadoExcepciones.RemoveLast();
                         ambito.mensajes.RemoveLast();                       
@@ -82,7 +83,11 @@ namespace cql_teacher_server.CQL.Componentes.Try_Catch
                         foreach (InstruccionCQL ins in cuerpoCatch)
                         {
                             object res = ins.ejecutar(newAmbito, ambito, tsT);
-                            if (res == null) return null;
+                            if (res == null)
+                            {
+                                System.Diagnostics.Debug.WriteLine("TIPO2: " + ins.GetType());
+                                return null;
+                            }
                             else if (ins.GetType() == typeof(Return)) return (Retorno)res;
                         }
                         return "";

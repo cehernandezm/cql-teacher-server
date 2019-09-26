@@ -64,6 +64,7 @@ namespace cql_teacher_server.CQL.Componentes
                 else if (tipo.Equals("map")) ts.setValor(id, new Map("none", new LinkedList<KeyValue>()));
                 else if (tipo.Equals("string") || tipo.Equals("int") || tipo.Equals("double") || tipo.Equals("date") || tipo.Equals("time") || tipo.Equals("boolean") || tipo.Equals("cursor")) { }
                 else ts.setValor(id, new InstanciaUserType("none", new LinkedList<Atributo>()));
+
                 return "";
             }
             else if (existe.Equals("none"))
@@ -119,7 +120,7 @@ namespace cql_teacher_server.CQL.Componentes
                             if (TablaBaseDeDatos.getUserType(tipo.ToLower(), bd))
                             {
                                 ts.AddLast(new Simbolo(tipo, id));
-                                ts.setValor(id, null);
+                                ts.setValor(id, new InstanciaUserType(tipo,null));
                             }
                             else
                             {
@@ -223,6 +224,25 @@ namespace cql_teacher_server.CQL.Componentes
                             Mensaje me = new Mensaje();
                             mensajes.AddLast(me.error("La variable " + id + " no se le puede asignar este valor " + a.ToString(), l, c, "Semantico"));
                             return null;
+                        }
+                        return "";
+                    }
+                    else
+                    {
+                        if (tipo.Equals("string") || tipo.Equals("date") || tipo.Equals("time"))
+                        {
+                            ts.AddLast(new Simbolo(tipo, id));
+                            ts.setValor(id, null);
+                        }
+                        else if (tipo.Equals("int") || tipo.Equals("double") || tipo.Equals("map") || tipo.Equals("set") || tipo.Equals("list") || tipo.Equals("cursor") || tipo.Equals("boolean"))
+                        {
+                            mensajes.AddLast(mensa.error("No se le puede asignar un valor null al tipo: " + tipo, l, c, "Semantico"));
+                            return null;
+                        }
+                        else
+                        {
+                            ts.AddLast(new Simbolo(tipo, id));
+                            ts.setValor(id, new InstanciaUserType(tipo,null));
                         }
                         return "";
                     }

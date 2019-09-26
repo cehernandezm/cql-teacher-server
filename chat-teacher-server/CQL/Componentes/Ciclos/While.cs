@@ -1,5 +1,6 @@
 ﻿using cql_teacher_server.CQL.Arbol;
 using cql_teacher_server.CQL.Componentes.Ciclos;
+using cql_teacher_server.CQL.Componentes.Try_Catch;
 using cql_teacher_server.Herramientas;
 using System;
 using System.Collections.Generic;
@@ -46,10 +47,11 @@ namespace cql_teacher_server.CQL.Componentes
 
         public object ejecutar(TablaDeSimbolos ts, Ambito ambito, TablaDeSimbolos tsT)
         {
+            Mensaje ms = new Mensaje();
             object res = (condicion == null) ? null : condicion.ejecutar(ts,ambito, tsT);
             object condi = verificarCondicion(res, ambito.mensajes);
-            if(condi != null)
-            {             
+            if (condi != null)
+            {
                 while ((Boolean)condi)
                 {
                     TablaDeSimbolos nuevoAmbito = new TablaDeSimbolos();
@@ -61,7 +63,11 @@ namespace cql_teacher_server.CQL.Componentes
                     foreach (InstruccionCQL i in cuerpo)
                     {
                         object resultado = i.ejecutar(nuevoAmbito, ambito, tsT);
-                        if (resultado == null) return null;
+                        if (resultado == null)
+                        {
+                            System.Diagnostics.Debug.WriteLine("TIPOWHILE: " + i.GetType());
+                            return null;
+                        }
                         else if (resultado.GetType() == typeof(Retorno)) return ((Retorno)resultado);
                         else if (i.GetType() == typeof(Continue) || resultado.GetType() == typeof(Continue)) break;
                     }
@@ -72,6 +78,11 @@ namespace cql_teacher_server.CQL.Componentes
                     if (condi == null) return null;
                 }
                 return "";
+            }
+            else
+            {
+                ambito.listadoExcepciones.AddLast(new Excepcion("exception", "La coindicion no puede ser null"));
+                ambito.mensajes.AddLast(ms.error("La coindicion no puede ser null", l, c, "Semantico"));
             }
             return null;
         }

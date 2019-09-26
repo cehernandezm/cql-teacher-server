@@ -199,7 +199,6 @@ namespace cql_teacher_server.CQL.Componentes
                                                 }
 
                                             }
-
                                             else
                                             {
                                                 mensajes.AddLast(mensa.error("No se le puede asignar al atributo: " + at.nombre + " el valor: " + op1, l, c, "Semantico"));
@@ -208,11 +207,29 @@ namespace cql_teacher_server.CQL.Componentes
                                             }
                                             return "";
                                         }
+                                        else
+                                        {
+                                            if (tipo.Equals("string") || tipo.Equals("date") || tipo.Equals("time")) at.valor = null;
+                                            else if(tipo.Equals("int") || tipo.Equals("double") || tipo.Equals("boolean") || tipo.Equals("map") || tipo.Equals("list") || tipo.Equals("set"))
+                                            {
+                                                mensajes.AddLast(mensa.error("No se le puede asignar al atributo: " + at.nombre + " el valor: null" , l, c, "Semantico"));
+
+                                                return null;
+                                            }
+                                            else
+                                            {
+                                                at.valor = null;
+                                            }
+                                            return "";
+                                        }
                                     }
                                     return null;
                                 }
                             }
+                            ambito.listadoExcepciones.AddLast(new Excepcion("exception", "No existe el atributo:" + id));
+                            mensajes.AddLast(mensa.error("No existe el atributo:" + id, l, c, "Semantico"));
                         }
+                        
                         
                     }
                     else  mensajes.AddLast(mensa.error("Para acceder a un atributo se necesita que sea de tipo USERTYPE no se reconoce: " + atri.ToString(), l, c, "Semantico"));
@@ -342,6 +359,17 @@ namespace cql_teacher_server.CQL.Componentes
                         return null;
 
                     }
+                    return "";
+                }
+                else
+                {
+                    if (tipo.Equals("string") || tipo.Equals("date") || tipo.Equals("time")) ts.setValor(id, null);
+                    else if (tipo.Equals("int") || tipo.Equals("double") || tipo.Equals("map") || tipo.Equals("set") || tipo.Equals("list") || tipo.Equals("cursor") || tipo.Equals("boolean"))
+                    {
+                        mensajes.AddLast(mensa.error("No se le puede asignar un valor null al tipo: " + tipo, l, c, "Semantico"));
+                        return null;
+                    }
+                    else ts.setValor(id, new InstanciaUserType(tipo, null));
                     return "";
                 }
             }

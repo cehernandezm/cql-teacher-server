@@ -1925,13 +1925,8 @@ namespace cql_teacher_server.CQL.Componentes
 
                     if (temp != null)
                     {
-                        LinkedList<Atributo> tempA = getAtributos(temp, bd,mensajes);
-                        InstanciaUserType tm = new InstanciaUserType(a.type, tempA);
-                        if (tempA != null)
-                        {
-                            att = new Atributo(a.name.ToLower(), tm, a.type.ToLower());
-                        }
-                        else return null;
+                        att = new Atributo(a.name.ToLower(), null, a.type.ToLower());
+                        
                     }
                     else return null;
                 }

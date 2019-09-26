@@ -28,6 +28,7 @@ namespace cql_teacher_server.CQL.Gramatica
 
         public object analizar(string cadena, string usuario)
         {
+            Mensaje mensajess = new Mensaje();
             usuario = usuario.TrimEnd();
             usuario = usuario.TrimStart();
             GramaticaCQL gramatica = new GramaticaCQL();
@@ -77,7 +78,6 @@ namespace cql_teacher_server.CQL.Gramatica
                     //----------------------------------------------------- SEGUNDO RECORRIDO EJECUTANDO TODO MENOS FUNCIONES ----------------------------
                     foreach (InstruccionCQL ins in listaInstrucciones)
                     {
-                        Mensaje mensa = new Mensaje();
                         if(ins.GetType() != typeof(Funcion))
                         {
                             object res = ins.ejecutar(tablaGlobal,ambito, tablaCQL);
@@ -99,6 +99,7 @@ namespace cql_teacher_server.CQL.Gramatica
                     
                 }
             }
+            if (salida.Equals("")) mensajess.message("Accion Realizada");
             return salida;
 
         }

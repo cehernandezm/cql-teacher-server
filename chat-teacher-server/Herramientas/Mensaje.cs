@@ -39,51 +39,83 @@ namespace cql_teacher_server.Herramientas
                 resultado += "\t<tr>\n";
                 foreach (Atributo atributo in data.valores)
                 {
-                    if(atributo.valor.GetType() == typeof(Map))
+                    if(atributo.valor != null)
                     {
-                        string temp = "[";
-                        foreach(KeyValue key in ((Map)atributo.valor).datos)
+                        if (atributo.valor.GetType() == typeof(Map))
                         {
-                            temp += key.key + ":" + key.value + ",";
+                            string temp = "[";
+                            foreach (KeyValue key in ((Map)atributo.valor).datos)
+                            {
+                                if (key.value != null)
+                                {
+                                    if (key.value.GetType() == typeof(InstanciaUserType))
+                                    {
+                                        InstanciaUserType tempInstancia = (InstanciaUserType)key.value;
+                                        temp += key.key + ": [" + getStringUser(tempInstancia.lista) + "] ,";
+                                    }
+                                    else temp += key.key + ":" + key.value + ",";
+                                }
+                                else temp += key.key + ":" + key.value + ",";
+                            }
+                            temp = temp.TrimStart(',');
+                            temp += "]";
+                            resultado += "\t\t<td>" + temp + "</td>\n";
                         }
-                        temp = temp.TrimStart(',');
-                        temp += "]"; 
-                        resultado += "\t\t<td>" + temp + "</td>\n";
-                    }
-                    else if(atributo.valor.GetType() == typeof(Set))
-                    {
-                        string temp = "[";
-                        foreach (object p in ((Set)atributo.valor).datos)
+                        else if (atributo.valor.GetType() == typeof(Set))
                         {
-                            temp += p.ToString() + ",";
+                            string temp = "[";
+                            foreach (object p in ((Set)atributo.valor).datos)
+                            {
+                                if (p != null)
+                                {
+                                    if (p.GetType() == typeof(InstanciaUserType))
+                                    {
+                                        InstanciaUserType tempInstancia = (InstanciaUserType)p;
+                                        temp +=  " [" + getStringUser(tempInstancia.lista) + "] ,";
+                                    }
+                                    else temp += p + ",";
+                                }
+                                else  temp += p + ",";
+
+                            }
+                            temp = temp.TrimStart(',');
+                            temp += "]";
+                            resultado += "\t\t<td>" + temp + "</td>\n";
                         }
-                        temp = temp.TrimStart(',');
-                        temp += "]";
-                        resultado += "\t\t<td>" + temp + "</td>\n";
-                    }
-                    else if (atributo.valor.GetType() == typeof(List))
-                    {
-                        string temp = "[";
-                        foreach (object p in ((List)atributo.valor).lista)
+                        else if (atributo.valor.GetType() == typeof(List))
                         {
-                            temp += p.ToString() + ",";
+                            string temp = "[";
+                            foreach (object p in ((List)atributo.valor).lista)
+                            {
+                                if (p != null)
+                                {
+                                    if (p.GetType() == typeof(InstanciaUserType))
+                                    {
+                                        InstanciaUserType tempInstancia = (InstanciaUserType)p;
+                                        temp += " [" + getStringUser(tempInstancia.lista) + "] ,";
+                                    }
+                                    else temp += p + ",";
+                                }
+                                else temp += p + ",";
+                            }
+                            temp = temp.TrimStart(',');
+                            temp += "]";
+                            resultado += "\t\t<td>" + temp + "</td>\n";
                         }
-                        temp = temp.TrimStart(',');
-                        temp += "]";
-                        resultado += "\t\t<td>" + temp + "</td>\n";
-                    }
-                    else if(atributo.valor.GetType() == typeof(InstanciaUserType))
-                    {
-                        string temp = "[";
-                        foreach(Atributo a in ((InstanciaUserType)atributo.valor).lista)
+                        else if (atributo.valor.GetType() == typeof(InstanciaUserType))
                         {
-                            temp += a.nombre + ":" + a.valor + ",";
+                            string temp = "[";
+                            foreach (Atributo a in ((InstanciaUserType)atributo.valor).lista)
+                            {
+                                temp += a.nombre + ":" + a.valor + ",";
+                            }
+                            temp = temp.TrimStart(',');
+                            temp += "]";
+                            resultado += "\t\t<td>" + temp + "</td>\n";
                         }
-                        temp = temp.TrimStart(',');
-                        temp += "]";
-                        resultado += "\t\t<td>" + temp + "</td>\n";
+                        else resultado += "\t\t<td>" + atributo.valor.ToString() + "</td>";
                     }
-                    else resultado += "\t\t<td>" + atributo.valor.ToString() + "</td>";
+                    
                 }
                 resultado += "\t</tr>\n";
             }
@@ -92,5 +124,21 @@ namespace cql_teacher_server.Herramientas
             resultado += "[-DATA]";
             return resultado;
         }
+        private String getStringUser(LinkedList<Atributo> lista)
+        {
+            String salida = "";
+            if (lista != null)
+            {
+                foreach (Atributo a in lista)
+                {
+                    salida += a.nombre + ":" + a.valor + ",";
+                }
+            }
+
+            return salida;
+        }
     }
+
+
+   
 }

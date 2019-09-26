@@ -82,9 +82,14 @@ namespace cql_teacher_server.CQL.Componentes
                 foreach (InstruccionCQL i in cuerpo)
                 {
                     object r = i.ejecutar(ambitoLocal,ambito, tablaTemp);
-                    if (r == null) return r;
+                    if (r == null)
+                    {
+                        System.Diagnostics.Debug.WriteLine("ACCION: " + i.GetType());
+                        return r;
+                    }
                     else if (r.GetType() == typeof(Retorno)) return r;
                 }
+                return "";
             }
             //--------------------------------------------------------------------------------- IF ELSE IF 
             else
