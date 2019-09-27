@@ -86,9 +86,11 @@ namespace cql_teacher_server.CQL.Gramatica
                         
                     }
 
-                    foreach (string m in ambito.mensajes)
+                    foreach (String m in ambito.mensajes)
                     {
-                        salida += m + "\n";
+
+                        String temp = m.Replace(':', ' ');
+                        salida += temp + "\n";
                         System.Diagnostics.Debug.WriteLine(m);
                     }
                    
@@ -99,7 +101,7 @@ namespace cql_teacher_server.CQL.Gramatica
                     
                 }
             }
-            if (salida.Equals("")) mensajess.message("Accion Realizada");
+            if (salida.Equals("")) salida = mensajess.message("Accion Realizada");
             return salida;
 
         }

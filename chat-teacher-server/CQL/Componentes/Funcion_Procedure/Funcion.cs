@@ -78,7 +78,7 @@ namespace cql_teacher_server.CQL.Componentes
                     object r = ins.ejecutar(newAmbito, ambito, tsT);
                     if (r == null)
                     {
-                        ambito.mensajes.AddLast(ms.error("Error en la Funcion: " + id, l, c, "Semantico"));
+                        ambito.mensajes.AddLast(ms.error("Problema en la Funcion: " + id, l, c, "Semantico"));
                         return null;
                     }
                     else if (r.GetType() == typeof(Retorno))
